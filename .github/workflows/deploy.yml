@@ -71,12 +71,26 @@ jobs:
       - name: Configure kubectl
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          echo "DEBUG: Decoding secret..."
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config 2>&1
+          echo "DEBUG: File created at $HOME/.kube/config"
+          ls -la $HOME/.kube/config
+          echo "DEBUG: First 100 chars of config:"
+          head -c 100 $HOME/.kube/config
+          echo ""
+          echo "DEBUG: Server endpoint:"
+          grep "server:" $HOME/.kube/config || echo "ERROR: No server found in config"
           chmod 600 $HOME/.kube/config
-          echo "=== Kubeconfig Content ===" 
-          cat $HOME/.kube/config
-          echo "=== Kubectl Config View ===" 
-          kubectl config view
+
+      - name: Verify kubectl connection
+        run: |
+          echo "KUBECONFIG location: $HOME/.kube/config"
+          echo "KUBECONFIG env var: ${KUBECONFIG}"
+          kubectl config view --raw
+          echo "---"
+          kubectl cluster-info
+          echo "---"
+          kubectl get nodes
 
       - name: Update deployment image
         run: |
