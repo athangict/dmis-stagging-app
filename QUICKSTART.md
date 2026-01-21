@@ -4,13 +4,13 @@
 
 ### Step 1: Create GitHub Repository
 1. Go to https://github.com/new
-2. Create a new repository (e.g., `staging-app`)
+2. Create a new repository (use `dmis-stagging-app` under the `athangict` account)
 3. Don't initialize with README (we already have files)
 
 ### Step 2: Configure Git Remote
 ```powershell
 cd c:\xampp\htdocs\staging.com
-git remote add origin https://github.com/YOUR_USERNAME/staging-app.git
+git remote add origin https://github.com/athangict/dmis-stagging-app.git
 git branch -M main
 ```
 
@@ -22,17 +22,17 @@ $kubeConfig = [Convert]::ToBase64String([System.IO.File]::ReadAllBytes("$env:USE
 Write-Output $kubeConfig
 ```
 
-### Step 4: Add GitHub Secrets
-Go to: https://github.com/YOUR_USERNAME/staging-app/settings/secrets/actions
+### Step 4: Add GitHub Secrets (Actions)
+Go to **Settings → Secrets and variables → Actions**: https://github.com/athangict/dmis-stagging-app/settings/secrets/actions (do not use Runners).
 
 Add these secrets:
 - **KUBE_CONFIG**: Paste the base64 string from Step 3
-- (Optional) **REGISTRY_TOKEN**: If using private registry
+- **REGISTRY_TOKEN** (optional, for private GHCR): PAT with `write:packages` and `read:packages`
 
 ### Step 5: Update Configuration Files
 
 #### Update k8s/deployment.yaml:
-- Line 92: Replace `your-registry/staging-app:latest` with `ghcr.io/YOUR_USERNAME/staging-app:latest`
+- Line 92: Replace `your-registry/staging-app:latest` with `ghcr.io/athangict/dmis-stagging-app:latest`
 - Line 103: Replace `staging.yourdomain.com` with your actual domain
 - Lines 28-31: Update database credentials
 
@@ -66,7 +66,7 @@ The GitHub Actions workflow will:
 3. ✅ Deploy to Kubernetes cluster
 4. ✅ Verify deployment
 
-Monitor the workflow at: https://github.com/YOUR_USERNAME/staging-app/actions
+Monitor the workflow at: https://github.com/athangict/dmis-stagging-app/actions
 
 ### Step 9: Verify Deployment
 ```powershell
@@ -107,7 +107,7 @@ git push
 
 ### Automatic Deployment
 - GitHub Actions automatically builds and deploys
-- Monitor at: https://github.com/YOUR_USERNAME/staging-app/actions
+- Monitor at: https://github.com/athangict/dmis-stagging-app/actions
 - Application updates in ~5 minutes
 
 ### Check Deployment
@@ -197,6 +197,24 @@ kubectl describe ingress staging-ingress -n staging
 # Ensure ingress controller is installed
 kubectl get pods -n ingress-nginx
 ```
+
+### Git push fails: "Repository not found"
+1. Confirm the repo exists: https://github.com/athangict/dmis-stagging-app
+2. Point the remote to the exact repo URL (no trailing slash):
+	```powershell
+	git remote set-url origin https://github.com/athangict/dmis-stagging-app.git
+	git remote -v
+	```
+3. Re-run the push (ensure the branch is `main`):
+	```powershell
+	git push -u origin main
+	```
+4. If still blocked, authenticate with GitHub (PAT with `repo` scope or `gh auth login`):
+	```powershell
+	gh auth login
+	# or push once and enter PAT when prompted
+	```
+5. Org/private repos: confirm your GitHub user has write access to the repo.
 
 ## 5. Environment Management
 
