@@ -69,50 +69,53 @@ jobs:
         uses: azure/setup-kubectl@v4
 
       - name: Configure kubeconfig from secret
-        shell: bash
+        shell: pwsh
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_SECRET }}
         run: |
-          SECRET_LENGTH=${#KUBE_CONFIG}
-          echo "Secret received length: $SECRET_LENGTH characters"
-          if [ $SECRET_LENGTH -lt 100 ]; then
-            echo "❌ ERROR: KUBE_CONFIG_SECRET is EMPTY or TOO SHORT!"
-            echo ""
-            echo "📝 STEPS TO FIX:"
-            echo "1. Go to: https://github.com/${{ github.repository }}/settings/secrets/actions"
-            echo "2. Click on 'KUBE_CONFIG_SECRET' to edit"
-            echo "3. Delete ALL current content"
-            echo "4. Paste the BASE64 string (should be ~9000+ characters)"
-            echo "5. Click 'Update secret'"
-            echo "6. Wait 5 seconds, then re-run this workflow"
+          $env:Path = "C:\kubectl;$env:Path"
+          $SECRET_LENGTH = $env:KUBE_CONFIG.Length
+          Write-Host "Secret received length: $SECRET_LENGTH characters"
+          if ($SECRET_LENGTH -lt 100) {
+            Write-Host "❌ ERROR: KUBE_CONFIG_SECRET is EMPTY or TOO SHORT!"
+            Write-Host ""
+            Write-Host "📝 STEPS TO FIX:"
+            Write-Host "1. Go to: https://github.com/${{ github.repository }}/settings/secrets/actions"
+            Write-Host "2. Click on 'KUBE_CONFIG_SECRET' to edit"
+            Write-Host "3. Delete ALL current content"
+            Write-Host "4. Paste the BASE64 string (should be ~9000+ characters)"
+            Write-Host "5. Click 'Update secret'"
+            Write-Host "6. Wait 5 seconds, then re-run this workflow"
             exit 1
-          fi
-          echo "✓ Secret received: $SECRET_LENGTH characters"
-          echo "$KUBE_CONFIG" | base64 -d > "${{ github.workspace }}/kubeconfig"
-          FILESIZE=$(stat -c%s "${{ github.workspace }}/kubeconfig")
-          echo "✓ Kubeconfig file size: $FILESIZE bytes"
-          echo "Server endpoint:"
-          grep "server:" "${{ github.workspace }}/kubeconfig"
-          chmod 600 "${{ github.workspace }}/kubeconfig"
+          }
+          Write-Host "✓ Secret received: $SECRET_LENGTH characters"
+          $bytes = [Convert]::FromBase64String($env:KUBE_CONFIG)
+          [IO.File]::WriteAllBytes("${{ github.workspace }}/kubeconfig", $bytes)
+          $FILESIZE = (Get-Item "${{ github.workspace }}/kubeconfig").Length
+          Write-Host "✓ Kubeconfig file size: $FILESIZE bytes"
+          Write-Host "Server endpoint:"
+          Select-String -Path "${{ github.workspace }}/kubeconfig" -Pattern "server:" | ForEach-Object { $_.Line }
 
       - name: Verify kubectl connection
-        shell: bash
+        shell: pwsh
         run: |
-          echo "KUBECONFIG is: $KUBECONFIG"
-          echo "---"
+          $env:Path = "C:\kubectl;$env:Path"
+          Write-Host "KUBECONFIG is: $env:KUBECONFIG"
+          Write-Host "---"
           kubectl cluster-info
-          echo "---"
+          Write-Host "---"
           kubectl get nodes -v=7
 
       - name: Update deployment image
-        shell: bash
+        shell: pwsh
         run: |
-          kubectl set image deployment/staging-app \
-            app=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${GITHUB_SHA::7} \
-            -n staging
+          $env:Path = "C:\kubectl;$env:Path"
+          $imageTag = "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-$("${{ github.sha }}".Substring(0,7))"
+          kubectl set image deployment/staging-app app=$imageTag -n staging
 
       - name: Verify deployment
-        shell: bash
+        shell: pwsh
         run: |
+          $env:Path = "C:\kubectl;$env:Path"
           kubectl rollout status deployment/staging-app -n staging
           kubectl get pods -n staging
