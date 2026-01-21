@@ -60,6 +60,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    env:
+      KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     steps:
       - name: Checkout code
@@ -70,27 +72,21 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          mkdir -p $HOME/.kube
-          echo "DEBUG: Decoding secret..."
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config 2>&1
-          echo "DEBUG: File created at $HOME/.kube/config"
-          ls -la $HOME/.kube/config
-          echo "DEBUG: First 100 chars of config:"
-          head -c 100 $HOME/.kube/config
-          echo ""
-          echo "DEBUG: Server endpoint:"
-          grep "server:" $HOME/.kube/config || echo "ERROR: No server found in config"
-          chmod 600 $HOME/.kube/config
+          echo "DEBUG: Creating kubeconfig file..."
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ${{ github.workspace }}/kubeconfig
+          echo "DEBUG: File created"
+          ls -la ${{ github.workspace }}/kubeconfig
+          echo "DEBUG: Checking server endpoint..."
+          grep "server:" ${{ github.workspace }}/kubeconfig
+          chmod 600 ${{ github.workspace }}/kubeconfig
 
       - name: Verify kubectl connection
         run: |
-          echo "KUBECONFIG location: $HOME/.kube/config"
-          echo "KUBECONFIG env var: ${KUBECONFIG}"
-          kubectl config view --raw
+          echo "KUBECONFIG is: $KUBECONFIG"
           echo "---"
           kubectl cluster-info
           echo "---"
-          kubectl get nodes
+          kubectl get nodes -v=7
 
       - name: Update deployment image
         run: |
