@@ -69,7 +69,7 @@ jobs:
         uses: azure/setup-kubectl@v4
 
       - name: Configure kubeconfig from secret
-        shell: pwsh
+        shell: powershell
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_SECRET }}
         run: |
@@ -97,7 +97,7 @@ jobs:
           Select-String -Path "${{ github.workspace }}/kubeconfig" -Pattern "server:" | ForEach-Object { $_.Line }
 
       - name: Verify kubectl connection
-        shell: pwsh
+        shell: powershell
         run: |
           $env:Path = "C:\kubectl;$env:Path"
           Write-Host "KUBECONFIG is: $env:KUBECONFIG"
@@ -107,14 +107,14 @@ jobs:
           kubectl get nodes -v=7
 
       - name: Update deployment image
-        shell: pwsh
+        shell: powershell
         run: |
           $env:Path = "C:\kubectl;$env:Path"
           $imageTag = "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-$("${{ github.sha }}".Substring(0,7))"
           kubectl set image deployment/staging-app app=$imageTag -n staging
 
       - name: Verify deployment
-        shell: pwsh
+        shell: powershell
         run: |
           $env:Path = "C:\kubectl;$env:Path"
           kubectl rollout status deployment/staging-app -n staging
