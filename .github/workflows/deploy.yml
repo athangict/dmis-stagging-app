@@ -95,7 +95,7 @@ jobs:
           grep "server:" ${{ github.workspace }}/kubeconfig
           chmod 600 ${{ github.workspace }}/kubeconfig
         env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_SECRET }}
 
       - name: Verify kubectl connection
         run: |
