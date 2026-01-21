@@ -18,16 +18,21 @@ git branch -M main
 Get your Kubernetes config and encode it:
 ```powershell
 # Get base64 encoded config
-$kubeConfig = [Convert]::ToBase64String([System.IO.File]::ReadAllBytes("$env:USERPROFILE\.kube\config"))
-Write-Output $kubeConfig
+$kubeContent = Get-Content "$env:USERPROFILE\.kube\config" -Raw
+$kubeBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($kubeContent))
+Write-Output $kubeBase64  # Copy this entire output string
 ```
 
 ### Step 4: Add GitHub Secrets (Actions)
-Go to **Settings → Secrets and variables → Actions**: https://github.com/athangict/dmis-stagging-app/settings/secrets/actions (do not use Runners).
+Go to **Settings → Secrets and variables → Actions**: https://github.com/athangict/dmis-stagging-app/settings/secrets/actions (use **Actions** secrets, NOT environment secrets).
 
 Add these secrets:
-- **KUBE_CONFIG**: Paste the base64 string from Step 3
-- **REGISTRY_TOKEN** (optional, for private GHCR): PAT with `write:packages` and `read:packages`
+1. **KUBE_CONFIG**: 
+   - Value: Paste the entire base64 string from Step 3 (should be 2000+ characters)
+   - Make sure no extra whitespace or newlines are included
+   - **Verify**: After pasting, ensure the first characters are `YXBpVmVyc2lvbjog` (base64 for "apiVersion: ")
+   
+2. **REGISTRY_TOKEN** (optional, for private GHCR): PAT with `write:packages` and `read:packages`
 
 ### Step 5: Update Configuration Files
 

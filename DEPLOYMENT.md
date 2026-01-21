@@ -26,14 +26,55 @@ Go to your GitHub repository → Settings → Secrets and variables → Actions 
 
 Add the following secrets:
 
-- **KUBE_CONFIG**: Your Kubernetes config file (base64 encoded)
-  ```bash
-  # On Linux/Mac:
-  cat ~/.kube/config | base64
+- **KUBE_CONFIG_SECRET**: Your Kubernetes config file (base64 encoded)
   
+  **To set this correctly:**
+  
+  1. Generate the base64-encoded kubeconfig:
+  ```powershell
   # On Windows PowerShell:
-  [Convert]::ToBase64String([System.IO.File]::ReadAllBytes("$env:USERPROFILE\.kube\config"))
+  $kubeContent = Get-Content "$env:USERPROFILE\.kube\config" -Raw
+  $kubeBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($kubeContent))
+  Write-Output $kubeBase64  # Copy this entire output
   ```
+  
+  2. Go to your GitHub repository → **Settings** → **Secrets and variables** → **Actions**
+  3. Click **New repository secret**
+  4. Name: `KUBE_CONFIG_SECRET`
+  5. Value: Paste the entire base64 string (from step 1)
+  6. Click **Add secret**
+  
+  **Verify the secret is set correctly:**
+  - The encoded value should be a very long string (typically 2000+ characters)
+  - Ensure no extra whitespace or line breaks are included
+  - The decoded kubeconfig should point to your actual cluster endpoint (not localhost)
+
+  #### Self-hosted runner (Windows) — required for private clusters
+
+  If your Kubernetes API server is on a private IP (e.g., `https://172.30.x.x:6443`), use a self-hosted runner inside your network so GitHub Actions can reach it.
+
+  1. Download the Windows x64 GitHub Actions runner:
+    https://github.com/actions/runner/releases (extract to `C:\actions-runner`)
+  2. Configure the runner unattended:
+    ```powershell
+    Push-Location "C:\actions-runner"
+    .\config.cmd --url https://github.com/<org-or-user>/<repo> --token <RUNNER_TOKEN> --name staging-runner --work _work --runnergroup "Default" --unattended
+    Pop-Location
+    ```
+    - Replace `<org-or-user>/<repo>` with your repository (e.g., `athangict/dmis-stagging-app`)
+    - The runner automatically has the `self-hosted` label; your workflow can use `runs-on: ["self-hosted"]`
+  3. Start the runner:
+    ```powershell
+    Push-Location "C:\actions-runner"
+    .\run.cmd
+    # Keep this window open; it should show "Listening for Jobs" then "Running job: deploy"
+    Pop-Location
+    ```
+  4. Optional: install as a Windows service later for persistence.
+
+  Troubleshooting:
+  - Ensure the `KUBE_CONFIG_SECRET` decodes to a kubeconfig whose `clusters.cluster.server` points to your real API endpoint (not `localhost`).
+  - If the job hangs on GitHub-hosted runners, switch to a self-hosted runner on the same network as the cluster.
 
 ### 3. Update Kubernetes Manifests
 
