@@ -72,10 +72,20 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          echo "DEBUG: Creating kubeconfig file..."
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ${{ github.workspace }}/kubeconfig
-          echo "DEBUG: File created"
-          ls -la ${{ github.workspace }}/kubeconfig
+          echo "DEBUG: Secret length: ${{ secrets.KUBE_CONFIG }} " | wc -c
+          echo "DEBUG: Secret first 50 chars: ${{ secrets.KUBE_CONFIG }}" | head -c 50
+          echo ""
+          echo "DEBUG: Decoding secret..."
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ${{ github.workspace }}/kubeconfig 2>&1
+          echo "DEBUG: File created, checking size..."
+          ls -lh ${{ github.workspace }}/kubeconfig
+          FILESIZE=$(stat -c%s "${{ github.workspace }}/kubeconfig")
+          echo "DEBUG: File size in bytes: $FILESIZE"
+          if [ $FILESIZE -eq 0 ]; then
+            echo "ERROR: Kubeconfig is empty! Secret on GitHub may not be set correctly."
+            echo "Please verify KUBE_CONFIG secret is updated at: https://github.com/athangict/dmis-stagging-app/settings/secrets/actions"
+            exit 1
+          fi
           echo "DEBUG: Checking server endpoint..."
           grep "server:" ${{ github.workspace }}/kubeconfig
           chmod 600 ${{ github.workspace }}/kubeconfig
