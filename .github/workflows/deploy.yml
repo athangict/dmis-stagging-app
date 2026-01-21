@@ -72,23 +72,30 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          echo "DEBUG: Secret length: ${{ secrets.KUBE_CONFIG }} " | wc -c
-          echo "DEBUG: Secret first 50 chars: ${{ secrets.KUBE_CONFIG }}" | head -c 50
-          echo ""
-          echo "DEBUG: Decoding secret..."
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ${{ github.workspace }}/kubeconfig 2>&1
-          echo "DEBUG: File created, checking size..."
-          ls -lh ${{ github.workspace }}/kubeconfig
-          FILESIZE=$(stat -c%s "${{ github.workspace }}/kubeconfig")
-          echo "DEBUG: File size in bytes: $FILESIZE"
-          if [ $FILESIZE -eq 0 ]; then
-            echo "ERROR: Kubeconfig is empty! Secret on GitHub may not be set correctly."
-            echo "Please verify KUBE_CONFIG secret is updated at: https://github.com/athangict/dmis-stagging-app/settings/secrets/actions"
+          SECRET_LENGTH=${#KUBE_CONFIG}
+          echo "Secret received length: $SECRET_LENGTH characters"
+          if [ $SECRET_LENGTH -lt 100 ]; then
+            echo "❌ ERROR: KUBE_CONFIG secret is EMPTY or TOO SHORT!"
+            echo "The secret on GitHub has not been properly updated."
+            echo ""
+            echo "📝 STEPS TO FIX:"
+            echo "1. Go to: https://github.com/athangict/dmis-stagging-app/settings/secrets/actions"
+            echo "2. Click on 'KUBE_CONFIG' to edit"
+            echo "3. Delete ALL current content"
+            echo "4. Paste the BASE64 string (should be ~9000+ characters)"
+            echo "5. Click 'Update secret'"
+            echo "6. Wait 5 seconds, then re-run this workflow"
             exit 1
           fi
-          echo "DEBUG: Checking server endpoint..."
+          echo "✓ Secret received: $SECRET_LENGTH characters"
+          echo "$KUBE_CONFIG" | base64 -d > ${{ github.workspace }}/kubeconfig
+          FILESIZE=$(stat -c%s "${{ github.workspace }}/kubeconfig")
+          echo "✓ Kubeconfig file size: $FILESIZE bytes"
+          echo "Server endpoint:"
           grep "server:" ${{ github.workspace }}/kubeconfig
           chmod 600 ${{ github.workspace }}/kubeconfig
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
 
       - name: Verify kubectl connection
         run: |
