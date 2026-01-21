@@ -53,32 +53,98 @@ Add the following secrets:
 
   If your Kubernetes API server is on a private IP (e.g., `https://172.30.x.x:6443`), use a self-hosted runner inside your network so GitHub Actions can reach it.
 
-  1. Download the Windows x64 GitHub Actions runner:
-    https://github.com/actions/runner/releases (extract to `C:\actions-runner`)
-  2. Configure the runner unattended:
-    ```powershell
-    Push-Location "C:\actions-runner"
-    .\config.cmd --url https://github.com/<org-or-user>/<repo> --token <RUNNER_TOKEN> --name staging-runner --work _work --runnergroup "Default" --unattended
-    Pop-Location
-    ```
-    - Replace `<org-or-user>/<repo>` with your repository (e.g., `athangict/dmis-stagging-app`)
-    - The runner automatically has the `self-hosted` label; your workflow can use `runs-on: ["self-hosted"]`
-  3. Start the runner:
-    ```powershell
-    Push-Location "C:\actions-runner"
-    .\run.cmd
-    # Keep this window open; it should show "Listening for Jobs" then "Running job: deploy"
-    Pop-Location
-    ```
-  4. Optional: install as a Windows service later for persistence.
+**Step 1: Download and configure the runner**
 
-  Troubleshooting:
-  - Ensure the `KUBE_CONFIG_SECRET` decodes to a kubeconfig whose `clusters.cluster.server` points to your real API endpoint (not `localhost`).
-  - If the job hangs on GitHub-hosted runners, switch to a self-hosted runner on the same network as the cluster.
+1. Download the Windows x64 GitHub Actions runner from Settings → Actions → Runners → New self-hosted runner
+2. Extract to `C:\actions-runner`
+3. Open PowerShell as Administrator and configure:
+   ```powershell
+   cd C:\actions-runner
+   .\config.cmd --url https://github.com/athangict/dmis-stagging-app --token <RUNNER_TOKEN>
+   ```
+4. When prompted:
+   - Runner group: Press Enter (Default)
+   - Runner name: Press Enter or type "staging-runner"
+   - Labels: Type "staging" or press Enter
+   - Work folder: Press Enter (_work)
+   - Run as service: Type "N" for now
 
-### 3. Update Kubernetes Manifests
+**Step 2: Install kubectl**
 
-Edit `k8s/deployment.yaml`:
+The workflow requires kubectl to be available on the runner machine:
+
+```powershell
+# Create kubectl directory
+New-Item -Path "C:\kubectl" -ItemType Directory -Force
+
+# Download kubectl v1.29.0
+Invoke-WebRequest -Uri "https://dl.k8s.io/release/v1.29.0/bin/windows/amd64/kubectl.exe" -OutFile "C:\kubectl\kubectl.exe"
+
+# Verify installation
+C:\kubectl\kubectl.exe version --client
+```
+
+**Step 3: Set PowerShell execution policy**
+
+Allow the runner to execute PowerShell scripts:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+```
+
+**Step 4: Start the runner**
+
+```powershell
+cd C:\actions-runner
+.\run.cmd
+# Keep this window open; it should show "Listening for Jobs" then "Running job: deploy"
+```
+
+**Step 5: Grant Kubernetes RBAC permissions**
+
+The kubeconfig user needs permissions to manage the staging namespace. Ask your cluster administrator to run:
+
+```powershell
+# Create staging namespace (if it doesn't exist)
+kubectl create namespace staging
+
+# Grant admin permissions for staging namespace
+kubectl create rolebinding singye-staging-admin --clusterrole=admin --user=singye --namespace=staging
+```
+
+This grants full access to the `staging` namespace only (recommended for security).
+
+**Step 6: Update kubeconfig secret**
+
+After receiving the kubeconfig file from your cluster admin:
+
+1. Encode it to base64:
+   ```powershell
+   $kubeContent = Get-Content "path\to\kubeconfig.yaml" -Raw
+   $kubeBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($kubeContent))
+   Set-Clipboard -Value $kubeBase64
+   Write-Host "Base64 length: $($kubeBase64.Length) characters - copied to clipboard"
+   ```
+
+2. Update the GitHub secret:
+   - Go to: https://github.com/athangict/dmis-stagging-app/settings/secrets/actions
+   - Click on `KUBE_CONFIG_SECRET`
+   - Paste the base64 value (Ctrl+V)
+   - Click **Update secret**
+
+3. Verify the secret (should start with base64 for "apiVersion"):
+   ```
+   First chars should be: YXBpVmVyc2lvbjogdjEK...
+   Length should be: ~9000+ characters
+   ```
+
+**Troubleshooting:**
+
+- **Runner not picking jobs**: Check that workflow uses `runs-on: self-hosted`
+- **kubectl not found**: Ensure `C:\kubectl` exists and kubectl.exe is in that folder
+- **Permission denied**: Verify RBAC permissions with `kubectl auth can-i list deployments -n staging`
+- **Secret errors**: Ensure no whitespace/newlines in base64 secret; length should be 9000+ chars
+- **Cluster unreachable**: Confirm runner machine can access the Kubernetes API endpoint on the private network
 
 1. Replace `your-registry/staging-app:latest` with your actual registry path
 2. Replace `staging.yourdomain.com` with your actual domain

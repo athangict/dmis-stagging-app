@@ -14,25 +14,38 @@ git remote add origin https://github.com/athangict/dmis-stagging-app.git
 git branch -M main
 ```
 
-### Step 3: Configure Kubernetes Access
-Get your Kubernetes config and encode it:
+### Step 3: Configure Kubernetes Access and GitHub Secrets
+
+**Prerequisites for Private Clusters:**
+- Self-hosted runner installed (see [DEPLOYMENT.md](DEPLOYMENT.md) for full setup)
+- kubectl installed on runner machine
+- RBAC permissions granted (see [RBAC-SETUP.md](RBAC-SETUP.md))
+
+**Encode your kubeconfig:**
 ```powershell
-# Get base64 encoded config
-$kubeContent = Get-Content "$env:USERPROFILE\.kube\config" -Raw
+# Read and encode kubeconfig
+$kubeContent = Get-Content "path\to\kubeconfig.yaml" -Raw
 $kubeBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($kubeContent))
-Write-Output $kubeBase64  # Copy this entire output string
+
+# Copy to clipboard
+Set-Clipboard -Value $kubeBase64
+
+# Verify length (should be ~9000+ characters)
+Write-Host "Base64 length: $($kubeBase64.Length) characters"
+Write-Host "First 50 chars: $($kubeBase64.Substring(0,50))"
 ```
 
 ### Step 4: Add GitHub Secrets (Actions)
-Go to **Settings → Secrets and variables → Actions**: https://github.com/athangict/dmis-stagging-app/settings/secrets/actions (use **Actions** secrets, NOT environment secrets).
+Go to **Settings → Secrets and variables → Actions**: https://github.com/athangict/dmis-stagging-app/settings/secrets/actions
 
-Add these secrets:
-1. **KUBE_CONFIG**: 
-   - Value: Paste the entire base64 string from Step 3 (should be 2000+ characters)
-   - Make sure no extra whitespace or newlines are included
-   - **Verify**: After pasting, ensure the first characters are `YXBpVmVyc2lvbjog` (base64 for "apiVersion: ")
+Add this secret:
+1. **KUBE_CONFIG_SECRET**: 
+   - Value: Paste the base64 string from clipboard (Ctrl+V)
+   - Should be ~9000+ characters
+   - Should start with: `YXBpVmVyc2lvbjogdjEK...`
+   - **Important**: No extra whitespace or newlines
    
-2. **REGISTRY_TOKEN** (optional, for private GHCR): PAT with `write:packages` and `read:packages`
+**Note**: The kubeconfig user must have admin permissions in the `staging` namespace. If you get permission errors, see [RBAC-SETUP.md](RBAC-SETUP.md).
 
 ### Step 5: Update Configuration Files
 
