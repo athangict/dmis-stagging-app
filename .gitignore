@@ -1,0 +1,79 @@
+# Vendor dependencies
+/vendor/
+composer.phar
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment and configuration
+.env
+.env.local
+.env.production
+config/autoload/local.php
+config/autoload/*.local.php
+!config/autoload/local.php.dist
+
+# Cache and temporary files
+data/cache/*
+!data/cache/.gitkeep
+data/DoctrineORMModule/
+*.cache
+*.tmp
+
+# Logs
+*.log
+logs/
+data/log/
+
+# Uploads and user-generated content
+public/uploads/*
+!public/uploads/.gitkeep
+data/uploads/*
+!data/uploads/.gitkeep
+
+# Database files
+*.sql
+!data/schema.sql
+*.sqlite
+*.db
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+
+# Build artifacts
+/build/
+/dist/
+
+# Testing
+/phpunit.xml
+/coverage/
+/.phpunit.result.cache
+
+# Node modules (if using frontend build tools)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Vagrant
+.vagrant/
+
+# Docker volumes
+docker-volumes/
+
+# Kubernetes local testing
+k8s/secrets-*.yaml
+k8s/*-local.yaml
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Public processed requests (runtime data)
+public/processed_requests.json

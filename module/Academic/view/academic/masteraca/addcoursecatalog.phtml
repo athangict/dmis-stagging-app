@@ -1,0 +1,86 @@
+<?php
+/**
+ * 
+ *  Academic/MasterController/addclassAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<form id="#form" method="post" action="<?php echo $this->url('masteraca', array('action' => 'addcoursecatalog')); ?>" enctype="multipart/form-data">                  
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body"> 
+        <div class="panel panel-default">
+			<div class="panel-body">  
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label for="name" class="control-label">Course Name</label>
+                            <input class="form-control" type="text" id="name" name="name" placeholder="Course Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="code" class="control-label">Code</label>
+                            <input class="form-control" type="text" id="code" name="code" placeholder="Course Code">
+                        </div>
+                        <div class="form-group">
+						    <label for="level" class="control-label">Levels</label>
+					        <select class="form-control" id="level" name="level" data-placeholder="Select">
+                                <option value="-1"> None</option>
+                                <?php 
+                                foreach ($class as $row):
+                                ?>
+                                    <option value="<?php echo $row['id'];?>" >
+                                        <?php echo $row['standard'];?>
+                                    </option>
+                                <?php
+                                endforeach;
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+		    </div>
+		</div>
+	</div> <!-- /modal-body -->    
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="ace-icon fa fa-check"></i> Save</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="ace-icon fa fa-times"></i> Cancel</button> 
+    </div>
+</form>
+<script>
+    FormValidation.formValidation(document.getElementById('#form'), {
+        fields: {
+            role: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please provide role name.'
+                    }
+                }
+            },
+            description: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please provide description.'
+                    }
+                }
+            },
+            status: {
+				validators: {
+					notEmpty: {
+						message: 'Please select status.'
+					}
+				}
+			},
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap3: new FormValidation.plugins.Bootstrap3(),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    });
+</script>

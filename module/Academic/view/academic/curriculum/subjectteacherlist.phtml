@@ -1,0 +1,104 @@
+<?php
+/**
+ * View -- of Administration/DomainController/viewcurriculum
+ * chophel@athang.com
+ */
+	$this->headTitle($this->title);
+	
+	foreach ($academic as $academics);
+?>
+<?php echo $this->tabs_helper(array(2835,2838,2841),$academics['id']); ?>
+<div class="card">
+<div class="card-header">
+		<div class="col-12">
+			<div class="card dcard">
+				<div class="card-body px-1 px-md-3">
+					<table class="table card-table text-nowrap">
+						<thead>
+							<tr>
+								<th>Academic Year</th>
+								<th>Batch</th>
+								<th>Class Name</th>
+								<th>Program</th>
+								<th>Level</th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php 
+							$i=1;
+							foreach ($academic as $academics):?>
+							<tr>
+							<td><?php  echo $academics['academic_year']; ?></td>	
+								<td><?php  echo $academics['batch']; ?></td>		
+								<td><?php  echo $academics['class_name']; ?></td>	
+								<td><?php  echo $this->program->getColumn($academics['program'],'name'); ?></td>
+								<td><?php  echo $this->class->getColumn($academics['level'],'standard'); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="card dcard">
+				<div class="card-body px-1 px-md-3">
+					<div class="btn-group pull-right">
+						<?php echo $this->button(2,$academics['id']);?>
+					</div>
+				</div>
+		     </div>
+		</div>
+	</div>
+	<div class="table-responsive">
+	<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Subject</th>
+					<th>Subject Teacher</th>
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>	
+				</tr>
+			</thead>
+			<tbody>
+			<?php 
+				$i=1;
+				foreach ($paginator as $row):?>
+				<tr data-href="<?php echo $this->button(4,$row['id']); ?>">
+					<td><?php  echo $i++; ?></td>	
+					<td class="uchen"><?php  echo $this->subject->getColumn($row['subject'],'subject'); ?></td>	
+					<td><?php  echo $this->student->getColumn($row['monk_id'],'full_name'); ?></td>	
+					<?php if($this->button(1)!=""):?>
+						<td><?php echo $this->button(1, $row['id'].'_'.$page);?></td>
+					<?php endif;?>
+				</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	</div>
+	<div class="card-footer d-flex align-items-center">
+		<?php echo $this->paginationControl($this->paginator,'Sliding','adm_pagination.phtml', 
+			array('route' => 'curriculum/paginator','action'=>'initiateacademic'));?>
+	</div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+$('document').ready(function(){
+	$("tr[data-href]").each(function(){ 
+		if($(this).attr('data-href')!='#'){
+			$(this).css('cursor','pointer');
+			$(this).bind('click',function() {
+				window.document.location = $(this).attr("data-href");
+			});
+		}
+	});
+	$('#dataTables').DataTable();
+});
+</script>

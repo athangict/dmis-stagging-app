@@ -1,0 +1,95 @@
+<?php
+/**
+ * 
+ *  Academic/MasterController/editsectionsAction
+ * 
+ */
+$this->headTitle($this->title);
+ foreach($qualification as $qualification):
+	extract($qualification);
+ endforeach;
+?>
+<form id="#form" role="form" data-toggle="validator" action="<?php echo $this->url('monk', array('action' => 'editqualification','id'=>$id)); ?>" enctype="multipart/form-data" method="post" >
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+    	<div class="panel panel-default">
+    		<div class="panel-body">
+				<div class="form-group">
+				<label for="monk_id" class="control-label">Monk Id</label>
+					<input type="text" name="monk_id" id="monk_id" class="form-control" value="<?php echo $monk_id?>" placeholder="Monk ID" required/>
+				</div>
+				<div class="form-group">
+					<label for="course" class="control-label">Course</label>
+					<input type="text" name="course" id="course" class="form-control" value="<?php echo $course?>"  placeholder="course" required/>
+				</div>
+				<div class="form-group">  
+				<label class="control-label" for="country">Country</label>
+				<input type="text" name="country" id="country" class="form-control" value="<?php echo $this->country->getColumn($country,'name');?>"  placeholder="location" required/>
+					</div>
+				<div class="form-group">
+					<label for="location" class="control-label">City/Dzongkhag</label>
+					<input type="text" name="location" id="location" class="form-control" value="<?php echo $location?>"  placeholder="location" required/>
+				</div>
+				<div class="form-group">
+					<label for="organization" class="control-label">Organization</label>
+					<input type="text" name="organization" id="organization" class="form-control" value="<?php echo $organization?>"  placeholder="occupation" required/>
+				</div>
+				<div class="form-group">
+					<label for="from_date" class="control-label">From Date</label>
+					<input type="date" name="from_date" id="from_date" class="form-control" value="<?php echo $from_date?>"  placeholder="from_date" required/>
+				</div>
+                <div class="form-group">
+					<label for="to_date" class="control-label">To Date</label>
+					<input type="date" name="to_date" id="to_date" class="form-control" value="<?php echo $to_date?>"  placeholder="to_date" required/>
+				</div>
+				
+			</div><!-- panel-body -->
+		</div><!-- panel panel-default -->	
+    </div> <!-- /modal-body -->
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="reset" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>        
+    </div>  
+</form>
+<script>
+$('document').ready(function(){
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			name: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide name.'
+					}
+				}
+			},
+			cid: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide cid.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+
+});
+</script>

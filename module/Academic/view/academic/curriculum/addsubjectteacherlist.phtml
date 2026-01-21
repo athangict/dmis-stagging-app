@@ -1,0 +1,129 @@
+<?php 
+/**
+ * View -- of Academic/MonkController/addstudentdetails
+ * chophel@athang.com
+ */
+$this->headTitle($this->title);
+foreach($studentlist as $studentlists);
+?>
+<form id="#form" method="post" action="<?php echo $this->url('curriculum', array('action' => 'addsubjectteacherlist','id'=>$page)); ?>"  enctype="multipart/form-data" >                  
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">   
+				<div class="row">
+				<input type="hidden" name="academic_year" value="<?php echo $studentlists['academic_year'];?>">
+					<input type="hidden" name="batch" value="<?php echo $studentlists['batch'];?>">
+					<input type="hidden" name="organization" value="<?php echo $studentlists['organization'];?>">
+					<input type="hidden" name="class" value="<?php echo $studentlists['class_name'];?>">
+					<input type="hidden" name="course" value="<?php echo $studentlists['course'];?>">
+					<input type="hidden" name="level" value="<?php echo $studentlists['level'];?>">
+					<input type="hidden" name="id" value="<?php echo $studentlists['id'];?>">
+					<div class="form-group col-lg-6">  
+						<label class="control-label" for="district">Subject Taecher</label>
+						<select id="staff" name="staff" class="form-control" data-placeholder="Select">
+							<option value="-1" selected>None</option>
+							<?php foreach($this->student->get(array('staff'=>2,'organization'=>$studentlists['organization'])) as $students):?>
+								<option value="<?php echo $students['id']?>">
+									<?php echo $students['full_name'];?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="form-group col-lg-6">  
+						<label class="control-label" for="subject">Subject</label>
+						<select id="subject" name="subject" class="form-control" data-placeholder="Select">
+							<option value="-1" selected>None</option>
+							<?php foreach($this->subject->get(array('standard'=>$studentlists['program'])) as $subjects):?>
+								<option value="<?php echo $subjects['id']?>">
+									<?php echo $subjects['subject'];?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> <!-- /modal-body -->    
+    <div class="modal-footer">
+		<button type="submit" class="btn btn-success"><i class="ace-icon fa fa-check"></i>Save</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="ace-icon fa fa-times"></i>Cancel</button> 
+    </div>
+</form>
+<script>
+$(function(){
+	$('select#district').on('change',function(){
+			$.post(
+				"<?php echo $this->url('monk', array('action' => 'getorganization'));?>",
+				{
+					rdzoId: $(this).val(),
+				},
+				function(data){
+					$('select#organization').html(data.organization);
+					$('select#organization').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			region: {
+				validators: {
+					notEmpty: {
+						message: 'Please select region.'
+					}
+				}
+			},
+			location_type: {
+				validators: {
+					notEmpty: {
+						message: 'Please select location type.'
+					}
+				}
+			},
+			location: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide location name.'
+					}
+				}
+			},
+			district: {
+				validators: {
+					notEmpty: {
+						message: 'Please select dzongkhag.'
+					}
+				}
+			},
+			status: {
+				validators: {
+					notEmpty: {
+						message: 'Please select status.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('form select').chosen().change(function () {
+		fv.revalidateField($(this).attr('name'));
+	});
+});
+</script>

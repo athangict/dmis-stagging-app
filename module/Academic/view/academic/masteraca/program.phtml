@@ -1,0 +1,60 @@
+<?php
+/**
+ * View -- of Administration/MasterController/locationtypeAction
+ * chophel@athang.com
+ */
+	$this->headTitle($this->title);
+?>
+<?php echo $this->tabs_helper(array(2654,2683,2686)); ?>
+<div class="card">
+	<div class="card-header">
+		<div class="btn-group pull-right">
+			<?php echo $this->button(2,$page);?>
+		</div>
+	</div>
+	<div class="table-responsive">
+	<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Program</th>
+					<th>Level</th>
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>	
+				</tr>
+			</thead>
+			<tbody>
+			<?php $i=1+(($page-1)*20); foreach ($paginator as $row):?>
+				<tr>
+					<td><?php  echo $i++; ?></td>								       
+					<td class="uchen fw-bold"><?php echo $row['name'];?></td>
+					<td class="uchen fw-bold"><?php echo $this->levels->getColumn($row['level'],'standard');?></td>
+					<?php if($this->button(1)!=""):?>
+						<td>
+							<?php echo $this->button(1, $row['id']);?>
+							<a class="btn btn-xs btn-primary" data-toggle="normal" href="<?php echo $this->url('masteraca', array('action'=>'subject', 'id' => $row['id']));?>">
+									<i class="ace-icon fa fa-eye bigger-120"></i>
+								</a> 
+						</td>
+	
+					<?php endif;?>
+				</tr>
+			<?php endforeach; ?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+$('document').ready(function(){
+	$('#dataTables').DataTable();
+});
+</script>

@@ -1,0 +1,72 @@
+<?php
+/**
+ * 
+ *  Academic/CurriculumController/editsubjectteacherlistAction
+ * 
+ */
+$this->headTitle($this->title);
+ foreach($subjectTeacher as $row):
+    //print_r($row);exit;
+    //extract($academics);
+ endforeach;
+?>
+<form id="#form" role="form" data-toggle="validator" action="<?php echo $this->url('curriculum', array('action' => 'editsubjectteacherlist','id'=>$row['id'])); ?>" enctype="multipart/form-data" method="post" >
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <input type="hidden" name="id" value="<?php echo $row['id'];?>">
+	<input type="hidden" name="aca_curriculum_id" value="<?php echo $row['aca_clurriculum_id'];?>">
+    <div class="modal-body">
+    	<div class="panel panel-default">
+    		<div class="panel-body">
+				<div class="form-group">
+				<label class="control-label" for="district">Subject Teacher</label>
+					<select id="student" name="student" class="form-control" data-placeholder="Select">
+					<option value=""></option>
+						<?php foreach($this->student->get(array('staff'=>2,'organization'=>$row['organization'])) as $students):?>
+							<option value="<?php echo $students['id']?>" <?php echo ($row['monk_id']==$students['id'])?'selected':'';?>>
+								<?php echo $students['full_name'];?></option>
+						<?php endforeach;?>
+					</select>
+				</div>
+			</div><!-- panel-body -->
+		</div><!-- panel panel-default -->	
+    </div> <!-- /modal-body -->
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="reset" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>        
+    </div>  
+</form>
+<script>
+$('document').ready(function(){
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			student: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide student.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+
+});
+</script>

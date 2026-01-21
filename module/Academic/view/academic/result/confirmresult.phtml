@@ -1,0 +1,40 @@
+<?php 
+/**
+ * View -- of Academic/MonkController/addstudentdetails
+ * chophel@athang.com
+ */
+$this->headTitle($this->title);
+?>
+<?php  foreach($curriculum as $curriculums);
+
+ if(sizeof($result)>0):
+	foreach($result as $results);
+	foreach($this->resultdetails->get(array('result_id'=>$results['id'])) as $resultdetail);endif;
+?>
+
+<form id="#form" method="post" action="<?php echo $this->url('result', array('action' => 'confirmresult','id'=>$curriculums['id'])); ?>"  enctype="multipart/form-data" >                  
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+	<input type="hidden" name="monk_id" value="<?php echo $results['monk_id']; ?>">
+	<input type="hidden" name="result_id" value="<?php echo $results['id']; ?>">
+	<?php  $subjects =sizeof($this->subject->get(array('standard'=>$curriculums['program'])));
+					 $totalmarks=$subjects*100; ?>
+	 <input type="hidden"  name="total_marks" value="<?php echo $totalmarks;?>">
+	 <input type="hidden" value="<?php echo $this->resultdetails->getSum('marks',array('result_id'=>$results['id']));?>" name="scored_marks">
+    <div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">   
+				<h5>Are you to confirm the above marks?</h5>
+				<p style="color:red">Warning! Once you confirm the result, you cannot edit the marks.</p>
+			</div>
+		</div>
+	</div> <!-- /modal-body -->    
+	<div class="modal-footer">
+		<button type="submit" class="btn btn-success"><i class="ace-icon fa fa-check"></i>Save</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="ace-icon fa fa-times"></i>Cancel</button> 
+    </div>
+</form>

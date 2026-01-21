@@ -1,0 +1,137 @@
+<?php
+/**
+ * 
+ * View -- of Academic/ResultController/addresultAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<form id="#form" method="post" action="<?php echo $this->url('result', array('action' => 'addresult')); ?>"  enctype="multipart/form-data" >
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+		<div class="panel panel-default">                       
+			<div class="panel-body">   
+			<div class="form-group">
+					<label for="yoe" class="control-label">Year of Examination </label>
+					<div class="date input-group" id="yoe" data-date-format="yyyy-mm-dd">
+						<input class="form-control" name="yoe" id="yoe" type="text" placeholder="Year Of Examination" >
+						<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="department" class="control-label">Organization</label>
+					<select class="form-control" data-placeholder="Select" name="department" id="department" required >
+						<option value=""></option>
+							<?php
+							foreach ($this->departments as $department):
+							?>
+								<option value="<?php echo $department['id'];?>">
+									<?php echo $department['department']; ?>
+								</option>
+							<?php 
+								endforeach;
+							?>
+					</select>
+				</div> 
+				<div class="form-group">
+					<label for="classes" class="control-label">Class</label>
+					<select class="form-control" id="classes" name="classes" data-placeholder="Select" required >
+						<option value=""></option>
+					</select>
+				</div>   
+				<div class="form-group">
+					<label for="name" class="control-label">Student Name</label>
+					<select class="form-control" id="name" name="name" data-placeholder="Select" required >
+						<option value=""></option>
+						
+					</select>
+				</div>        				
+				<div class="form-group">
+					<label for="subject" class="control-label">Subjects</label>
+					<select class="form-control" id="subject" name="subject" data-placeholder="Select" required >
+						<option value=""></option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="marks" class="control-label">Marks</label>
+					<input type="text" class="form-control" name="marks" id="marks" size="30" placeholder="Marks" required> 
+				</div>
+			</div>
+		</div>
+    </div> <!-- /modal-body -->
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>  
+</form>
+<script>
+$('document').ready(function(){
+	   $('#yoe').datepicker();
+	$('select#classes').on('change',function(){
+			$.post(
+				"<?php echo $this->url('result', array('action' => 'getsubject'));?>",
+				{
+					classId: $(this).val(),
+				},
+				function(data){
+					$('select#subject').html(data.subject);
+					$('select#subject').trigger('chosen:updated');
+					$('select#name').html(data.student);
+					$('select#name').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#department').on('change',function(){
+			$.post(
+				"<?php echo $this->url('result', array('action' => 'getclass'));?>",
+				{
+					orgId: $(this).val(),
+				},
+				function(data){
+					$('select#classes').html(data.class);
+					$('select#classes').trigger('chosen:updated');
+					
+				},
+				'json'
+			);
+		});
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			code: {
+				validators: {
+					notEmpty: {
+						message: 'Eneter Student Id'
+					},
+				}
+			},
+			name: {
+				validators: {
+					notEmpty: {
+						message: 'Enter the name'
+					},
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+});
+</script>

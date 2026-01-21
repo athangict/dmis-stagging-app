@@ -1,0 +1,166 @@
+<?php
+/**
+ * 
+ * View -- of Academic/ResultController/resultAction
+ * 
+ */
+	$this->headTitle($this->title);
+	
+?>
+<?php echo $this->tabs_helper(array(2818)); ?>
+<div class="card">
+	<div class="card-header">
+	<div class="col-12">
+		<div class="card dcard">
+			<div class="card-body px-1 px-md-3">
+				<form method="POST" action="<?php echo $this->url('result', array('action' => 'examination','id'=>$page)); ?>" enctype="multipart/form-data" >    
+					<div class="row">
+						<div class="form-group col-lg-3">  
+							<label class="control-label" for="academic_year">Academic Year</label>
+							<select id="academic_year" name="academic_year" class="form-control" data-placeholder="Select" >
+							<option value="" selected></option>
+								<?php foreach ($academic_year as $academic_years): ?>
+									<option value="<?php echo $academic_years;?>">
+										<?php echo $academic_years; ?>
+									</option>
+								<?php endforeach; ?>	
+							</select>
+						</div>
+						<div class="form-group col-lg-3">  
+							<label class="control-label" for="district">Dzongkhag</label>
+							<select id="district" name="district" class="form-control" data-placeholder="Select">
+								<option value="-1" selected>None</option>
+								<?php foreach($districts as $district):?>
+									<option value="<?php echo $district['id']?>">
+										<?php echo $district['district'];?></option>
+								<?php endforeach;?>
+							</select>
+						</div>
+						<div class="form-group col-lg-3">  
+							<label class="control-label" for="organization">Organization</label>
+							<select id="organization" name="organization" class="form-control" data-placeholder="Select" onchange='this.form.submit()'>
+							<option value="<?php $data['organization'];?>" <?php echo ($data['organization'])?'selected':'';?>><?php echo $this->org->getColumn($data['organization'],'location');?></option>
+							</select>
+						</div>
+						<div class="form-group col-lg-3">  
+						<label class="control-label" for="organization"></label>
+							<?php echo $this->button(2,$page);?>
+						</div>
+						
+					</div>	
+				</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="table-responsive">
+	<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Academic year</th>
+					<th>Batch</th>
+					<th>Organization</th>
+					<th>Class</th>
+					<th>Section</th>
+					<!-- <th>Examination Date</th> -->
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>	
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+					$i = 1; 
+					foreach ($paginator as $row):?>
+						<tr data-href="<?php echo $this->button(4,$row['id']); ?>">
+							<td><?php echo $i++; ?> </td> 
+							<td><?php echo $row['academic_year']; ?></td>
+							<td><?php echo $row['batch']; ?></td>
+							<td><?php echo $this->org->getColumn($row['organization'],'location'); ?></td>
+							<td><?php echo $this->classes->getColumn($row['level'],'standard'); ?></td>  
+							<td><?php  echo $row['class_name']; ?></td>	
+							<!-- <td><?php echo $row['examination_date']; ?></td>  -->
+							<?php if($this->button(1)!=""):?>
+							<td><?php echo $this->button(1, $row['id'].'_'.$page);?></td>
+					<?php endif;?>
+						</tr>
+				<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+	<div class="card-footer d-flex align-items-center">
+		<?php echo $this->paginationControl($this->paginator,'Sliding','adm_pagination.phtml', 
+			array('route' => 'result/paginator','action'=>'examination'));?>
+	</div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script>
+$(function(){
+	$('select#district').on('change',function(){
+			$.post(
+				"<?php echo $this->url('monk', array('action' => 'getorganization'));?>",
+				{
+					rdzoId: $(this).val(),
+				},
+				function(data){
+					$('select#organization').html(data.organization);
+					$('select#organization').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			academic_year: {
+				validators: {
+					notEmpty: {
+						message: 'Please select academic year.'
+					}
+				}
+			},
+			district: {
+				validators: {
+					notEmpty: {
+						message: 'Please select district.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('form select').chosen().change(function () {
+		fv.revalidateField($(this).attr('name'));
+	});
+	$("tr[data-href]").each(function(){ 
+		if($(this).attr('data-href')!='#'){
+			$(this).css('cursor','pointer');
+			$(this).bind('click',function() {
+				window.document.location = $(this).attr("data-href");
+			});
+		}
+	});
+	$('#dataTables').DataTable();
+});
+</script>
+

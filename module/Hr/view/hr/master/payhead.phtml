@@ -1,0 +1,90 @@
+<?php
+/**
+ * 
+ * View -- of Hr/MasterController/payheadAction
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<?php echo $this->tabs_helper(array(853,832,838,835,841,850,844,847,856,859)); ?>
+<div class="card">
+	<div class="card-header">
+		<div class="btn-group pull-right">
+			<?php echo $this->button(2);?>
+		</div>
+	</div>
+	<div class="table-responsive">
+	<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Pay Head</th>
+					<th>DLWP</th>
+					<th>RoundUp</th>
+					<th>Deduction</th>
+					<th>Type</th>
+					<th>Percentage</th>
+					<th>Against</th>
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+					$i = 1; 
+					foreach ($this->rowset as $rows): 
+						$deduction = ($rows['deduction'] == 1)?"Yes":"No";
+						if(($rows['against'] > 0 )):
+							$against = $this->payheadObj->getColumn(array('id'=>$rows['against']),'pay_head');
+						elseif($rows['against'] == '-1'):
+							$against = "Gross Pay";
+						elseif($rows['against'] == '-2'):
+							$against = "PIT Net Pay";
+						else:
+							$against = "";
+						endif;
+						
+						if($rows['type'] == 1):
+							$type = "Actual amount";
+						elseif($rows['type'] == 2):
+							$type = "Percentage";
+						elseif($rows['type'] == 3):
+							$type = "Slab";
+						elseif($rows['type'] == 4):
+							$type = "Group";
+						endif;?>
+					<tr class="<?php echo $class; ?>">
+						<td><?php echo $i; ?> </td>
+						<td><b><?php echo $rows['code']; ?></b> (<?php echo $rows['pay_head']; ?>) </td>
+						<td><?php echo $dlwp = ($rows['dlwp']=='1')?'Yes':'No';?></td>
+						<td><?php echo $roundup = ($rows['roundup']=='1')?'Yes':'No';?></td>
+						<td><?php echo $deduction; ?></td>
+						<td><?php echo $type ?></td>
+						<td><?php echo $rows['percentage'];?></td>
+						<td><?php echo $against;?></td>
+						<?php if($this->button(1)!=""):?>
+							<td><?php echo $this->button(1, $rows['id']);?></td>
+						<?php endif;?>
+					</tr>
+				<?php 
+				$i++;
+				endforeach;  
+				?>                        
+			</tbody>
+		</table>
+	</div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#dataTables').DataTable({"paging":   true,});
+});
+</script>

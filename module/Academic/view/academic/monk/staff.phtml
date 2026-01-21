@@ -1,0 +1,75 @@
+<?php
+/**
+ * 
+ * View -- of Academic/MasteracaController/staffAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<?php echo $this->tabs_helper(array(2801, 2804)); ?>
+<div class="card">
+	<div class="card-header">
+		<div class="btn-group pull-right">
+			<?php echo $this->button(2, $page); ?>
+		</div>
+	</div>
+	<div class="table-responsive">
+	<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Staff Name</th>
+					<th>Tsenzin No</th>
+					<th>Organization</th>
+					<?php if ($this->button(1) != ""): ?>
+						<th class="no-print">Action</th>
+					<?php endif; ?>
+				</tr>
+			</thead>
+			<tbody>
+				<?php $i = 1 + (($page - 1) * 25);
+				foreach ($paginator as $row): ?>
+					<tr data-href="<?php echo $this->button(4, $row['id']); ?>">
+						<td>
+							<?php echo $i++; ?>
+						</td>
+						<td>
+							<?php echo $row['full_name']; ?>
+						</td>
+						<td>
+							<?php echo $row['tsenzin_no']; ?>
+						</td>
+						<td>
+							<?php echo $this->organization->getColumn($row['organization'],'location'); ?>
+						</td>
+						<?php if ($this->button(1) != ""): ?>
+							<td>
+								<a class="btn btn-xs btn-primary" data-toggle="normal"
+									href="<?php echo $this->url('monk', array('action' => 'viewdetails', 'id' => $row['id'], '', '2811')); ?>">
+									<i class="ace-icon fa fa-eye bigger-120"></i>
+								</a>
+							</td>
+
+						<?php endif; ?>
+					</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	</div>
+
+</div>
+<script type="text/javascript">
+	$('document').ready(function () {
+		$("tr[data-href]").each(function () {
+			if ($(this).attr('data-href') != '#') {
+				$(this).css('cursor', 'pointer');
+				$(this).bind('click', function () {
+					window.document.location = $(this).attr("data-href");
+				});
+			}
+		});
+		$('#dataTables').DataTable();
+	});	
+</script>

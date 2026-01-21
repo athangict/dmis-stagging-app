@@ -1,0 +1,128 @@
+<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"> <i class="fa fa-asterisk"></i> Action </h4>
+</div>  <!-- /modal-header -->
+
+<div class="modal-body">
+	<div class="panel panel-default">
+		<div class="panel-body">      
+	    <form method="post" action="<?php echo $this->url('leave', array('action' => 'encashprocess')); ?>">					
+	     <?php
+	        $variables = explode('-', $this->id);
+			$applicationID = $variables['0'];
+			$action = $variables['1'];
+			$leaveFlow = $this->leaveFlowObj->get(array('application'=>$applicationID));
+			$actors = array();
+			foreach($leaveFlow as $flow):			 
+			   if(!in_array($flow['actor'],$actors)){			   
+			      array_push($actors, $flow['actor']);				 
+			   }
+			endforeach;
+			switch($action):
+			    case 1: ?>
+				         <div class="form-group">
+							 <label for="leave Official" class="control-label">Apply to Leave Official</label>
+							 <select class="form-control" id="routing" name="routing" >
+						     <option value=""></option>
+							 <?php 
+								$leaveOfficials = $this->userRoleObj->get(array('subrole'=>'17'));							
+								foreach ($leaveOfficials as $officail):
+								$userDtls = $this->userObj->get($officail['user']);
+								foreach($userDtls as $userdtl);
+								?>
+									<option value="<?php echo $userdtl['id'];?>"><?php echo $userdtl['name'];?></option>
+								<?php
+								endforeach;
+							 ?>						    
+						  </select>
+						</div>
+				        <?php
+						$button_label = "Apply";
+						$label = "success";
+						break;
+			    case 2: //Forward the app
+				        ?>
+						 <div class="form-group">
+			              <label for="routing" class="control-label">Forward To:</label>
+						  <select class="form-control" id="routing" name="routing" >
+						     <option value=""></option>
+							 <?php 
+								$leaveOfficials = $this->userRoleObj->get(array('subrole'=>'17'));							
+								foreach ($leaveOfficials as $officail):
+								$userDtls = $this->userObj->get($officail['user']);
+								foreach($userDtls as $userdtl);
+								if($userdtl['id'] != $this->userID):
+								?>
+									<option value="<?php echo $userdtl['id'];?>"><?php echo $userdtl['name'];?></option>
+								<?php
+								endif; 
+								endforeach;
+							 ?>						    
+						  </select>
+						 </div>
+						<?php
+						$button_label = "Forward";
+						$label = "info";
+						break;  
+                case 3: //Application Approve 
+				        $button_label = "Approve";
+						$label = "success";
+				        break;				
+				case 4: //Reject Application
+				        $button_label = "Reject";
+						$label = "danger";
+				        break;	
+			endswitch;
+	     ?>
+		<input type="hidden" value="<?php echo $action; ?>" name="action">
+		<input type="hidden" value="<?php echo $applicationID; ?>" name="application">
+		<div class="form-group">
+			<label for="remarks" class="control-label">Remarks</label>
+			<textarea class="form-control" rows="3" name="remarks" required>
+			</textarea>
+		</div>
+		<div class="form-group">
+		   <input type="submit" value="<?php echo $button_label; ?>" class="btn btn-<?php echo $label;?>">
+		</div>
+	    </form>
+	  </div>
+	</div>	
+</div>
+<script>
+$('document').ready(function(){
+	$('#reporting_date').datepicker();
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			remarks: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide remarks.'
+					}
+				}
+			},
+			routing: {
+				validators: {
+					notEmpty: {
+						message: 'Please select person to route.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+});
+</script>
+

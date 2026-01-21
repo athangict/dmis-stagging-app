@@ -1,0 +1,196 @@
+<?php
+/**
+ * 
+ * View -- of Accounts/PayrollController/salaryAction
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<?php  foreach ($employee as $emp);  
+	extract($emp);
+?> 
+   
+<div class="space-12"></div>
+<div id="report-print">  
+	<div class="widget widget-box transparent">
+		<div class="widget-header">
+			<h5 class="widget-title"> 	
+				Salary Structure of <strong><?php echo $full_name;?></strong>
+			</h5>
+			<div class="widget-toolbar hidden-xs">
+				<a style='cursor:pointer' id="print">
+					<i class="ace-icon fa fa-file-pdf-o fa-lg red"></i>
+				</a> &nbsp;
+				<?php echo $this->button(3, $emp['id']);?> 
+			</div>
+		</div>
+		<div class="widget-body">
+			<div class="widget-main">
+				<div class="row" id="convert-tb0">
+					<div class="col-lg-6" id="convert-tb1">
+						<ul class="list-unstyled spaced">
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Name:  <b class="red"> <?php echo $full_name; ?></b>
+							</li>
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Cid No:  <b class="red"> <?php echo $cid;?></b>
+							</li>
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Employee ID:  <b class="red"> <?php echo $emp_id;?></b>
+							</li>
+						</ul>
+					</div>
+					<div class="col-lg-6" id="convert-tb2">
+						<ul class="list-unstyled spaced pull-right">
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Position Title:  <b class="red"> <?php echo $position_title; ?> </b>
+							</li>
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Location:  <b class="red"> <?php echo $location; ?> </b>
+							</li>
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Region:  <b class="red"> <?php echo $region;?> </b>
+							</li>
+						</ul>
+					</div>
+				</div>	
+				<div class="hr dotted"></div>
+				<div class="row">    
+					<div class="col-lg-6">
+						<h3 class="header smaller lighter grey">Earnings</h3>
+						<table id="earning_table" class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Type <small><span class="fa fa-exclamation-circle"><i>  ( Depends on LWP  )</i></span></small></th>
+									<th>Percent</th>
+									<th>Amount(<?php echo $this->currency_code();?>)</th>
+									<th class="no-sort no-printpdf">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+									$i = 1; $total_earning=0;
+									foreach ($paystructureObj->get(array('deduction' => 0, 'employee' => $emp['id'] )) as $paystructure):
+										$total_earning += $paystructure['amount'];
+								?>
+									<tr>
+										<td><?php echo $i++; ?> </td>
+										<td>
+											<?php echo $paystructure['pay_head']; ?>
+											<?php if($paystructure['dlwp'] == '1'):?>
+												<small><span class="fa fa-exclamation-circle"></span></small>
+											<?php endif;?>
+										</td>
+										<td>
+											<?php  if($paystructure['percent'] == 0):  
+												echo '-';
+											else:
+												echo $paystructure['percent'];
+											endif; ?>
+										</td>
+										<td><?php echo $paystructure['amount']; ?></td>
+										<td>
+											<div class="btn-group">
+												<a class="btn btn-xs btn-info" href="<?php echo $this->url('payroll', array('action'=>'edit', 'id'=>$paystructure['id']));?>" title="Edit" data-target="#modal" data-toggle="modal">
+													<i class="ace-icon fa fa-pencil bigger-120"></i>
+												</a>
+												<a class="btn btn-xs btn-info" href="<?php echo $this->url('payroll', array('action'=>'delete', 'id'=>$paystructure['id']));?>" title="Delete">
+													<i class="ace-icon fa fa-trash-o bigger-120"></i>
+												</a>												
+											</div>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+					<div class="col-lg-6">
+						<h3 class="header smaller lighter grey"> Deductions</h3>
+						<table id="deduction_table" class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Type <small><span class="fa fa-exclamation-circle"><i>  ( Depends on LWP  )</i></span></small></th>
+									<th>Percent</th>
+									<th>Amount(<?php echo $this->currency_code();?>)</th>
+									<th class="no-sort no-printpdf">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+									$i = 1; $total_deduction=0;
+									foreach ($paystructureObj->get(array('deduction' => 1, 'employee' => $emp['id'])) as $paystructure):
+										$total_deduction += $paystructure['amount'];
+								 ?>
+									<tr>
+										<td><?php echo $i++; ?> </td>
+										<td>
+											<?php echo $paystructure['pay_head']; ?>
+											<?php if($paystructure['dlwp'] == '1'):?>
+												<small><span class="fa fa-exclamation-circle"></span></small>
+											<?php endif;?>
+										</td>
+										<td>
+											<?php  if($paystructure['percent'] == 0):  
+												echo '-';
+											else:
+												echo $paystructure['percent'];
+											endif; ?>
+										</td>
+										<td><?php echo $paystructure['amount']; ?></td>
+										<td>
+											<div class="btn-group">
+												<a class="btn btn-xs btn-info" href="<?php echo $this->url('payroll', array('action'=>'edit', 'id'=>$paystructure['id']));?>" title="Edit" data-target="#modal" data-toggle="modal">
+													<i class="ace-icon fa fa-pencil bigger-120"></i>
+												</a>
+												<a class="btn btn-xs btn-info" href="<?php echo $this->url('payroll', array('action'=>'delete', 'id'=>$paystructure['id']));?>" title="Delete">
+													<i class="ace-icon fa fa-trash-o bigger-120"></i>
+												</a>												
+											</div>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="space-12"></div>
+				<div class="row">
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label for="gross" class="control-label">Gross Pay(<?php echo $this->currency_code();?>)</label>
+							<input type="text" name="gross" id="gross" class="form-control" placeholder="gross" value="<?php echo $total_earning; ?>" readonly />
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="form-group">   
+							<label for="total_deduction" class="control-label">Total Deduction(<?php echo $this->currency_code();?>)</label>
+							<input type="text" name="total_deduction" id="total_deduction" class="form-control" value="<?php echo $total_deduction; ?>" readonly />
+						</div>              
+					</div>
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label for="net_pay" class="control-label">Net pay(<?php echo $this->currency_code();?>)</label>
+							<input type="text" name="net_pay" id="net_pay" class="form-control" value="<?php echo $total = $total_earning - $total_deduction; ?>" readonly/>
+						</div>
+					</div>
+				</div>
+				<button type="button" class="btn btn-sm pull-right" onclick="javascript:history.back();"><i class="fa fa-history"></i> back </button>
+			</div>
+		</div>	
+	</div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content"> </div>
+	</div>
+</div>
+<script type="text/javascript">
+	$('#print').genpdfpage({
+		content: '#report-print',
+		src:"<?php echo $this->url('pdfxls', array('action' => 'pdf'));?>",
+		orentation:"P",//L =landscape, P = potrait
+	});
+</script>

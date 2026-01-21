@@ -1,0 +1,224 @@
+<?php
+/**
+ * 
+ * View -- of Hr/LeaveController/indexAction
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<?php foreach ($employee as $emp_row):
+		extract($emp_row);
+		$employeeID = $id;
+	endforeach;		
+?>
+<?php echo $this->tabs_helper(array(812,813,814,815,816,818,821,824),$id); ?>
+<div class="row" id="report-print">
+	<div class="col-lg-12">
+		<div class="widget-box transparent ">
+			<div class="widget-header widget-header-large">
+				<h3 class="widget-title grey lighter">
+					Leave Record(s) of <span class="orange"><?php echo $full_name;?></span>
+				</h3>
+				<div class="widget-toolbar">
+				    <?php $leaveOfficials = $this->userRoleObj->get(array('user'=>$this->userID, 'subrole'=>'17')); 
+					if(sizeof($leaveOfficials)>0){
+					?>
+					<a data-toggle="modal" data-target="#modal" href="<?php echo $this->url('employee', array('action'=>'updateleavebalance', 'id'=>$employeeID));?>" class="btn btn-success"> 
+						<i class="fa fa-check-square-o"></i> Update Leave Opening Balance 
+					</a> &nbsp;
+					<?php  } ?>
+					<a class ="hidden-xs" style='cursor:pointer' id="print">
+						<i class="ace-icon fa fa-file-pdf-o red"></i>
+					</a>			
+				</div>
+			</div>
+			<div class="widget-body">
+				<div class="widget-main padding-24">
+				<?php
+					$minYr = date('Y',strtotime($startDate));
+					$minMonth = date('m',strtotime($startDate));
+					$curYr = date('Y');
+					$curMonth = date('m');
+					$casual = 0;  $earned = 0; 	$i = 1;	$j = 1;						
+					for($curYear = $curYr; $curYear >= $minYr; $curYear--):			
+						foreach($this->leaveObj->get(array('employee'=>$employeeID, 'ld.status'=>array(6,7))) as $leave):
+							$startD = $leave['start_date'];
+							$startYr = date('Y',strtotime($startD));
+							$startMonth= date('m',strtotime($startD));							
+							if($startYr == $curYear && $startMonth <= $curMonth):
+								if($leave['leave_type']==2):
+									$casual += $leave['actual_leave_taken'];
+									if($i == 1):
+										 $presentCasual = $casual;
+									endif;// total casual leave used for till current year from given date															
+									$i++;
+								elseif($leave['leave_type']==3):
+									$earned += $leave['actual_leave_taken'];//total earned leave used
+									if($j == 1):
+										$presentEarned = $earned;
+									endif;// total casual leave used for till current year from given date															
+									$j++;
+								endif;	
+							endif;
+						endforeach;											 						 
+					endfor;				
+						$total_years = $curYr - $minYr;
+						$sub_total = 0;
+						$monthCasual = 10/12;
+						if($total_years > 0){
+							$Bmonth = (12 - $minMonth);  
+							$Amonth = $curMonth;
+							$sub_total = $Bmonth + $Amonth;
+							$Bcasual = round($Bmonth * $monthCasual);
+							
+							if($total_years == 1):
+								$total_months = $sub_total;							
+								$totCasual = $Bcasual + 10;
+								$usedcasual = $casual - $presentCasual;
+								$CasualLeft = $Bcasual - $usedcasual;					
+								$totcasualBal = $totCasual - $casual;
+								$totearnedBal = $Balance + ($total_months * 2.5) - $earned;						
+							else:
+								$YEAR = $curYr - $minYr - 1;
+								$total_months = ($YEAR * 12) + $sub_total;							
+								$totCasual = $Bcasual + 10 + ($YEAR * 10);
+								$casualBefore = $casual - $presentCasual;
+								$CasualLeft = $Bcasual + ($YEAR * 10) - $casualBefore;						
+								$totcasualBal = $totCasual - $casual;
+								$totearnedBal = $Balance + ($total_months * 2.5) - $earned;									
+							endif;
+						}else{
+							$total_months = $curMonth - $minMonth;
+							$actCasual = (12 - $minMonth + 1) * $monthCasual;
+							$CasualLeft = 0;
+							$actualCasual = round($actCasual);
+							$totearnedBal = $Balance + ($total_months * 2.5) - $earned;
+						}
+					$casual_bal = 10 - $presentCasual; 
+					$earned_bal = $totearnedBal + $CasualLeft;
+					$total_bal = $earned_bal + $casual_bal;
+					if($total_bal > 90){
+						$total_balance = 90;
+					}else{
+						$total_balance = $total_bal;
+					}
+					$leave_taken = $presentCasual + $presentEarned;
+					?>
+					<div class="row" id="convert-tb0">
+						<h4>Leave Summary</h4>
+						<div class="col-lg-8" id="convert-tb1">
+							<ul class="list-unstyled spaced">
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>
+									Casual Leave Balance (10 days/year) : <b class="red"><?php echo $casual_bal." days"; ?></b>
+								</li>
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>
+									Earned Leave Balance (2.5 days/month) : <b class="red"><?php echo $earned_bal." days";?></b>
+								</li>
+							</ul>
+						</div>
+						<div class="col-lg-4" id="convert-tb2">
+							<ul class="list-unstyled spaced">
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>
+									Total Leave Taken : <b class="red"><?php echo $leave_taken." days"; ?></b>
+								</li>
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>
+									Total Leave Balance : <b class="red"><?php echo $total_balance." days"; ?></b>
+								</li>
+							</ul>
+						</div>
+					</div>	
+					<div class="space-12"></div>											
+					<div class="row">
+					<?php 
+						for($curYear = $curYr; $curYear >= $minViewDate; $curYear--):
+						$n = 0;
+							foreach($this->leaveObj->get(array('employee'=>$employeeID, 'ld.status'=>array(6,7))) as $leave):
+								$startD = $leave['start_date'];
+								$startDATE = date('Y',strtotime($startD));
+								if($startDATE == $curYear):
+									$n = 1;
+								endif;
+							endforeach;	
+							if($n == 1):
+						?>
+							<div class="table-responsive col-lg-12">
+							<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+								<!-- add `collapsed` by default ... it will be removed by default -->
+								<!-- thead with .sticky-nav -->
+         						<thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+										<tr>
+											<th colspan="8"><strong><?php echo "Leave Details for the year : ".$curYear;?></strong></th>
+										</tr>	
+										<tr>
+											<th>#</th>
+											<th>Type of Leave</th>
+											<th>No of Days</th>
+											<th>Start Date</th>
+											<th>End Date</th>
+											<th>Sanction Order No</th>
+											<th>Remarks</th>
+											<th>Status</th>
+											<th>Log</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php $i = 1;
+										foreach($this->leaveObj->get(array('employee'=>$employeeID, 'ld.status'=>array(6,7))) as $leave):
+											$startD = $leave['start_date'];
+											$startDATE = date('Y',strtotime($startD));
+											if($startDATE == $curYear):?>
+											<tr>
+												<td><?php echo $i++; ?> </td>
+												<td><?php echo $this->ltypeObj->getColumn($leave['leave_type'], 'type'); ?></td>
+												<td><?php echo $leave['actual_leave_taken']; ?></td>
+												<td><?php echo $leave['start_date']; ?></td>
+												<td><?php echo $leave['end_date']; ?></td>
+												<td><?php echo $leave['sanction_order_no']; ?></td>
+												<td><?php echo $leave['remarks']; ?> </td>
+												<td><?php
+													 $leaveActions  = $this->leaveactionObj->get(array('status'=>$leave['status'])); 
+													 foreach ($leaveActions as $leaveAction):
+														 extract($leaveAction);
+													 endforeach;
+													 ?>
+													<span class="label label-<?php echo $label;?>">
+														&nbsp; <?php echo $action; ?> &nbsp;
+													</span> </strong>
+												</td>
+												<td class="action">
+													<a class="btn-xs btn-danger" data-toggle="modal" data-target="#modal" 
+														href="<?php echo $this->url('acl', array('action' => 'activitylog', 'id' => "22-".$leave['id'])); ?>" title="View Activity Logs">
+														<i class="ace-icon fa fa-plus smaller-120" ></i>  
+												   </a>
+												</td>
+											</tr>												
+										<?php endif;
+										endforeach; ?>
+									</tbody>
+								</table>				
+							</div>
+						<?php endif; 
+						endfor;?>
+					</div>					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">                                                  
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->       
+<script>
+$('document').ready(function(){
+	$('#dataTables').DataTable({"paging":   true,});
+});
+</script>
+
+

@@ -1,0 +1,332 @@
+<?php 
+/**
+ * View -- of Acadmic/MonkController/addstudentdetails
+ * chophel@athang.com
+ */
+$this->headTitle($this->title);
+foreach($student as $std);
+extract($std);
+
+?>                 
+<div class="card">
+	<div class="card-header">
+	<h3 class="card-title text-125 text-orange-d4">
+		<i class="ace-icon fa fa-user-plus"></i><?php echo $this->title;?>
+		</h3>
+	</div>
+    <div class="card-body">
+		<form id="#form" method="post" action="<?php echo $this->url('monk', array('action' => 'editstudentdetails','id'=>$page)); ?>"  enctype="multipart/form-data" >
+			<input type="hidden" id="monk_id" name="monk_id" value="<?php echo $monk_id?>"/>
+			<div class="row">
+				<div class="form-group col-lg-4"> 
+					<label class="control-label" for="cid">CID</label>
+					<input type="text" class="form-control" name="cid" id="cid" value="<?php echo $cid?>"placeholder="CID" required /> 
+				</div>
+				<div class="form-group col-lg-4"> 
+					<label class="control-label" for="full_name">Full Name</label>
+					<input type="text" class="form-control" name="full_name" id="full_name" value="<?php echo $full_name?>" placeholder="Full Name" required /> 
+				</div>
+				<div class="form-group col-lg-4">  
+					<label class="control-label" for="dob">Date of Birth</label>
+					<div class="input-group">
+						<input class="form-control date-picker" placeholder="Select" type="date" name="dob" id="dob" type="text" value="<?php echo $dob?>"data-date-format="yyyy-mm-dd" autocomplete="off" />
+						<!-- <span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span> -->
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="form-group col-lg-4">
+					<label for="gender" class="control-label">Gender</label>
+					<div class="radio">
+						<label>
+						<label>
+							<input class="ace" type="radio" name="gender" id="gender" value="0" checked/>
+							<span class="lbl">Male </span>
+						</label>
+							<input class="ace" type="radio" name="gender" id="gender" value="1" />
+							<span class="lbl"> Female </span>
+						</label>
+						
+					</div>
+				</div>
+				<div class="form-group col-lg-4"> 
+						<label class="control-label" for="blood_group">Blood Group</label>
+						<select name="blood_group" id="blood_group" class="form-control" data-placeholder="Select">
+						<option value=""> </option>
+						<option value="A+"> A+ </option>
+						<option value="A-"> A- </option>
+						<option value="B+"> B+ </option>
+						<option value="B-"> B- </option>
+						<option value="AB+"> AB+ </option>
+						<option value="AB-"> AB- </option>
+						<option value="O+"> O+ </option>
+						<option value="O-"> O- </option>
+					</select>
+				</div>
+				<div class="form-group col-lg-4">  
+					<label class="control-label" for="district">Dzongkhag</label>
+					<select id="district" name="district" class="form-control" data-placeholder="Select">
+						<option value=" "></option>
+						<?php foreach($districts as $district):?>
+							<option value="<?php echo $district['id']?>" <?php echo ($dzongkhag==$district['id'])?'selected':'';?>>
+								<?php echo $district['district'];?></option>
+						<?php endforeach;?>
+					</select>
+				</div>
+				<div class="form-group col-lg-4">  
+					<label class="control-label" for="block">Gewog</label>
+					<select id="block" name="block" class="form-control" data-placeholder="Select">
+						<option value="<?php echo $gewog?>" selected><?php echo $this->gewog->getColumn($gewog,'block')?></option>
+					</select>
+				</div>
+				<div class="form-group col-lg-4">  
+					<label class="control-label" for="village">Vllage</label>
+					<select id="village" name="village" class="form-control" data-placeholder="Select">
+						<option value="<?php echo $village?>" selected><?php echo $this->village->getColumn($village,'village')?></option>
+					</select>
+				</div>
+				<div class="form-group col-lg-4"> 
+					<label class="control-label" for="house_no">House Number</label>
+					<input type="text" class="form-control" value="<?php echo $house_no?>" name="house_no" id="house_no" placeholder="House_no" /> 
+				</div>
+				<div class="form-group col-lg-4"> 
+					<label class="control-label" for="thram_no">Tham Number</label>
+					<input type="text" class="form-control" name="thram_no" value="<?php echo $thram_no?>" id="thram_no" placeholder="Thram_no"  /> 
+				</div>
+				<div class="form-group col-lg-4"> 
+					<label class="control-label" for="email">Email</label>
+					<input type="text" class="form-control" name="email" value="<?php echo $email?>"id="email" placeholder="Email" /> 
+				</div>
+				<div class="form-group col-lg-4"> 
+					<label class="control-label" for="mobile">Mobile</label>
+					<input type="text" class="form-control" name="mobile" id="mobile" value="<?php echo $mobile?>" placeholder="Mobile"  /> 
+				</div>
+
+				<div class="form-group col-lg-4">  
+					<label class="control-label" for="registration_date">Registration Date</label>
+					<input class="form-control date-picker" placeholder="Select" name="registration_date" id="registration_date" type="date" value="<?php echo $registration_date?>" >
+				</div>
+				<div class="form-group col-lg-4">  
+					<label class="control-label" for="rdistrict">Registration District</label>
+					<select id="rdistrict" name="rdistrict" class="form-control" data-placeholder="Select">
+						<option value="-1" selected>None</option>
+						<?php foreach($districts as $district):?>
+							<option value="<?php echo $district['id']?>">
+								<?php echo $district['district'];?></option>
+						<?php endforeach;?>
+					</select>
+				</div>
+				<div class="form-group col-lg-4">  
+					<label class="control-label" for="organization">Registration organization</label>
+					<select id="organization" name="organization" class="form-control" data-placeholder="Select">
+						<option value="<?php echo $organization?>" selected><?php echo $this->organization->getColumn($organization,'location')?></option>
+					</select>
+				</div>
+				<div class="form-group col-lg-4"> 
+					<label class="control-label" for="tsenzin_no">Tsenzen Number</label>
+					<input type="text" class="form-control" value="<?php echo $tsenzin_no?>" name="tsenzin_no" id="tsenzin_no" placeholder="tsenzin_no"  /> 
+				</div>
+				<div class="form-group col-lg-4">
+					<label for="status" class="control-label">SEN</label>
+					<div class="radio">
+						<label>
+							<input class="ace" type="radio" name="sen" id="sen" value="1" checked />
+							<span class="lbl"> Yes </span>
+						</label>
+						<label>
+							<input class="ace" type="radio" name="sen" id="sen" value="0" />
+							<span class="lbl"> No </span>
+						</label>
+					</div>
+				</div>
+			</div>
+			<div class="mt-2 border-t-1 bgc-secondary-l4 brc-secondary-l2 py-35 mx-n25 text-right">
+				<div class="offset-md-3 col-md-9 text-nowrap">
+				<button type="submit" class="btn btn-success"><span class="fa fa-check"></span> Save</button>
+						<a class="btn btn-warning" onclick="javascript:history.back();"><span class="fa fa-times"></span> Cancel </a> 
+				</div>
+			</div>
+		</form>
+	</div> <!-- /card-body -->    
+</div>
+<script>
+$('document').ready(function(){
+	$('#cid').on('change',function(){
+		$.post(
+				"<?php echo $this->url('monk', array('action' => 'getempdetails'));?>",
+				{
+					cid: $(this).val(),
+				},
+				function(data){
+					$('input#full_name').val(data.full_name);
+					$('input#dob').val(data.dob);
+					$('input#blood_group').val(data.blood_group);
+					$('select#village').html(data.village);
+					$('select#village').trigger('chosen:updated');
+					$('select#organization').html(data.organization);
+					$('select#organization').trigger('chosen:updated');
+					$('select#blood_group').html(data.blood_group);
+					$('select#blood_group').trigger('chosen:updated');
+					$('input#thram_no').val(data.thram_no);
+					$('input#house_no').val(data.house_no);
+					$('input#location').val(data.location);
+					$('input#registration_date').val(data.office_order_date);
+					$('input#email').val(data.email);
+					$('input#mobile').val(data.mobile);
+					
+				},
+				'json'
+			);
+		});
+	
+		$('#cid').on('change', function(){
+			//alert("cid");exit;
+		$.post(
+			"<?php echo $this->url('employee', array('action' => 'getciddtl')); ?>",
+			{
+				cid: $(this).val(),
+			},
+			function(data){
+			console.log(data); 
+			$('#cid').val(data.cid);
+			$('#full_name').val(data.name);
+			$('#full_name_dzo').val(data.name_dzo);
+			$('#father_name').val(data.fatherName);
+			$('#mother_name').val(data.motherName);
+			$('input#dob').val(data.dob);
+			//$('#gender').val(data.gender);
+			$('#thram_no').val(data.thram_no);
+			$('#house_no').val(data.house_no);
+			$('#dzongkhags').val(data.dzongkhag);
+			$('#gewog').val(data.gewog);
+			$('#village').val(data.village);
+			if(data.dob == ''){ $('#message1').html(data.message);	}
+			},
+			'json'
+		);
+	});
+	$('select#district').on('change',function(){
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getgewog'));?>",
+				{
+					dzoId: $(this).val(),
+				},
+				function(data){
+					$('select#block').html(data.gewog);
+					$('select#block').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#rdistrict').on('change',function(){
+			$.post(
+				"<?php echo $this->url('monk', array('action' => 'getorganization'));?>",
+				{
+					rdzoId: $(this).val(),
+				},
+				function(data){
+					$('select#organization').html(data.organization);
+					$('select#organization').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#block').on('change',function(){
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getvillage'));?>",
+				{
+					gewogId: $(this).val(),
+				},
+				function(data){
+					$('select#village').html(data.village);
+					$('select#village').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#region').on('change',function(){
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getlocation'));?>",
+				{
+					regionId: $(this).val(),
+				},
+				function(data){
+					$('select#location').html(data.location);
+					$('select#location').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#department').on('change',function(){
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getactivity'));?>",
+				{
+					deptId: $(this).val(),
+				},
+				function(data){
+					$('select#activity').html(data.activity);
+					$('select#activity').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			full_name: {
+				validators: {
+					notEmpty: {
+						message: 'Please insert CID number'
+					}
+				}
+			},
+			dob: {
+				validators: {
+					notEmpty: {
+						message: 'Please select date of birth.'
+					}
+				}
+			},
+			gender: {
+				validators: {
+					notEmpty: {
+						message: 'Please select gender.'
+					}
+				}
+			},
+			registration_date: {
+				validators: {
+					notEmpty: {
+						message: 'Please select registration date.'
+					}
+				}
+			},
+			organization: {
+				validators: {
+					notEmpty: {
+						message: 'Please select organization.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('form select').chosen().change(function () {
+		fv.revalidateField($(this).attr('name'));
+	});
+	
+});
+</script>

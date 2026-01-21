@@ -1,0 +1,123 @@
+<?php
+/**
+ * View -- of Hr/PayIncrementController/addincrementAction
+ */
+	$this->headTitle($this->title);
+?>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="widget widget-box">
+			<div class="widget-header">
+				<h5 class="widget-title lighter smaller">
+					<i class="fa fa-asterisk"></i>&nbsp;&nbsp;Add Salary Increment
+				</h5>
+			</div><!-- end of widget-header -->
+			<div class="widget-body">
+				<div class="widget-main">
+					<form id="#form" method="post" action="<?php echo $this->url('payincrement', array('action' => 'addincrement')); ?>"  enctype="multipart/form-data" >    
+						<div class="row">	
+							<div class="col-lg-3">    
+								<div class="form-group">
+									<label for="increment_date" class="control-label">Increment Date</label>
+									<div class="date input-group" id="increment_date" data-date-format="yyyy-mm-dd" >
+										<input class="form-control span2" name="increment_date" id="increment_date" type="text" placeholder="Increment Date" value="<?php echo date('Y-m-d');?>" required>
+										<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-3">    
+								<div class="form-group">
+									<label for="Increment Type" class="control-label">Increment Type</label>
+									<select class="control-form" name="increment_type" id="increment_type" data-placeholder="Select" >
+										<option value=""></option>
+										<?php foreach($increments as $increment):?>
+										<option value="<?php echo $increment['id'];?>">
+											<?php echo $increment['increment_type'];?>
+										</option>
+										<?php endforeach;?>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-3"> 
+								<div class="space-6"></div>
+								<button type="button" id="refresh_btn" class="btn btn-info"><i class="fa fa-refresh"></i> Load </button>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12">
+								<div id="incrementdtl">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12">
+								<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save</button>
+								<button type="button" class="btn btn-warning" onclick="javascript:history.back();" ><i class="fa fa-long-arrow-left"></i> Back </button> 
+							</div>
+						</div> 
+					</form>
+				</div><!-- end of widget-main -->
+			</div><!-- end of widget-body -->
+		</div><!-- end of widget-box -->
+	</div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#increment_date').datepicker();
+	
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			'increment_date': {
+				validators: {
+					notEmpty: {
+						message: 'Please select increment date'
+					}
+				}
+			},
+			'increment_type': {
+				validators: {
+					notEmpty: {
+						message: 'Please select increment type'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+
+	$('#increment_date').on('changeDate',function(){
+			$('form').formValidation('revalidateField', $(this).attr('id'));
+		});
+		
+		$('#refresh_btn').click(function(){
+			$('form').formValidation('revalidateField',$('select#increment_type'));
+			var validation = $('form small[data-fv-result = "INVALID"]').length;
+			if(validation <= 0){
+				$.post( 
+					"<?php echo $this->url('payincrement', array('action' => 'getincrementdtl'));?>",
+					{	
+						'increment_type': $('select#increment_type').val(),
+					}, 
+					function(data) {
+						$('div#incrementdtl').html( data ); 
+				});	
+				$('div.message_box').hide();
+			}
+		});
+});
+</script>
+
+

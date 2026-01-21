@@ -1,0 +1,68 @@
+<?php 
+/**
+ * View -- of Administration/MasterController/editlocation
+ * chophel@athang.com
+ */
+$this->headTitle($this->title);
+
+?>
+<?php foreach($curriculum as $row);?>
+<form id="#form" method="post" action="<?php echo $this->url('result', array('action' => 'editexamination','id'=>$page)); ?>"  enctype="multipart/form-data" >                  
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+	<input type="hidden" name="id" id="id" value="<?php echo $row['id']?>">
+    <div class="modal-body">  
+		<div class="panel panel-default">
+			<div class="panel-body"> 
+				<div class="row">
+					<div class="form-group col-lg-12">  
+						<label class="control-label" for="exam_date">Examination Date</label>
+						<input class="form-control" name="exam_date" id="exam_date" type="date" value="<?php if(empty($row['examination_date'])):echo "0000-00-00 "; else:echo $row['examination_date'];endif ?>"placeholder="Date of Examination" >
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> <!-- /modal-body -->    
+    <div class="modal-footer">
+		<button type="submit" class="btn btn-success"><i class="ace-icon fa fa-check"></i>Save</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="ace-icon fa fa-times"></i>Cancel</button> 
+    </div>
+</form>
+<script>
+$(function(){
+	$('#exam_date').datepicker();
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			exam_date: {
+				validators: {
+					notEmpty: {
+						message: 'Please select exam_date.'
+					}
+				}
+			},
+			
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('form select').chosen().change(function () {
+		fv.revalidateField($(this).attr('name'));
+	});
+});
+</script>

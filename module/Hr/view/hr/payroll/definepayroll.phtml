@@ -1,0 +1,160 @@
+<?php
+/**
+ * 
+ * View -- of Hr/PayrollController/salaryAction
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<div class="row">	
+	<form>				
+		<div class="col-lg-2">
+			<label for="month" class="control-label">Month </label>
+			<select class="form-control" name="month" id="month" data-placeholder="Select" required >
+				<option value=""></option>
+				<?php 
+					for($m=1;$m<=12;$m++):
+						$selected = ($this->month == $m)?'selected':'';
+				?>
+					<option value="<?php echo $m;?>" <?php echo $selected;?>>
+						<?php echo date("F", strtotime(date("d-$m-y"))); ?>
+					</option>
+				<?php endfor; ?>
+			</select>
+		</div>
+		<div class="col-lg-2">
+			<label for="year" class="control-label">Year </label>
+			<select class="form-control" name="year" id="year" data-placeholder="Select" required >
+				<option value=""></option>
+				<?php for($y=date('Y');$y >2005;$y--):
+					$selected = ($this->year == $y)?'selected':'';?>
+					<option value="<?php echo $y;?>" <?php echo $selected;?>>
+						<?php echo $y; ?>
+					</option>
+				<?php endfor; ?>
+			</select>
+		</div>
+		<div class="form-group col-lg-1">
+			<label class="control-label"> </label>
+			<button type="button" class="btn btn-sm btn-info" onclick="refresh()" ><i class="fa fa-refresh"></i> refresh</button>
+		</div>
+		<div class="form-group col-lg-3"></div>
+		<div class="form-group col-lg-4"><br />
+			<div><?php echo $this->button(2);?></div>
+			<div class="pull-right tableTools-container"></div>
+		</div>
+	</form>
+</div>
+<div class="hr dotted"></div>
+<div class="widget widget-box transparent">
+	<div class="widget-header">
+		<h4 class="widget-title"> 	
+			Payroll for the month of <strong><?php echo date('F, Y', strtotime('1-'.$this->month.'-'.$this->year));?></strong>
+		</h4>
+		<div class="widget-toolbar">
+			
+		</div>
+	</div>
+	<div class="widget-body">
+		<div class="widget-main">
+			<div class="row"> 
+				<table class="table card-table text-nowrap" id="dataTables">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Employee</th>
+							<th>Emp ID</th>
+							<th>Designation</th>
+							<th>Location</th>
+							<th>Gross</th>
+							<th>Total Ded.</th>
+							<th>Net Pay</th>
+							<?php if($this->button(1)!=""):?>
+								<th class="no-sort no-printpdf">Action</th>
+							<?php endif;?>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+						$i = 1; 
+						$total_net =0;
+						$total_gross =0;
+						$total_ded =0;
+						foreach ($this->temppayroll as $row):
+						?> 
+							<tr data-href="<?php echo $this->button(4, $row['id']); ?>" >
+								<td><?php echo $i; ?> </td>
+								<td>
+									<strong><?php echo $row['full_name']; ?></strong>
+									</td>
+									<td>
+									 &nbsp;<?php echo $row['emp_id']; ?> 
+								  </td>
+								  <td><?php echo $row['designation'];?>(<?php echo $row['type_code']; ?>)	
+								</td>
+								<td><?php echo $row['location'];?> </td>
+								<td><strong><?php echo $this->currency($gross = $row['gross']); ?> </strong></td>
+								<td><strong><?php echo $this->currency($deduc = $row['total_deduction']+$row['earning_dlwp']+$row['deduction_dlwp']); ?> </strong></td>
+								<td><strong><?php echo $this->currency($net_pay = ($gross+$row['bonus']+$row['leave_encashment'])-$row['total_deduction']-$row['earning_dlwp']-$row['deduction_dlwp']); ?></strong></td>
+								<?php $total_net += $net_pay; $total_ded +=$deduc; $total_gross += $gross; ?>
+								<td><?php echo $this->button(1, $row['id']);?></td>    
+							</tr>
+						<?php 
+						$i++;
+						endforeach;  
+						?>
+					</tbody>
+				</table>
+			</div>			
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<h3 class="widget-title"> Sumarray: </h3>
+				<div class="hr dotted"></div>
+				<div class="col-md-3">
+					<label> Total Employee: </label> <strong><?php echo $i-1;?></strong>
+				</div>
+				<div class="col-md-3">
+					<label> Total Gross Pay: </label> <strong><?php echo $this->currency($total_gross);?></strong>
+				</div>
+				<div class="col-md-3">
+					<label> Total Deduction: </label> <strong><?php echo $this->currency($total_ded);?></strong>
+				</div>
+				<div class="col-md-3">
+					<label> Total Net Pay: </label><strong><?php echo $this->currency($total_net);?></strong>
+				</div>
+			</div>
+		</div>
+		<div class="hr dotted"></div>
+		<div class="space-12"></div>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="alert alert-warning"> 
+					<strong>Warning!</strong> Once you submit this payroll you cannot alter any data, So check it and make sure before submitting.
+				</div>
+				<center>
+					<a href="<?php echo $this->url('payroll', array('action'=>'submitpayroll','id'=>$this->year.'-'.$this->month));?>"  class="btn btn-success" onclick="confirmSubmit(this);" >
+						Submit Payroll for the month of <?php echo date('F, Y', strtotime('1-'.$this->month.'-'.$this->year));?>
+					</a>
+				</center>
+			</div>
+		</div>
+	</div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script>
+	//fuction to refresh 
+	function refresh(){
+		var id = $('#year').val()+'-'+$('#month').val();
+		location.href="<?php echo $this->url('payroll', array('action'=>'definepayroll'));?>/"+id;
+	}
+	
+	$('document').ready(function(){
+		$('#dataTables').DataTable({"paging":   true,});
+	});
+</script>

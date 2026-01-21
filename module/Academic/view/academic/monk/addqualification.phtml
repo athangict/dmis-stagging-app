@@ -1,0 +1,231 @@
+<?php
+/**
+ * View -- of Acadmic/MonkController/addstudentdetails
+ * chophel@athang.com
+ */
+$this->headTitle($this->title);
+foreach ($monk as $monk)
+	extract($monk);
+?>
+<form id="#form" method="post"
+	action="<?php echo $this->url('monk', array('action' => 'addqualification', 'id' => $page)); ?>"
+	enctype="multipart/form-data">
+	<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+	<div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row">
+					<div class="form-group col-lg-4">
+						<label class="control-label" for="monk_id">Monk ID</label>
+						<input type="text" class="form-control" name="monk_id" id="monk_id" value="<?php echo $id ?>"
+							placeholder="Monk Id" required />
+					</div>
+					<div class="form-group col-lg-4">
+						<label class="control-label" for="country">Country</label>
+						<select class="form-control" id="country" name="country" data-placeholder="Select" required>
+							<option value=""></option>
+							<?php foreach ($country as $country):
+								?>
+								<option value="<?php echo $country['id']; ?>">
+									<?php echo $country['name']; ?>
+								</option>
+								<?php
+							endforeach;
+							?>
+						</select>
+					</div>
+					<div class="form-group col-lg-4">
+						<label class="control-label" for="location">City/Dzongkhag</label>
+						<input type="text" class="form-control" name="location" id="location" placeholder="Location"
+							required />
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-4">
+						<label class="control-label" for="organization">Organization</label>
+						<input type="text" class="form-control" name="organization" id="organization"
+							placeholder="organization" required />
+					</div>
+					<div class="form-group col-lg-4">
+						<label class="control-label" for="course">Course</label>
+						<input type="text" class="form-control" name="course" id="course" placeholder="Course"
+							required />
+					</div>
+					<div class="form-group col-lg-4">
+						<label class="control-label" for="from_date">From Date</label>
+						<input type="date" class="form-control" name="from_date" id="from_date" placeholder="from_date"
+							required />
+					</div>
+					<div class="form-group col-lg-4">
+						<label class="control-label" for="to_date">To Date</label>
+						<input type="date" class="form-control" name="to_date" id="to_date" placeholder="To Date"
+							required />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> <!-- /modal-body -->
+	<div class="modal-footer">
+		<button type="submit" class="btn btn-success"><i class="ace-icon fa fa-check"></i>Save</button>
+		<button type="button" class="btn btn-warning" data-dismiss="modal"><i
+				class="ace-icon fa fa-times"></i>Cancel</button>
+	</div>
+</form>
+<script>
+	$('document').ready(function () {
+		$('#cid').on('change', function () {
+			$.post(
+				"<?php echo $this->url('monk', array('action' => 'getempdetails')); ?>",
+				{
+					cid: $(this).val(),
+				},
+				function (data) {
+					$('input#full_name').val(data.full_name);
+					$('input#dob').val(data.dob);
+					$('input#blood_group').val(data.blood_group);
+					$('select#village').html(data.village);
+					$('select#village').trigger('chosen:updated');
+					$('select#organization').html(data.organization);
+					$('select#organization').trigger('chosen:updated');
+					$('select#blood_group').html(data.blood_group);
+					$('select#blood_group').trigger('chosen:updated');
+					$('input#thram_no').val(data.thram_no);
+					$('input#house_no').val(data.house_no);
+					$('input#location').val(data.location);
+					$('input#registration_date').val(data.office_order_date);
+					$('input#email').val(data.email);
+					$('input#mobile').val(data.mobile);
+
+				},
+				'json'
+			);
+		});
+		$('select#district').on('change', function () {
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getgewog')); ?>",
+				{
+					dzoId: $(this).val(),
+				},
+				function (data) {
+					$('select#block').html(data.gewog);
+					$('select#block').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#rdistrict').on('change', function () {
+			$.post(
+				"<?php echo $this->url('monk', array('action' => 'getorganization')); ?>",
+				{
+					rdzoId: $(this).val(),
+				},
+				function (data) {
+					$('select#organization').html(data.organization);
+					$('select#organization').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#block').on('change', function () {
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getvillage')); ?>",
+				{
+					gewogId: $(this).val(),
+				},
+				function (data) {
+					$('select#village').html(data.village);
+					$('select#village').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#region').on('change', function () {
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getlocation')); ?>",
+				{
+					regionId: $(this).val(),
+				},
+				function (data) {
+					$('select#location').html(data.location);
+					$('select#location').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#department').on('change', function () {
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getactivity')); ?>",
+				{
+					deptId: $(this).val(),
+				},
+				function (data) {
+					$('select#activity').html(data.activity);
+					$('select#activity').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		const fv = FormValidation.formValidation(document.getElementById('#form'), {
+			fields: {
+				full_name: {
+					validators: {
+						notEmpty: {
+							message: 'Please insert CID number'
+						}
+					}
+				},
+				dob: {
+					validators: {
+						notEmpty: {
+							message: 'Please select date of birth.'
+						}
+					}
+				},
+				gender: {
+					validators: {
+						notEmpty: {
+							message: 'Please select gender.'
+						}
+					}
+				},
+				registration_date: {
+					validators: {
+						notEmpty: {
+							message: 'Please select registration date.'
+						}
+					}
+				},
+				organization: {
+					validators: {
+						notEmpty: {
+							message: 'Please select organization.'
+						}
+					}
+				},
+			},
+			plugins: {
+				trigger: new FormValidation.plugins.Trigger(),
+				bootstrap3: new FormValidation.plugins.Bootstrap3(),
+				submitButton: new FormValidation.plugins.SubmitButton(),
+				defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+			},
+		}).on('core.element.validated', function (e) {
+			if (e.valid) {
+				$('div#' + e.field.replace('[]', '') + '_chosen').removeClass('is-invalid');
+				$('div#' + e.field.replace('[]', '') + '_chosen').addClass('is-valid');
+			} else {
+				$('div#' + e.field.replace('[]', '') + '_chosen').removeClass('is-valid');
+				$('div#' + e.field.replace('[]', '') + '_chosen').addClass('is-invalid');
+			}
+		});
+		$('form select').chosen().change(function () {
+			fv.revalidateField($(this).attr('name'));
+		});
+
+	});
+</script>

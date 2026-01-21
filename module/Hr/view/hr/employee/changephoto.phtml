@@ -1,0 +1,48 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmployeeController/changephotoAction
+ * 
+ */
+?>
+
+<?php
+  foreach ($rowsets as $rowset):
+       extract($rowset); 
+  endforeach;
+?> 
+
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	<h4 class="blue">Change Photo for <?php echo $full_name;  ?></h4>
+</div>
+<form class="no-margin" method="post" action="<?php echo $this->url('employee', array('action' => 'changephoto', 'id' => $id)); ?>"  enctype="multipart/form-data" >
+	<div class="modal-body">
+		<div class="space-4"></div>
+		<input type="file" id="uploadimage_drag_drop" name="imageupload">
+	</div>	
+	<div class="modal-footer">
+		<button type="submit" class="btn btn-sm btn-success"><i class="ace-icon fa fa-check"></i> Submit</button>
+		<button type="button" class="btn btn-sm btn-warning" data-dismiss="modal"><i class="ace-icon fa fa-times"></i> Cancel</button>
+	</div>
+</form>  
+<script>
+$('#uploadimage_drag_drop').ace_file_input({
+	style:'well',
+	btn_choose:'Drop Image here or click to choose',
+	btn_change:null,
+	no_icon:'ace-icon fa fa-cloud-upload',
+	droppable:true,
+	thumbnail:'fit',//large | small
+	whitelist:"jpeg|jpg|png|gif",
+	preview_error : function(filename, error_code) {
+		//name of the file that failed
+		//error_code values
+		//1 = 'FILE_LOAD_FAILED',
+		//2 = 'IMAGE_LOAD_FAILED',
+		//3 = 'THUMBNAIL_FAILED'
+		//alert(error_code);
+	}
+
+});
+</script>

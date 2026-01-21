@@ -1,0 +1,139 @@
+<?php 
+/**
+ * View -- of Academic/MonkController/addstudentdetails
+ * chophel@athang.com
+ */
+$this->headTitle($this->title);
+?>
+<?php 
+foreach($curriculum as $curriculums);
+// print_r($curriculums);
+// exit;
+ if(sizeof($result)>0):
+ foreach($result as $results);
+foreach($this->resultdetails->get(array('result_id'=>$results['id'])) as $resultdetail);endif;?>	  
+<div class="card body">
+	<form id="#form" method="post" action="<?php echo $this->url('result', array('action' => 'addresult','id'=>$class_id)); ?>"  enctype="multipart/form-data" >                  
+	<div class="col-lg-12 ">
+		<div class="mt-5">
+		<img src="<?php echo $this->basePath() . '/images/logo.png' ?>" align="left" height=150 width=150/>
+	<img src="<?php echo $this->basePath() . '/images/logo.png' ?>" align="right" height=150 width=150/>
+	<p class="uchen text-center" style="font-size:21px;"><b><span style="font-size:45px;">དཔལ་ལྡན་འབྲུག་པའི་ཚོས་སྡེ<span></b><br><?php echo $this->organization->getColumn($curriculums['organization'],'location')?>གཞུང་གྲྭ་ཚང་། <br>༼<?php echo $this->program->getColumn($curriculums['program'],'name')?>འི་ལོ་འཁོར་ཆོས་རྒྱུགས་ཤེས་ཚད་ལག་ཁྱེར༽</p>	
+ </div>
+	<table class="table" style="border:2px solid black;">
+		<thead style="color:black;border:2px solid black;">
+			<tr style="border:2px solid black;">
+				<td class="uchen" style="border:2px solid black;">རྫོང་ཁག།</td>
+				<td class="uchen"style="border:2px solid black;">རྒེད་འོག།</td>
+				<td class="uchen" style="border:2px solid black;">ཡུལ།</td>
+				<td class="uchen"style="border:2px solid black;">ཕ་མིང་།</td>
+				<td class="uchen"style="border:2px solid black;">ངོ་མིང་།</td>
+				<td class="uchen"style="border:2px solid black;">སྐྱེས་ལོ།</td>
+				<td class="uchen"style="border:2px solid black;">ངོ་སྤྲོད་ལག་འཁྱེར་ཨང་།</td>
+			</tr>
+		</thead>
+			<?php foreach($monk as $monks);?>
+			<tr>
+				<td class="uchen" style="border:2px solid black;"><?php echo $this->dzongkhag->getColumn($monks['dzongkhag'],'districtDz')?></td>
+				<td class="uchen"style="border:2px solid black;"><?php echo $this->gewog->getColumn($monks['gewog'],'blockDz')?></td>
+				<td class="uchen"style="border:2px solid black;"><?php echo $this->village->getColumn($monks['village'],'villageDz')?></td>
+				<td class="uchen"style="border:2px solid black;">-</td>
+				<td class="uchen"style="border:2px solid black;"><?php echo $monks['full_name']?></td>
+				<td class="uchen"style="border:2px solid black;"><?php echo $monks['age']?></td>
+				<td class="uchen"style="border:2px solid black;"><?php echo $monks['cid']?></td>
+ 			</tr>
+		<tbody>
+		</tbody>
+ 	</table>
+					<input type="hidden" name="id" value="<?php echo $curriculums['id'];?>">
+					<input type="hidden" name="academic_year" value="<?php echo $curriculums['academic_year'];?>">
+					<input type="hidden" name="organization" value="<?php echo $curriculums['organization'];?>">
+					<input type="hidden" name="class" value="<?php echo $curriculums['program'];?>">
+					<input type="hidden" name="section" value="<?php echo $curriculums['course'];?>">
+					<input type="hidden" name="batch" value="<?php echo $curriculums['batch'];?>">
+					<input type="hidden" name="monk_id" value="<?php echo $curriculums['monk_id'];?>">
+					<input type="hidden" name="aca_curriculum" value="<?php echo $curriculums['aca_curriculum_id'];?>">	
+
+		<table class="table card-table text-nowrap" id="dataTables">
+			
+			<table class="table" id="trdetails_table" border="2 solid black">
+				<thead style="color:black;border:2px solid black;">
+				<tr style="border:2px solid black;">
+						<td class="uchen" style="border:2px solid black;">ཨང་།</td>
+						<td class="uchen" style="border:2px solid black;">སློབ་མཚན་སོ་སོའི་མིང་།</td>
+						<td class="uchen"style="border:2px solid black;">སྐུགས་བསྡོམས།</td>
+						<td class="uchen"style="border:2px solid black;">ངོས་ཐོབ་དགོས་པ།</td>
+						<td class="uchen"style="border:2px solid black;">ཐོབ་ཡོད་པ།</td>
+					</tr>
+				</thead><?php if(sizeof($result)>0):?>
+					<tbody>
+					<input type="hidden" name="result_id" value="<?php echo $results['id'];?>">	
+					<?php $i=1; foreach ($this->subject->get(array('standard'=>$curriculums['program'])) as $subjects): 
+							$marks =	$this->resultdetails->getColumn(array('subject'=>$subjects['id'],'result_id'=>$results['id']),'marks');
+							$id = $this->resultdetails->getColumn(array('subject'=>$subjects['id'],'result_id'=>$results['id']),'id');?>
+					<tr>
+					<td class="uchen"style="border:2px solid black;"><?php  echo $i++; ?></td>
+						<td class="uchen" style="border:2px solid black;"><input type="hidden" name="subject[]" value="<?php echo $subjects['id'];?>" readonly><?php echo $subjects['subject'];?></td>
+						<td class="uchen" style="border:2px solid black;">༡༠༠</td>
+						<td class="uchen" style="border:2px solid black;">༤༠</td>
+						<td class="uchen" style="border:2px solid black;"><input type="hidden" value="<?php echo $id; ?>" name="detail_id[]"> 
+						<div class="form-group"style="border:2px solid black;"> <input type="number" name="marks[]" id="marks" class="form-control" value="<?php echo $marks; ?>" step="0.001" required></div></td>
+					</tr>
+					<?php 
+					endforeach;?>
+					<tr>
+					<?php  $subjects =sizeof($this->subject->get(array('standard'=>$curriculums['program'])));
+						$totalmarks=$subjects*100;
+						$totalpass=$subjects*40;?>
+						<td style="border:2px solid black;"></td>
+						<td class="uchen"style="border:2px solid black;">ཡོངས་བསྡོམས།</td>
+						<td style="border:2px solid black;"><input type="hidden"  name="total_marks" value="<?php echo $totalmarks;?>"><?php echo $totalmarks;?></td>
+						<td style="border:2px solid black;"><input type="hidden"  name="total_pass" value=""><?php echo $totalpass;?></td>
+						<td style="border:2px solid black;"><input type="hidden" value="<?php echo $this->resultdetails->getSum('marks',array('result_id'=>$results['id']));?>" name="scored_marks"><?php echo $this->resultdetails->getSum('marks',array('result_id'=>$results['id']));?></td>  
+					</tr>
+					
+				</tbody><?php else:?>
+					<tbody>
+					
+					<?php $i=1; foreach ($this->subject->get(array('standard'=>$curriculums['program'])) as $subjects): ?>
+					<tr style="border:2px solid black;">
+					<td style="border:2px solid black;" class="uchen"><?php  echo $i++; ?></td>	
+					<td class="uchen" style="border:2px solid black;"><input type="hidden" name="subject[]" value="<?php echo $subjects['id'];?>" readonly><?php echo $subjects['subject'];?></td>
+						<td class="uchen" style="border:2px solid black;">༡༠༠</td>
+						<td class="uchen" style="border:2px solid black;">༤༠</td>
+						<td class="uchen"style="border:2px solid black;"><input type="hidden" value="<?php echo $id; ?>" name="detail_id[]"> 
+						<div class="form-group"> <input type="number" name="marks[]" id="marks" class="form-control" value="" step="0.001" required></div></td>
+					</tr><?php 
+					endforeach; ?>
+				</tbody>
+				<?php endif;?>
+			</table>
+		</div>
+		<div class="row"><?php 
+		if(sizeof($result)>0): foreach($result as $results);
+			if($results['status']!=4):?>
+			<div class="col-lg-12">
+				<button type="submit" class="btn btn-success" onClick="return confirm('Are you sure')"><i class="fa fa-save"></i> &nbsp; Save Marks</button>
+				<?php echo $this->button(2,$class_id);?>
+			</div>
+			<?php else:?>
+			<div class="col-lg-12">
+				<?php if($results['pass']!=0):?><button type="btn" class="btn btn-success"><i class="fa fa-check"></i> &nbsp;Passed</button><?php else:?><button type="btn" class="btn btn-danger" ><i class="ace-icon fa fa-times"></i> &nbsp;Failed</button><?php endif;?>
+			</div><?php endif;else:?>
+			<div class="col-lg-12">
+				<button type="submit" class="btn btn-success" onClick="return confirm('Are you sure')"><i class="fa fa-save"></i> &nbsp; Save Marks</button>
+				<?php echo $this->button(2,$class_id);?>
+				
+			</div><?php
+		endif;?>
+		</div>	
+	</form>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+

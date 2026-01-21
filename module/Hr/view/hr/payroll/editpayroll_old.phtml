@@ -1,0 +1,544 @@
+<?php
+/**
+ * 
+ * View -- of Hr/PayrollController/salaryAction
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<?php 
+foreach($this->payroll as $payroll); 
+foreach($this->employeeObj->get($payroll['employee']) as $employee);
+?>
+<form id="form" method="post" action="<?php echo $this->url('payroll', array('action' => 'editpayroll', 'id' => $payroll['id'])); ?>" enctype="multipart/form-data">
+    <div class="widget widget-box transparent">
+		<div class="widget-header">
+			<h5 class="widget-title"> 	
+				Payroll of <strong><?php echo $employee['full_name'];?></strong>
+				<?php echo $this->status($payroll['status']); ?>
+			</h5>
+			<div class="widget-toolbar">
+				<?php if($payroll['status'] < 3): ?>
+					<a class="pull-right btn btn-success btn" href="<?php echo $this->url('payroll', array('action'=>'addpr','id'=>$employee['id']));?>" data-target="#modal" data-toggle="modal">
+						<i class="ace-icon fa fa-plus bigger-120"></i>
+						<span>Add Earning & Deduct</span>
+					</a>
+				<?php endif;?> 
+			</div>
+		</div>
+		<div class="widget-body">
+			<div class="widget-main">
+				<div class="row">
+					<div class="col-lg-3" >
+						<ul class="list-unstyled spaced">
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Name:  <b class="red"><a target="_blank" class="red" href="<?php echo $this->url('employee', array('action'=>'view', 'id'=>$employee['id']));?>"> <?php echo $employee['full_name']; ?></a></b>
+							</li>
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Cid No:  <b class="red"> <?php echo $employee['cid'];?></b>
+							</li>
+						</ul>
+					</div>
+					<div class="col-lg-3">
+						<ul class="list-unstyled spaced">
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Employee ID:  <b class="red"> <?php echo $employee['emp_id'];?></b>
+							</li>
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Activity:  <b class="red"> <?php echo $employee['activity'];?></b>
+							</li>
+						</ul>
+					</div>
+					<div class="col-lg-3">
+						<ul class="list-unstyled spaced">
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Position Title:  <b class="red"> <?php echo $employee['position_title']; ?> </b>
+							</li>
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Region:  <b class="red"> <?php echo $employee['region'];?> </b>
+							</li>
+						</ul>
+					</div>
+					<div class="col-lg-3" id="convert-tb1">
+						<ul class="list-unstyled spaced">
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Location:  <b class="red"> <?php echo $employee['location']; ?> </b>
+							</li>
+							<li>
+								<i class="ace-icon fa fa-caret-right blue"></i>Department:  <b class="red"> <?php echo $employee['department']; ?> </b>
+							</li>
+						</ul>
+					</div>
+				</div>				
+				<div class="hr dotted"></div>
+				<div class="row">					
+					<div class="col-lg-2">
+						<label for="employee" class="control-label">Employee </label>
+						<select class="form-control" name="employee" id="employee" data-placeholder="Select" required>
+							<option value=""></option>
+							<?php 
+								foreach($this->employeeObj->getAll() as $emp_row):
+									$selected = ($payroll['employee'] == $emp_row['id'])?'selected':'';
+								    $tempPrDetails = $tempPrObj->get(array('pr.employee'=>$emp_row['id']));
+								    foreach ($tempPrDetails as $tempDtl);
+								    $tempPrId = $tempDtl['id'];
+							?>
+								<option value="<?php echo $tempPrId;?>" <?php echo $selected;?> >
+									<?php echo $emp_row['full_name']; ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+					<div class="col-lg-2">
+						<label for="month" class="control-label">Month </label>
+						<select class="form-control" name="month" id="month"  data-placeholder="Select" required readonly>
+							<option value=""></option>
+							<?php 
+								for($m=1;$m<=12;$m++):
+									$selected = ($payroll['month'] == $m)?'selected':'';
+							?>
+								<option value="<?php echo $m;?>" <?php echo $selected;?> >
+									<?php echo date("F", strtotime(date("d-$m-y"))); ?>
+								</option>
+							<?php endfor; ?>
+						</select>
+					</div>
+					<div class="col-lg-1">
+						<label for="year" class="control-label">Year </label>
+						<select class="form-control" name="year" id="year" data-placeholder="Select" required readonly >
+							<option value=""></option>
+							<?php for($y=date('Y');$y >2005;$y--):
+								$selected = ($payroll['year'] == $y)?'selected':'';?>
+								<option value="<?php echo $y;?>" <?php echo $selected;?>>
+									<?php echo $y; ?>
+								</option>
+							<?php endfor; ?>
+						</select>
+					</div>
+					<div class="form-group col-lg-2">
+						<label for="working_days" class="control-label">Working Days</label>
+						<input type="text" name="working_days" id="working_days" value="<?php echo $payroll['working_days'];?>" class="form-control" placeholder="Working days" required>
+					</div>
+					<div class="form-group col-lg-2">
+						<label for="leave_without_pay" class="control-label">Leave Without Pay</label>
+						<input type="text" name="leave_without_pay" id="leave_without_pay" class="form-control" value="<?php echo $payroll['leave_without_pay']?>">
+					</div>
+					<div class="form-group col-lg-2">
+						 <label for="bank_account_no" class="control-label">Bank Account No</label>
+						 <input type="text" class="form-control" name="bank_account_no" id="bank_account_no" value="<?php echo $employee['bank_account_no'];?>" size="30" > 
+					</div>
+					<div class="form-group col-lg-1">
+						<label for="cash">Take Cash</label>
+						<?php $checked_cash = ($employee['bank_account_no'] == 0)?'checked':'';?>
+						<label class="block">
+							<input name="cash" id="cash" type="checkbox" class="ace input-lg" value="1" <?php echo $checked_cash;?>/>
+							<span class="lbl bigger-120"> &nbsp;</span>
+						</label>
+					</div>
+				</div>
+				<div class="hr dotted"></div>
+				<div class="row">    
+					<div class="col-lg-6">
+						<h3 class="header smaller lighter grey">Earnings</h3>
+						<table id="earning_table" class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Type </th>
+									<th>Default Amount(<?php echo $this->currency_code();?>)</th>
+									<th>Amount(<?php echo $this->currency_code();?>) <small><span class="fa fa-exclamation-circle"><i> (DLWP)</i></span></small></th>
+									<th class="no-sort no-printpdf">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php $i = 1; $total_earning=0;
+								foreach ($paystructureObj->get(array('employee' => $payroll['employee'], 'deduction' => 0 )) as $paydetail):
+									$total_earning += $paydetail['amount']; ?>
+									<tr>
+										<td><?php echo $i++; ?> </td>
+										<td>
+											<?php echo $paydetail['code']; ?>
+										</td>
+										<td><?php echo $paydetail['amount']; ?></td>
+										<td>
+											<input type="hidden" id="e_dlwp" value="<?php echo $paydetail['dlwp']; ?>" ></input>
+											<input type="hidden" id="e_roundup" value="<?php echo $paydetail['roundup']; ?>" ></input>
+											<?php
+												if($paydetail['dlwp'] == '1'):
+												$actual_amt = $paydetail['amount'];
+											?>
+												<span class="input-icon input-icon-right">
+													<input type="text" name="earning_amt" id="earning_amt" class="form-control" value="<?php echo $actual_amt;?>" readonly />
+													<i class="ace-icon fa fa-exclamation-circle"></i>
+												</span>
+											<?php  else:  ?>
+												<input class="form-control" class="form-control" type="text" name="earning_amt" id="earning_amt" value="<?php echo $paydetail['amount'];?>" readonly />
+											<?php endif; ?>
+										</td>
+										<td>
+											<div class="btn-group">
+												<a class="btn btn-xs btn-info" href="<?php echo $this->url('payroll', array('action'=>'editpr', 'id'=>$paydetail['id']));?>" title="Edit" data-target="#modal" data-toggle="modal">
+													<i class="ace-icon fa fa-pencil bigger-120"></i>
+												</a>
+												<a class="btn btn-xs btn-info" href="<?php echo $this->url('payroll', array('action'=>'deletepr', 'id'=>$paydetail['id']));?>" title="Delete">
+													<i class="ace-icon fa fa-trash-o bigger-120"></i>
+												</a>												
+											</div>
+										</td>
+									</tr>
+								<?php  endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+					<div class="col-lg-6">
+						<h3 class="header smaller lighter grey"> Deductions</h3>
+						<table id="deduction_table" class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Type </th>
+									<th>Default Amount(<?php echo $this->currency_code();?>)</th>
+									<th>Amount(<?php echo $this->currency_code();?>) <small><span class="fa fa-exclamation-circle"><i> (DLWP)</i></span></small></th>
+									<th class="no-sort no-printpdf">Action</th> 
+								</tr>
+							</thead>
+							<tbody>
+								<?php $i = 1; $total_deduction=0;
+								foreach ($paystructureObj->get(array('employee' => $payroll['employee'], 'deduction' => 1)) as $paydetail):?>
+									<tr>
+										<td><?php echo $i++; ?> </td>
+										<td>
+											<?php echo $paydetail['code']; ?>
+										</td>
+										<td><?php echo $paydetail['amount']; ?></td>
+										<td>
+											<input type="hidden" id="d_dlwp" value="<?php echo $paydetail['dlwp']; ?>" ></input>
+											<input type="hidden" id="d_roundup" value="<?php echo $paydetail['roundup']; ?>" ></input>
+											<?php 
+												if($paydetail['dlwp'] == '1'):
+												$actual_amt = $paydetail['amount'];
+											?>
+												<span class="input-icon input-icon-right">
+													<input type="text" name="deduction_amt" id="deduction_amt" class="form-control" value="<?php echo $actual_amt;?>" readonly />
+													<i class="ace-icon fa fa-exclamation-circle"></i>
+												</span>
+											<?php  else:  ?>
+												<input class="form-control" class="form-control" type="text"  name="deduction_amt" id="deduction_amt" value="<?php echo $paydetail['amount'];?>" readonly />
+											<?php endif; ?>
+										</td>
+										<td>
+											<div class="btn-group">
+												<a class="btn btn-xs btn-info" href="<?php echo $this->url('payroll', array('action'=>'editpr', 'id'=>$paydetail['id']));?>" title="Edit" data-target="#modal" data-toggle="modal">
+													<i class="ace-icon fa fa-pencil bigger-120"></i>
+												</a>
+												<a class="btn btn-xs btn-info" href="<?php echo $this->url('payroll', array('action'=>'deletepr', 'id'=>$paydetail['id']));?>" title="Delete">
+													<i class="ace-icon fa fa-trash-o bigger-120"></i>
+												</a>							
+											</div>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="hr dotted"></div>
+				<div class="row">
+					<div class="form-group col-lg-3">
+						<label for="earning_dlwp" class="control-label">LWP Amount from Earnings(<?php echo $this->currency_code();?>)</label>
+						<input type="text" name="earning_dlwp" id="earning_dlwp" class="form-control" placeholder="LWP Amount from Earnings" value="<?php echo $payroll['earning_dlwp']; ?>" readonly/>
+					</div>
+					<div class="form-group col-lg-3">
+						<label for="gross" class="control-label green"><b>Gross Pay</b>(<?php echo $this->currency_code();?>)</label>
+						<input type="text" name="gross" id="gross" class="form-control" value="" readonly />
+					</div>
+					<div class="form-group col-lg-3">        
+						<label for="deduction_dlwp" class="control-label">LWP Amount from Deduction(<?php echo $this->currency_code();?>)</label>
+						<input type="text" name="deduction_dlwp" id="deduction_dlwp" class="form-control" placeholder="LWP Amount from Deduction" value="<?php echo $payroll['deduction_dlwp'];?>" readonly/>
+					</div>
+					<div class="form-group col-lg-3">   
+						<label for="total_deduction" class="control-label red"><b>Total Deduction</b>(<?php echo $this->currency_code();?>)</label>
+						<input type="text" name="total_deduction" id="total_deduction" class="form-control" value="" readonly />
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-3">
+						<label for="bonus" class="control-label">Bonus(<?php echo $this->currency_code();?>)</label>
+						<input type="text" name="bonus" id="bonus" class="form-control" placeholder="bonus" value="<?php echo $payroll['bonus']; ?>"/>
+					</div>
+					<div class="form-group col-lg-3">        
+						<label for="leave_encashment" class="control-label">Leave Encashment(<?php echo $this->currency_code();?>)</label>
+						<input type="text" name="leave_encashment" id="leave_encashment" class="form-control" placeholder="leave encashment" value="<?php echo $payroll['leave_encashment'];?>"/>
+					</div>
+					<div class="form-group col-lg-3">
+						<label for="net_pay" class="control-label blue"><b>Net pay</b>(<?php echo $this->currency_code();?>)</label>
+						<input type="text" name="net_pay" id="net_pay" class="form-control" value="" readonly/>
+					</div>
+					<div class="col-lg-3" style="text-align:center">
+						<div class="space-8"></div>
+						<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+						<a class="btn btn-warning" onclick="javascript:history.back();"><i class="fa fa-times"></i> Cancel </a> 
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="alert alert-warning">
+							Please <b>"Save"</b> after you insert the no. of days for Leave Without Pay. Then make changes to the pay structure of <?php echo $employee['position_title']; ?> <b><?php echo $employee['full_name'];?></b>.
+							Thats because some of the payheads depends upon Gross Pay.
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		 </div>
+	</div>
+</form>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<?php foreach ($paystructureObj->get(array('deduction' => 0, 'employee' => $employee['id'] )) as $paystructure):
+	if($paystructure['pay_head'] == 'Basic'):
+		$basic = $paystructure['amount'];	// this basic is used in javascript below	
+	endif;
+endforeach; ?>
+<script>
+	if($('#cash').prop('checked') == true){
+		$('#bank_account_no').prop('disabled',true);
+	}else{
+		$('#bank_account_no').prop('disabled',false);
+	}
+	$('#cash').on('change',function(){
+		if($(this).prop('checked') == true){
+			$('#bank_account_no').val('');
+			$('#bank_account_no').prop('disabled',true);
+		}else{
+			$('#bank_account_no').val('');
+			$('#bank_account_no').prop('disabled',false);
+		}
+	});
+	$('#employee').change(function(){
+		var id = $('#employee').val();
+		location.href="<?php echo $this->url('payroll', array('action'=>'editpayroll'));?>/"+id;
+	});
+	
+	//reasigning the id
+	var e_id =0;
+	$('#earning_table tbody tr').each(function(){
+		e_id++;
+		$(this).attr('id', e_id);	
+		$(this).find('input').each(function(){
+			var old_id =$(this).attr('id');
+			$(this).attr('id',old_id+'_'+e_id);
+		});	
+	});
+	var d_id =0;
+	$('#deduction_table tbody tr').each(function(){
+		d_id++;
+		$(this).attr('id', d_id);	
+		$(this).find('input').each(function(){
+			var old_id =$(this).attr('id');
+			$(this).attr('id',old_id+'_'+d_id);
+		});	
+	});
+	
+	//dynamic calculation
+	var e_length = e_id;
+	var d_length = d_id;
+	
+	var i = 0; var j = 0;
+	var old_earning_amt = []; var old_deduction_amt = [];
+	var e_dlwp = []; var d_dlwp = [];
+	var e_roundup = []; var d_roundup = [];
+	var total_earning=0; var total_deduction=0;
+	var leave_encashment =0; var bonus =0;
+	
+	for(i=1;i<=e_length;i++){
+		old_earning_amt[i] = parseFloat($('#earning_amt_'+i).val());
+		e_dlwp[i] = $('#e_dlwp_'+i).val();
+		e_roundup[i] = $('#e_roundup_'+i).val();
+	}
+	for(j=1;j<=d_length;j++){
+		old_deduction_amt[j] = parseFloat($('#deduction_amt_'+j).val());
+		d_dlwp[j] = $('#d_dlwp_'+j).val();
+		d_roundup[j] = $('#d_roundup_'+j).val();
+	}
+	
+	//for earning
+	for(i=1;i<=e_length;i++){
+		var amount = parseFloat(old_earning_amt[i]).toFixed(2);;
+		if(e_dlwp[i]=='1'){
+			if(parseInt($('#working_days').val()) > 0 && parseInt($('#leave_without_pay').val()) > 0){
+				working_days = parseFloat($('#working_days').val());
+				leave_without_pay = parseFloat($('#leave_without_pay').val());
+				var final_amt = parseFloat((old_earning_amt[i] / working_days) * leave_without_pay);    		 
+				amount = parseFloat(Math.round(old_earning_amt[i] - final_amt));
+				if(e_roundup[i] =='1'){
+					amount = amount.toFixed();
+				}else{
+					amount = amount.toFixed(2);
+				}		
+			}		
+		}
+		$('#earning_amt_'+i).val(amount);
+	} 
+	//for deduction
+	for(j=1;j<=d_length;j++){
+		var amount = parseFloat(old_deduction_amt[j]).toFixed(2);
+		if(d_dlwp[j]=='1'){	
+			if(parseInt($('#working_days').val()) > 0 && parseInt($('#leave_without_pay').val()) > 0){
+				working_days = parseFloat($('#working_days').val());
+				leave_without_pay = parseFloat($('#leave_without_pay').val());
+				var final_amt = parseFloat((old_deduction_amt[j] / working_days) * leave_without_pay);    		 
+				amount = parseFloat(Math.round(old_deduction_amt[j] - final_amt));
+				if(d_roundup[j] =='1'){
+					amount = amount.toFixed();
+				}else{
+					amount = amount.toFixed(2);
+				}		
+			}
+		}
+		$('#deduction_amt_'+j).val(amount);
+	} 
+
+	if(parseFloat($('#bonus').val()) > 0){
+	   bonus = parseFloat($('#bonus').val());
+	}
+	if(parseFloat($('#leave_encashment').val()) > 0){
+		leave_encashment = parseFloat($('#leave_encashment').val());
+	} 
+
+	$('input[name="earning_amt"]').each(function(){
+	   total_earning  = Number(parseFloat(total_earning).toFixed(2)) + Number(parseFloat($(this).val()).toFixed(2));
+	});
+
+	$('input[name="deduction_amt"]').each(function(){
+	   total_deduction  = Number(parseFloat(total_deduction).toFixed(2)) + Number(parseFloat($(this).val()).toFixed(2));
+	});
+
+	$("#gross").val(parseFloat(total_earning).toFixed(2));
+	$("#total_deduction").val(parseFloat(total_deduction).toFixed(2));
+	var net_pay =  parseFloat((total_earning + leave_encashment + bonus)- total_deduction).toFixed(2);
+	$('#net_pay').val(net_pay);
+	
+	$('#leave_without_pay').change(function(){
+		update();
+	});
+	$('#working_days').change(function(){
+		update();
+	});
+	
+	$('#bonus').change(function(){
+		var bonus = parseFloat(Math.round($('#bonus').val())).toFixed(2);
+		var leave_encashment = Number($('#leave_encashment').val());
+		var gross = Number($('#gross').val());
+		var tot_deduction = Number($('#total_deduction').val());
+		$('#bonus').val(bonus);
+		var net_pay = parseFloat(Number(gross) + Number(leave_encashment) + Number(bonus) - Number(tot_deduction)).toFixed(2);
+		$('#net_pay').val(net_pay);  
+		
+	});
+
+	$('#leave_encashment').change(function(){
+		var leave_encashment = parseFloat(Math.round($('#leave_encashment').val())).toFixed(2);
+		var bonus = Number($('#bonus').val());
+		var gross = Number($('#gross').val());
+		var tot_deduction = Number($('#total_deduction').val());
+		$('#leave_encashment').val(leave_encashment);
+		var net_pay = parseFloat(Number(gross) + Number(leave_encashment) + Number(bonus) - Number(tot_deduction)).toFixed(2);
+		$('#net_pay').val(net_pay);  
+		
+	});
+	//general function to update the form on input change
+	function update(){
+		i =0; j=0;
+		var bonus = 0; var leave_encashment = 0;
+		var working_day = 0; var leave_without_pay = 0;
+		var total_deduction = 0; var total_earning = 0;
+		//for earning
+		for(i=1;i<=e_length;i++){
+			var amount = parseFloat(old_earning_amt[i]).toFixed(2);;
+			if(e_dlwp[i]=='1'){
+				if(parseInt($('#working_days').val()) > 0 && parseInt($('#leave_without_pay').val()) > 0){
+					working_days = parseFloat($('#working_days').val());
+					leave_without_pay = parseFloat($('#leave_without_pay').val());
+					var final_amt = parseFloat((old_earning_amt[i] / working_days) * leave_without_pay);    		 
+					amount = parseFloat(old_earning_amt[i] - final_amt);	
+					if(e_roundup[i] =='1'){
+						amount = amount.toFixed();
+					}else{
+						amount = amount.toFixed(2);
+					}	
+				}		
+			}
+			$('#earning_amt_'+i).val(amount);
+		} 
+		//for deduction
+		for(j=1;j<=d_length;j++){
+			var amount = parseFloat(old_deduction_amt[j]).toFixed(2);
+			if(d_dlwp[j]=='1'){	
+				if(parseInt($('#working_days').val()) > 0 && parseInt($('#leave_without_pay').val()) > 0){
+					working_days = parseFloat($('#working_days').val());
+					leave_without_pay = parseFloat($('#leave_without_pay').val());
+					var final_amt = parseFloat((old_deduction_amt[j] / working_days) * leave_without_pay);    		 
+					amount = parseFloat(old_deduction_amt[j] - final_amt);
+					if(d_roundup[j] =='1'){
+						amount = amount.toFixed();
+					}else{
+						amount = amount.toFixed(2);
+					}		
+				}
+			}
+			$('#deduction_amt_'+j).val(amount);
+		}
+		leave_encashment = Number($('#leave_encashment').val());
+		bonus = Number($('#bonus').val());
+		gross = Number($('#gross').val());
+		tot_deduction = Number($('#total_deduction').val());
+		var net_pay = parseFloat(Number(gross) + Number(leave_encashment) + Number(bonus) - Number(tot_deduction)).toFixed(2);
+		$('#net_pay').val(net_pay);
+	}
+	
+	$('form select').chosen();
+	$('document').ready(function(){
+		$('form').formValidation({
+			excluded: ':disabled',
+			message: 'Please enter a value.',
+			fields: {
+				year: {
+					validators: {
+						notEmpty: {
+							message: 'Please select year.'
+						}
+					}
+				},
+				month: {
+					validators: {
+						notEmpty: {
+							message: 'Please select month.' 
+						}
+					}
+				},
+				working_days: {
+					validators: {
+						notEmpty: {
+							message: 'Please provide working days.'
+						},
+						digits: {
+							message: 'Please provide valid working days.'
+						}
+					}
+				},
+				activity: {
+					validators: {
+						notEmpty: {
+							message: 'Please select activity.'
+						},
+					}
+				},
+			}
+		});
+	});
+</script>

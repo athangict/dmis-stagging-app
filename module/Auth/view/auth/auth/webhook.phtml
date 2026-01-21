@@ -1,0 +1,55 @@
+<?php
+/**
+ * Authentication --- login
+ * chophel@athang.com
+ */
+	//$this->headTitle($title);
+?> 
+<div style="position: relative;">
+	<img src="<?php echo $this->cid; ?>" alt="QR Code">
+</div>
+<script>
+$(document).ready(function() {
+    // Function to periodically check the proof status
+    function postData() {
+        var accessToken = "<?php echo $this->escapeHtml($this->cid); ?>";
+
+        // Debugging: Log values before sending the request
+        console.log('AccessToken:', accessToken);
+        console.log('ReqThreadId:', reqThreadId);
+
+        $.ajax({
+            url: '<?php echo $this->url('auth', array('action' => 'login'));?>',
+            type: 'POST',
+            data: {
+                accessToken: cid
+            },
+            dataType: 'json',
+            success: function(data) {
+                // Log the entire response to debug
+                console.log('Full response:', data);
+                // Check if the response contains the expected structure
+                if (data && data.status) {
+                    //var status = response.status;
+                    console.log('Status 1:', data.status);
+                    // Check different statuses and act accordingly
+                    if (data.status === 'ProofValidated' || data.status === 'verificationFailed') {
+                        console.log('Ending check. Status:', data.status);
+                         window.location.href = "../application/panel2";
+                    } else {
+                        console.log('User has not yet shared the proof, waiting for action...');
+                        setTimeout(postData, 8000); // Check every 8 seconds (adjust as needed)
+                    }
+                } else {
+                    console.log('ProofRequest is not yet shared by the user. Retrying...');
+                    setTimeout(postData, 8000); // Retry after a delay
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText); // Log the error message to the console
+            }
+        });
+    }
+    postData();
+});
+</script>

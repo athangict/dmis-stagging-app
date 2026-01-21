@@ -1,0 +1,56 @@
+<?php
+/**
+ * 
+ * View -- of Hr/MasterController/apptypeAction
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<?php echo $this->tabs_helper(array(853,832,838,835)); ?>
+<div class="card">
+	<div class="card-header">
+		<div class="btn-group pull-right">
+			<?php echo $this->button(2);?>
+		</div>
+	</div>
+	<div class="table-responsive">
+	<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Appointment Types</th>
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+					$i = 1; 
+					foreach ($this->apptype as $apptype):
+				?>
+						<tr>
+							<td><?php echo $i++; ?> </td>
+							<td><b><?php echo $apptype['type_of_appointment']; ?><b></td> 
+							<?php if($this->button(1)!=""):?>
+								<td><?php echo $this->button(1, $apptype['id']);?></td>
+							<?php endif;?>                            
+						</tr>
+				<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#dataTables').DataTable({"paging":   true,});
+});
+</script>

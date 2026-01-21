@@ -1,0 +1,79 @@
+<?php
+/**
+ * 
+ * View -- of Hr/MasterController/editapptypeAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<?php 
+    foreach($this->apptype as $emptype):
+        extract($emptype);        
+    endforeach;
+?>
+
+<form id="#form" method="post" action="<?php echo $this->url('master', array('action' => 'editemptype', 'id' => $id)); ?>"  enctype="multipart/form-data" >                  
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    
+    <div class="modal-body">       
+		<div class="panel panel-default">                       
+			<div class="panel-body"> 
+				<div class="form-group">
+					<label for="emp_type" class="control-label">Employee Category</label>
+					<input type="text" class="form-control" name="emp_type" id="emp_type" value="<?php echo $emp_type;?>" size="30" required> 
+				</div>
+			</div>
+			<div class="panel-body"> 
+				<div class="form-group">
+					<label for="code" class="control-label">Code</label>
+					<input type="text" class="form-control" name="code" id="code" value="<?php echo $code;?>" size="30" required> 
+				</div>
+			</div>
+		</div>
+	</div> <!-- /modal-body -->    
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>
+</form>
+<script>
+$('document').ready(function(){
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			emp_type: {
+					validators: {
+						notEmpty: {
+							message: 'Please provide employee category.'
+						}
+					}
+				},
+				code: {
+					validators: {
+						notEmpty: {
+							message: 'Please provide category code.'
+						}
+					}
+				},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+});
+</script>

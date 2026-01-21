@@ -1,0 +1,306 @@
+<?php
+/**
+ * View -- of Humanresource/EmployeeController/viewAction
+ */
+    $this->headTitle($this->title);
+	foreach ($employee as $row):
+        extract($row);
+    endforeach; 
+?>
+<?php echo $this->tabs_helper(array(812,813,814,815,816,818,821,824),$id); ?>
+<div id="report-print">
+	<div class="row" id="convert-table">
+		<span class="col-xs-12 col-sm-4 center" id="convert-tab1">
+			<span class="profile-picture">
+				<img class="editable img-responsive"; alt="<?php echo $full_name; ?>" id="<?php echo $full_name; ?>" src="<?php echo $this->basePath() . '/images/avatar2.jpg';?>" />
+			</span>
+			<div class="space space-3"></div>
+			<?php echo $this->button(3, $id, $system_user);?>
+			<a class="btn btn-sm btn-danger hidden-xs" style='cursor:pointer' id="print">
+				<i class="ace-icon fa fa-file-pdf-o fa-lg "></i>
+			</a>
+		</span>
+		<span class="col-xs-12 col-sm-8" id="convert-tab2">
+			<h4 class="blue">
+				<span class="middle"><?php echo $full_name; ?> (<strong><?php echo $type_code; ?></strong>)</span>
+				<span class="label label-<?php echo $status_color;?> arrowed-in-right">					
+					<i class="ace-icon fa fa-circle smaller-80 align-middle"></i>
+					<?php echo $status;?>
+				</span>
+			</h4>
+			<div class="profile-user-info">
+				<div class="profile-info-row">
+					<span class="profile-info-name"> EID / CID : </span>
+
+					<span class="profile-info-value">
+						<span><?php echo $emp_id;?> / <?php echo $cid;?></span>
+					</span>
+				</div>
+
+				<div class="profile-info-row">
+					<span class="profile-info-name"> DoB / Gender : </span>
+
+					<span class="profile-info-value">
+						<span><?php echo $dob;?> /  <?php echo $gender; ?></span>
+					</span>
+				</div>
+
+				<div class="profile-info-row">
+					<span class="profile-info-name"> Email / Mobile : </span>
+
+					<span class="profile-info-value">
+						<span><?php echo $email;?> / <?php echo $mobile; ?></span>
+					</span>
+				</div>
+				
+				<div class="profile-info-row">
+					<span class="profile-info-name"> Height / Blood Group : </span>
+
+					<span class="profile-info-value">
+						<span><?php echo $height;?> / <?php echo $blood_group; ?></span>
+					</span>
+				</div>
+
+				<div class="profile-info-row">
+					<span class="profile-info-name">Nationality / Religion : </span>
+
+					<span class="profile-info-value">
+						<span><?php echo $nationality;?> / <?php echo $religion;?></span>
+					</span>
+				</div>
+				<div class="profile-info-row">
+					<span class="profile-info-name">Permanent Add : </span>
+
+					<span class="profile-info-value">
+						<i class="fa fa-map-marker light-orange bigger-110"></i>
+						<span><?php echo $district;?></span>
+						<span><?php echo $block;?></span>
+						<span><?php echo $village;?></span>
+					</span>
+				</div>
+				<div class="profile-info-row">
+					<span class="profile-info-name">Thram No. / House No. : </span>
+					<span class="profile-info-value">
+						<span><?php echo $thram_no;?> / <?php echo $house_no;?></span>
+					</span>
+				</div>
+				<div class="profile-info-row">
+					<span class="profile-info-name">Bank ACC No./Basic Pay. : </span>
+					<span class="profile-info-value">
+						<span><?php echo ($bank_account_no == 0)?'CASH':$bank_account_no;?> / <?php //echo $basicPAY;?></span>
+					</span>
+				</div>
+			</div>
+		</span>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="space-12"></div>
+			<div class="widget-box transparent">
+				<div class="widget-header widget-header-small">
+					<h4 class="widget-title smaller"> 
+						<i class="ace-icon fa fa-lightbulb-o bigger-120"></i>
+						Job Profile 
+					</h4>
+				</div>
+				<div class="widget-body">
+					<div class="widget-main">
+						<div class="table-responsive">
+							<table class="table-striped table-bordered table-condensed col-lg-12 table-responsive">
+								<thead>
+									<tr>
+										<th>Region</th>
+										<th>Location</th>
+										<th>Department</th>
+										<th>Activity</th>
+										<th>Position Title | Level</th>
+										<th>Joined On</th>
+										<th>Pay Scale </th>
+										<th>Office Order </th>
+									</tr>
+								</thead>
+								<tbody> 
+									<?php foreach ($emphistory as $emph): ?>
+										<tr>
+											<td>
+												<?php echo $emph['region']; ?>
+											</td>
+											<td>
+												<?php echo $emph['location']; ?>
+											</td>
+											<td>
+												<?php echo $emph['department']; ?>
+											</td>
+											<td>
+												<?php echo $emph['activity']; ?>
+											</td>
+											<td>
+												<?php echo $emph['position_title'];?> | <?php echo $emph['position_level']; ?>
+											</td>
+											<td>
+												<?php echo $emph['start_date']; ?>
+											</td>
+											<td>
+												<?php echo $emph['min_pay']."-".$emph['increment']."-".$emph['max_pay']; ?>
+											</td>
+											<td>
+												<?php echo $emph['office_order_no'];?> (<?php echo $emph['office_order_date'];?>)
+											</td>
+										</tr>
+									<?php  endforeach; ?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="space-12"></div>
+			<div class="widget-box transparent">
+				<div class="widget-header widget-header-small">
+					<h4 class="widget-title smaller"> 
+						<i class="ace-icon fa fa-book bigger-120"></i>
+						Qualification Detail 
+					</h4>
+				</div>
+				<div class="widget-body">
+					<div class="widget-main">	
+						<div class="table-responsive">
+							<table class="table-striped table-bordered table-condensed col-lg-12">
+								<thead>
+									<th>#</th>
+									<th>Qualifiction</th>
+									<th>Course</th>
+									<th>Institute</th>
+									<th>Location</th>
+									<th>Completion Year</th>
+								</thead>
+								<tbody>
+									<?php 
+									$i = 1; 
+									foreach($this->qualification as $qrow):?>
+									<tr>
+										<td><?php echo $i; ?> </td>
+										<td><?php  echo $this->q_levelsObj->getColumn($qrow['qualification'],'qualification_level');?></td>
+										<td><?php  echo $qrow['course'];?></td>
+										<td><?php  echo $qrow['institute'];?></td>
+										<td><?php  echo $qrow['location'];?></td>
+										<td><?php  echo $qrow['completion_year'];?></td>
+									</tr>
+								<?php 
+								$i++;
+								endforeach;?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="space-12"></div>
+		<div class="col-lg-12">
+			<div class="widget-box transparent">
+				<div class="widget-header widget-header-small">
+					<h4 class="widget-title smaller"> 
+						<i class="ace-icon fa fa-certificate bigger-120"></i>
+						Awards 
+					</h4>
+				</div>
+				<div class="widget-body">
+					<div class="widget-main">
+						<div class="table-responsive">
+							<table class="table-striped table-bordered table-condensed col-lg-12">
+								<thead>
+									<th>#</th>
+									<th>Particular</th>
+									<th>Award</th>
+									<th>Award Date</th>
+									<th>Authority</th>
+								</thead>
+								<tbody>
+									<?php 
+									$i = 1; 
+									foreach($this->award as $arow):?>
+									<tr>
+										<td><?php echo $i; ?> </td>
+										<td><?php  echo $arow['particular'];?></td>
+										<td><?php  echo $arow['award'];?></td>
+										<td><?php  echo $arow['award_date'];?></td>
+										<td><?php  echo $arow['authority'];?></td>
+									</tr>
+								<?php 
+								$i++;
+								endforeach;?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="space-12"></div>
+			<div class="widget-box transparent">
+				<div class="widget-header widget-header-small">
+					<h4 class="widget-title smaller"> 
+						<i class="ace-icon fa fa-users bigger-120"></i>
+						Family Detail 
+					</h4>
+				</div>
+				<div class="widget-body">
+					<div class="widget-main">
+						<div class="table-responsive">
+							<table class="table-striped table-bordered table-condensed col-lg-12">
+								<thead>
+									<th>#</th>
+									<th>Name</th>
+									<th>Relation</th>
+									<th>Nationality</th>
+									<th>Occupation</th>
+									<th>Address</th>
+								</thead>
+								<tbody>
+									<?php 
+									$i = 1; 
+									foreach($this->family as $frow):?>
+									<tr>
+										<td><?php echo $i; ?> </td>
+										<td><?php  echo $frow['name'];?></td>
+										<td><?php  echo $frow['relation'];?></td>
+										<td><?php  echo $frow['nationality'];?></td>
+										<td><?php  echo $frow['occupation'];?></td>
+										<td><?php  echo $frow['address'];?></td>
+									</tr>
+								<?php 
+								$i++;
+								endforeach;?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script type="text/javascript">
+	$('#print').genpdfprofile({
+		content: '#report-print',
+		src:"<?php echo $this->url('pdfxls', array('action' => 'pdf'));?>",
+		orentation:"P",//L =landscape, P = potrait
+	});
+</script>   
+

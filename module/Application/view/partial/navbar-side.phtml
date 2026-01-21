@@ -1,0 +1,332 @@
+<?php
+/**
+ * Layout --- Side Navbar
+ * chophel@athang.com
+ */
+?>
+<?php 
+	$getRoute = $this->getroute_helper()->getMatchedRouteName();
+	$getAction = $this->getroute_helper()->getParam('action');
+	$arr = explode('/', $getRoute);
+	$getRoute = $arr[0];
+	$getResource = $this->getresource_helper($getRoute);
+?>	
+<div id="sidebar" class="sidebar sidebar-fixed expandable sidebar-light">
+	<div class="sidebar-inner">
+		<div class="ace-scroll flex-grow-1" data-ace-scroll="{}">
+			<div class="sidebar-section my-2">
+				<!-- the shortcut buttons -->
+				<div class="sidebar-section-item fadeable-left">
+					<div class="fadeinable sidebar-shortcuts-mini">
+						<!-- show this small buttons when collapsed -->
+						<span class="btn btn-success p-0 opacity-1"></span>
+						<span class="btn btn-info p-0 opacity-1"></span>
+						<span class="btn btn-orange p-0 opacity-1"></span>
+						<span class="btn btn-danger p-0 opacity-1"></span>
+					</div>
+
+					<div class="fadeable">
+						<!-- show this small buttons when not collapsed -->
+						<div class="sub-arrow"></div>
+						<div>
+							<button class="btn px-25 py-2 text-95 btn-success opacity-1">
+								<i class="fa fa-signal f-n-hover"></i>
+							</button>
+
+							<button class="btn px-25 py-2 text-95 btn-info opacity-1">
+								<i class="fa fa-edit f-n-hover"></i>
+							</button>
+
+							<button class="btn px-25 py-2 text-95 btn-orange opacity-1">
+								<i class="fa fa-users f-n-hover"></i>
+							</button>
+
+							<button class="btn px-25 py-2 text-95 btn-danger opacity-1">
+								<i class="fa fa-cogs f-n-hover"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+				<!-- the search box -->
+				<div class="sidebar-section-item">
+					<i class="fadeinable fa fa-search text-info-m1 mr-n1"></i>
+
+					<div class="fadeable d-inline-flex align-items-center ml-3 ml-lg-0">
+						<i class="fa fa-search mr-n3 text-info-m1"></i>
+						<input type="text" class="sidebar-search-input pl-4 pr-3 mr-n2" maxlength="60" placeholder="Search ..." aria-label="Search" />
+					</div>
+				</div>
+			</div>
+
+			 <ul class="nav has-active-border active-on-right" id="dzongkha-menu" style="display: none;">
+				<?php if($this->menu_helper()!==null): foreach ( $this->menu_helper() as $key=>$menu): ?>
+					<?php  extract($menu); ?>
+					<?php if ( !is_array($menuItems) ): $route = ($route=='home')?'application':$route;?>
+						<li class="nav-item <?php echo ($getRoute == $route)?'active':'';?>">
+							<a href="<?php echo $this->url($route, array('action' => $action)); ?>" class="nav-link">
+								<i class="nav-icon <?php echo $icon; ?>"></i>
+								<span class="nav-text fadeable">
+									<span class="uchen"><?php echo $menu; ?></span>
+								</span>
+							</a>
+							<b class="sub-arrow"></b>
+						</li>
+					<?php else: ?>
+						<?php $condition = ($getResource == $this->getresource_helper($route));?>
+						<li class="nav-item <?php echo ($condition)?'active open':'';?>">
+							<a href="<?php echo $this->url($route, array('action' => $action)); ?>" class="nav-link dropdown-toggle collapsed">
+								<i class="nav-icon <?php echo $icon; ?>"></i>
+								<span class="nav-text fadeable">
+									<span class="uchen"><?php echo $menu_dzongkha; ?></span>
+								</span>
+								<b class="caret fa fa-angle-left rt-n90"></b>
+							</a>
+							<div class="hideable submenu collapse <?php echo ($condition)?'show':'';?>">
+								<ul class="submenu-inner">
+									<?php foreach ($menuItems as $key=>$menuitem): ?>
+										<?php extract($menuitem); ?>		                     
+										<?php if(!is_array($submenuItems)):?>
+										<?php 
+											$condition1 = ($getResource == $this->getresource_helper($route));
+											$condition2 = ($getRoute == $route);
+										?>
+											<li class="nav-item <?php echo ($condition1 && $condition2)?'active':'';?>">
+												<a href="<?php echo $this->url($route); ?>" class="nav-link">
+												<?php if($menu_dzongkha==null):?>
+													<span class="nav-text">
+														<span class="uchen"><?php echo $menu; ?></span>
+													</span>
+													<?php else: ?>
+													<span class="nav-text">
+														<span class="uchen"><?php echo $menu_dzongkha; ?></span>
+													</span>
+													<?php endif;?>
+												</a>
+											</li>
+										<?php else: ?>
+											<?php 
+												$condition1 = ($getResource == $this->getresource_helper($route));
+												$condition2 = ($getRoute == $route);
+											?>
+											<li class="nav-item <?php echo ($condition1 && $condition2)?'active open':'';?>">
+												<a href="#" class="nav-link dropdown-toggle collapsed">
+												<?php if($menu_dzongkha==null):?>
+													<span class="nav-text">
+														<span class="uchen"><?php echo $menu; ?></span>
+													</span>
+													<?php else: ?>
+													<span class="nav-text">
+														<span class="uchen"><?php echo $menu_dzongkha; ?></span>
+													</span>
+													<?php endif;?>
+													<b class="caret fa fa-angle-left rt-n90"></b>
+												</a>
+												<div class=" submenu collapse <?php echo ($condition1 && $condition2)?'show':'';?>">
+													<ul class="submenu-inner">
+													<?php foreach ($submenuItems as $submenuItem):?>
+														<?php 
+															$condition1 = ($getResource == $this->getresource_helper($route));
+															$condition2 = ($getRoute == $route);
+															$condition3 = ($getAction == $submenuItem['action']);
+														?>
+														<li class="nav-item <?php echo ($condition1 && $condition2 && $condition3)?'active':'';?>"> 
+															<a href="<?php echo $this->url($route, array('action' => $submenuItem['action'])); ?>" class="nav-link">
+															<?php if($menu_dzongkha==null):?>
+													<span class="nav-text">
+														<span class="uchen"><?php echo $submenuItem['menu'] ?></span>
+													</span>
+													<?php else: ?>
+													<span class="nav-text">
+														<span class="uchen"><?php echo $submenuItem['menu_dzongkha'] ?></span>
+													</span>
+													<?php endif;?>
+															</a>
+														</li>
+													<?php endforeach;?>
+													</ul>
+												</div>
+												<b class="sub-arrow"></b>
+												<!-- /.nav-second-level -->
+											</li>
+										<?php endif; ?>   
+									<?php endforeach;?>  
+								</ul>
+							</div>
+							<b class="sub-arrow"></b>
+						</li>
+					<?php endif; ?>				
+				<?php endforeach; endif;?>
+			</ul>
+			<ul class="nav has-active-border active-on-right" id="english-menu">
+				<?php if($this->menu_helper()!==null): foreach ( $this->menu_helper() as $key=>$menu): ?>
+					<?php  extract($menu); ?>
+					<?php if ( !is_array($menuItems) ): $route = ($route=='home')?'application':$route;?>
+						<li class="nav-item <?php echo ($getRoute == $route)?'active':'';?>">
+							<a href="<?php echo $this->url($route, array('action' => $action)); ?>" class="nav-link">
+								<i class="nav-icon <?php echo $icon; ?>"></i>
+								<span class="nav-text fadeable">
+									<span ><?php echo $menu; ?></span>
+								</span>
+							</a>
+							<b class="sub-arrow"></b>
+						</li>
+					<?php else: ?>
+						<?php $condition = ($getResource == $this->getresource_helper($route));?>
+						<li class="nav-item <?php echo ($condition)?'active open':'';?>">
+							<a href="<?php echo $this->url($route, array('action' => $action)); ?>" class="nav-link dropdown-toggle collapsed">
+								<i class="nav-icon <?php echo $icon; ?>"></i>
+								<span class="nav-text fadeable">
+									<span><?php echo $menu; ?></span>
+								</span>
+								<b class="caret fa fa-angle-left rt-n90"></b>
+							</a>
+							<div class="hideable submenu collapse <?php echo ($condition)?'show':'';?>">
+								<ul class="submenu-inner">
+									<?php foreach ($menuItems as $key=>$menuitem): ?>
+										<?php extract($menuitem); ?>		                     
+										<?php if(!is_array($submenuItems)):?>
+										<?php 
+											$condition1 = ($getResource == $this->getresource_helper($route));
+											$condition2 = ($getRoute == $route);
+										?>
+											<li class="nav-item <?php echo ($condition1 && $condition2)?'active':'';?>">
+												<a href="<?php echo $this->url($route); ?>" class="nav-link">
+													<span class="nav-text">
+														<span><?php echo $menu; ?></span>
+													</span>
+												</a>
+											</li>
+										<?php else: ?>
+											<?php 
+												$condition1 = ($getResource == $this->getresource_helper($route));
+												$condition2 = ($getRoute == $route);
+											?>
+											<li class="nav-item <?php echo ($condition1 && $condition2)?'active open':'';?>">
+												<a href="#" class="nav-link dropdown-toggle collapsed">
+													<span class="nav-text">
+														<span><?php echo $menu; ?></span>
+													</span>
+													<b class="caret fa fa-angle-left rt-n90"></b>
+												</a>
+												<div class=" submenu collapse <?php echo ($condition1 && $condition2)?'show':'';?>">
+													<ul class="submenu-inner">
+													<?php foreach ($submenuItems as $submenuItem):?>
+														<?php 
+															$condition1 = ($getResource == $this->getresource_helper($route));
+															$condition2 = ($getRoute == $route);
+															$condition3 = ($getAction == $submenuItem['action']);
+														?>
+														<li class="nav-item <?php echo ($condition1 && $condition2 && $condition3)?'active':'';?>"> 
+															<a href="<?php echo $this->url($route, array('action' => $submenuItem['action'])); ?>" class="nav-link">
+																<span class="nav-text">
+																	<span><?php echo $submenuItem['menu']; ?></span>
+																</span>
+															</a>
+														</li>
+													<?php endforeach;?>
+													</ul>
+												</div>
+												<b class="sub-arrow"></b>
+												<!-- /.nav-second-level -->
+											</li>
+										<?php endif; ?>   
+									<?php endforeach;?>  
+								</ul>
+							</div>
+							<b class="sub-arrow"></b>
+						</li>
+					<?php endif; ?>				
+				<?php endforeach; endif;?>
+			</ul>
+		</div><!-- /.sidebar scroll -->
+		<div class="dropdown-clickable px-3 py-25 bgc-h-secondary-l3 border-b-1 brc-secondary-l2">
+		<!-- English/dzongkha toggle  -->
+			<div class="d-flex justify-content-center align-items-center tex1t-600">
+				<label for="language" class="text-grey-d1 pt-2 px-2">English</label>
+				<input type="checkbox" class="ace-switch ace-switch-sm text-grey-l1 brc-green-d1" name="language" id="language" />
+				<label for="language" class="text-green-d1 text-600 pt-2 px-2">Dzongkha</label>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  var languageToggle = document.getElementById("language");
+  var englishMenu = document.getElementById("english-menu");
+  var dzongkhaMenu = document.getElementById("dzongkha-menu");
+  
+  // Function to set the selected language
+  function setLanguage(language) {
+    if (language === "english") {
+      languageToggle.checked = false;
+      englishMenu.style.display = "block";
+      dzongkhaMenu.style.display = "none";
+    } else if (language === "dzongkha") {
+      languageToggle.checked = true;
+      englishMenu.style.display = "none";
+      dzongkhaMenu.style.display = "block";
+    }
+  }
+  
+  // Function to get the selected language from cookie or local storage
+  function getSelectedLanguage() {
+    // Check if language is stored in cookie
+    var languageCookie = getCookie("selectedLanguage");
+    if (languageCookie) {
+      setLanguage(languageCookie);
+      return;
+    }
+    
+    // Check if language is stored in local storage
+    var languageStorage = localStorage.getItem("selectedLanguage");
+    if (languageStorage) {
+      setLanguage(languageStorage);
+    }
+  }
+  
+  // Function to set a cookie
+  function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  }
+  
+  // Function to get a cookie
+  function getCookie(name) {
+    var nameEQ = name + "=";
+    var cookies = document.cookie.split(";");
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i];
+      while (cookie.charAt(0) === " ") {
+        cookie = cookie.substring(1, cookie.length);
+      }
+      if (cookie.indexOf(nameEQ) === 0) {
+        return cookie.substring(nameEQ.length, cookie.length);
+      }
+    }
+    return null;
+  }
+  
+  // Add event listener to language toggle button
+  languageToggle.addEventListener("change", function() {
+    if (this.checked) {
+      setLanguage("dzongkha");
+      // Store selected language in cookie or local storage
+      setCookie("selectedLanguage", "dzongkha", 30); // Change the expiry time if desired
+      localStorage.setItem("selectedLanguage", "dzongkha");
+    } else {
+      setLanguage("english");
+      // Store selected language in cookie or local storage
+      setCookie("selectedLanguage", "english", 30); // Change the expiry time if desired
+      localStorage.setItem("selectedLanguage", "english");
+    }
+  });
+  
+  // Get the selected language when the page loads
+  getSelectedLanguage();
+});
+</script>

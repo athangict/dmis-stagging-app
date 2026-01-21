@@ -1,0 +1,108 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmployeeController/editfamilyAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<?php     
+    foreach($this->award as $row):
+        extract($row);        
+    endforeach;
+?>
+
+<form id="#form" method="post" action="<?php echo $this->url('employee', array('action' => 'editaward', 'id' => $this->id)); ?>"  enctype="multipart/form-data" >    
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->      
+    <div class="modal-body">       
+		<div class="panel panel-default">                       
+			<div class="panel-body">
+				<div class="form-group">
+					<label for="particular" class="control-label">Particular</label>
+					<input type="text" class="form-control" name="particular" id="particular" value="<?php echo $particular;?>" required> 
+				</div>
+				<div class="form-group">
+					<label for="award" class="control-label">Award</label>
+					<input type="text" class="form-control" name="award" id="award" value="<?php echo $award;?>" required> 
+				</div>
+				<div class="form-group">
+					<label for="award_date" class="control-label">Award Date</label>
+					<?php $def_date = (date('Y-m-d',strtotime($award_date)) > date('Y-m-d',strtotime('0000-00-00')))? $award_date:date('Y-m-d'); ?>	
+					<div class="date input-group" id="award_date" data-date="<?php echo date('Y-m-d', strtotime($def_date));?>" data-date-format="yyyy-mm-dd">
+						<input class="form-control span2" name="award_date" id="award_date" type="text" value="<?php echo $award_date;?>" placeholder="Award Date" readonly required>
+						<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+					</div> 
+				</div>
+				<div class="form-group">
+					<label for="authority" class="control-label">Authority</label>
+					<input type="text" class="form-control" name="authority" id="authority" value="<?php echo $authority;?>" required> 
+				</div>
+				    <input type="hidden" name="employee" id="employee" value="<?php echo $employee_id;?>"> 
+			</div>
+		</div>
+	</div> <!-- /modal-body -->        
+	<div class="modal-footer">
+		<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+		<button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>  
+</form>  
+<script>
+$('document').ready(function(){
+	$('#award_date').datepicker();
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			particular: {
+				validators: {
+					notEmpty: {
+						message:'Please provide particular.'
+					}
+				}
+			},
+			award:{
+				validators:{
+					notEmpty:{
+						message:'Please provide award.'
+					}
+				}
+			},	
+			award_date:{
+				validators:{
+					notEmpty:{
+						message:'Please select award date.'
+					}
+				}
+			},
+			authority:{
+				validators:{
+					notEmpty:{
+						message:'Please provide authority.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('#award_date').on('changeDate',function(){
+		$('form').formValidation('revalidateField', 'award_date');
+	});
+});
+</script>  
+

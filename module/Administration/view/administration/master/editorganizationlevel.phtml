@@ -1,0 +1,82 @@
+<?php
+/**
+ * View -- of Administration/MasterController/editorganizationlevelAction
+ * chophel@athang.com
+ */
+	$this->headTitle($this->title);
+?>
+<?php foreach ($organizationlevels as $row);?> 
+<form id="#form" action="<?php echo $this->url('setmaster', array('action' => 'editorganizationlevel', 'id' => $page));?>" method="post" enctype="multipart/form-data">
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row"> 
+					<input type="hidden" id="organizationlevel_id" name="organizationlevel_id" value="<?php echo $row['id'];?>" />
+					<div  class="form-group col-lg-12">
+						<label for="organization_level" class="control-label">Organization Level</label>
+						<input class="form-control" value="<?php echo $row['organization_level'];?>" type="text" name="organization_level" id="organization_level" placeholder="Organization Level" required />
+					</div>
+					<div  class="form-group col-lg-6">
+						<label for="status" class="control-label">Status</label>
+						<div class="radio">
+							<label>
+								<input class="ace" type="radio" name="status" id="status" value="1" <?php echo ($row['status']=='1')?"checked":"";?> />
+								<span class="lbl"> Yes </span>
+							</label>
+							<label>
+								<input class="ace" type="radio" name="status" id="status" value="0" <?php echo ($row['status']=='0')?"checked":"";?> />
+								<span class="lbl"> No </span>
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div> <!-- /modal-body -->
+    <div class="modal-footer">
+		<button type="submit" class="btn btn-success"><i class="ace-icon fa fa-check"></i>Save</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="ace-icon fa fa-times"></i>Cancel</button> 
+    </div>  
+</form>
+<script>
+$(function(){
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			organization_level: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide Organization Level.'
+					}
+				}
+			},
+			status: {
+				validators: {
+					notEmpty: {
+						message: 'Please select status.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+});
+</script>

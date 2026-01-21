@@ -1,0 +1,93 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmployeeController/indexAction
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<?php echo $this->tabs_helper(array(802)); ?>
+<div class="card">
+<div class="card-header">
+	<div class="col-12">
+		<div class="card dcard">
+			<div class="card-body px-1 px-md-3">
+			<form method="post" action="<?php echo $this->url('employee', array('action' => 'index')); ?>" >   
+					<div class="row">
+						<div class="form-group col-lg-3">  
+						<label class="control-label" for="emp_status">Employee Status</label>
+							<select class="form-control" id="emp_status" name="emp_status" data-placeholder="Select" onchange='this.form.submit()'>
+								<option value="-1" <?php echo ($selected_status == '-1')?'selected':'';?>>All</option>
+								<?php foreach($employee_status as $emp_status):
+									$sel_status = ($emp_status['id'] == $selected_status)?'selected':'';
+								?>
+								<option value="<?php echo $emp_status['id'];?>" <?php echo $sel_status;?>>
+									<?php echo $emp_status['status'];?>
+								</option>
+								<?php endforeach;?>
+							</select>
+						</div>
+					</div>	
+					<div class="form-group col-lg-3t text-right">
+							<?php echo $this->button(2);?>
+							<!-- <a class ="btn btn-sm btn-info" href ="<?php echo $this->url('employee',array('action'=>'updateleavebalance'))?>">Update Leave Balance</a> -->
+						</div>
+				</form>
+				</div>
+			</div>
+		</div>
+	</div>
+<div>
+	<div class="table-responsive">
+<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+			<tr>
+				<th>#</th>
+				<th>Name</th>
+				<th>Employee ID</th>
+				<th>Position Title</th>
+				<th>Category</th>
+				<th>Status</th>
+				<?php if($this->button(1)!=""):?>
+				<th class='no-sort'>Action</th>
+				<?php endif;?>
+			</tr>
+		</thead>
+		<tbody>
+			<?php $j = 1; foreach ($this->employee as $rows):?>
+				<tr data-href="<?php echo $this->button(4, $rows['id']); ?>">
+					<td><?php echo $j++; ?> </td>
+					<td><b><?php echo $rows['full_name']; ?></b></td>
+					<td><?php echo $rows['emp_id']; ?></td>
+					<td><?php echo $rows['position_title']; ?></td>
+					<td><strong><?php echo $rows['type_code']; ?></strong> (<?php echo $rows['type']; ?>)</td>
+					<td>
+						<span class="label label-sm label-<?php echo $rows['status_color'];?>"><?php echo $rows['status'];?></span>
+					</td>
+				<?php if($this->button(1)!=""):?>
+						<td><?php //echo $this->button(1,$rows['id'],$rows['system_user']);?><?php echo $this->button(1,$rows['id']);?></td>
+					<?php endif;?>
+				</tr>
+			<?php 
+			endforeach;  
+			?>
+		</tbody>
+	</table>
+	</div>
+</div>
+<script>
+	$("tr[data-href]").each(function(){
+		$(this).find('td').not('td.action').each(function(){
+			$(this).css('cursor','pointer');
+			$(this).bind('click',function() {
+				window.document.location = $(this).closest('tr').attr("data-href");
+			});
+		});
+	});
+	$('document').ready(function(){
+		$('#dataTables').DataTable({"paging":   true,});
+	});
+</script>
+

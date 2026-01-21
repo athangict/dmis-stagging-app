@@ -1,0 +1,85 @@
+<?php
+/**
+ * @var Laminas\View\Renderer\PhpRenderer $this
+ * chophel@athang.com
+ */
+?>
+<?= $this->doctype() ?>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <?= $this->headTitle('MONAL ')->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?= $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0, viewport-fit=cover')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+        ?>
+    
+		<!-- Le styles -->
+        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/images/favicon.png'))
+			->prependStylesheet($this->basePath() . '/css/athang.css')
+			->prependStylesheet($this->basePath() . '/css/ace.css')
+			->prependStylesheet($this->basePath() . '/css/ace-font.css')
+			->prependStylesheet($this->basePath() . '/css/bootstrap-select.min.css')
+			->prependStylesheet($this->basePath() . '/font-awesome/css/font-awesome.min.css')
+			->prependStylesheet($this->basePath() . '/select2/dist/css/select2.css')
+			->prependStylesheet($this->basePath() . '/dataTables/datatables.min.css')
+			->prependStylesheet($this->basePath() . '/css/%40page-style.css')
+			->prependStylesheet($this->basePath() . '/%40fortawesome/fontawesome-free/css/fontawesome.css')
+			->prependStylesheet($this->basePath() . '/%40fortawesome/fontawesome-free/css/regular.css')
+			->prependStylesheet($this->basePath() . '/%40fortawesome/fontawesome-free/css/brands.css')
+			->prependStylesheet($this->basePath() . '/%40fortawesome/fontawesome-free/css/solid.css')
+			->prependStylesheet($this->basePath() . '/css/bootstrap.css');
+        ?>
+		
+    </head>
+	<body>
+    	<div class="body-container">
+			<?php if ($user = $this->Identity()) {  ?>
+				<!-- topbar menu  -->
+				<?php echo $this->partial('partial/navbar-top.phtml'); ?>
+			<?php } ?>
+   			<div class="main-container <?php echo ($user = $this->Identity())?'bgc-white':'container bgc-transparent';?>">
+			   <?php if ($user = $this->Identity()) {  ?>  
+					<!-- sidebar menu  -->
+				<?php echo $this->partial('partial/navbar-side.phtml'); ?>
+				<?php } ?>
+			   	<div role="main" class="main-content <?php echo ($user = $this->Identity())?'':'minh-100 justify-content-center';?>">
+				   	<!-- Scripts -->
+					<?php echo $this->headScript()
+						->prependFile($this->basePath() . '/js/ace.js')
+						->prependFile($this->basePath() . '/js/bootstrap.js')
+						->prependFile($this->basePath() . '/js/popper.js')
+						->prependFile($this->basePath() . '/js/bootstrap-select.min.js')
+						->prependFile($this->basePath() . '/js/canvasjs.min.js')
+						->prependFile($this->basePath() . '/select2/dist/js/select2.js')
+						->prependFile($this->basePath() . '/js/%40page-script.js')
+						->prependFile($this->basePath() . '/js/chosen.jquery.min.js')
+						->prependFile($this->basePath() . '/dataTables/datatables.min.js')
+						->prependFile($this->basePath() . '/js/jquery.js');?>
+					<?php if ($user = $this->Identity()) {  ?>
+						<!-- Page Content  -->
+						<div class="page-content container container-plus">
+					<?php } ?>
+				   	<?php echo $this->content; ?>
+					<?php if ($user = $this->Identity()) {  ?>  
+						</div>
+						<!-- sidebar menu  -->
+						<?php echo $this->partial('partial/navbar-bottom.phtml'); ?>
+					<?php } ?>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+<script>
+	/* ---------------------------------------------------------------------- */
+	/*  Modal -- Content loaded via jQuery's load method
+	/* ---------------------------------------------------------------------- */
+	$('body').find('.modal').on('show.bs.modal', function (e) {
+		$(this).find('.modal-content').load(e.relatedTarget.href);
+	});
+	$('body').on('hidden.bs.modal', '.modal', function (e) {
+		$(this).find('.modal-content').empty();
+	}); 
+</script>

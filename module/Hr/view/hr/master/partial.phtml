@@ -1,0 +1,75 @@
+<?php // partial.phtml 
+  $emptype = ($this->active == "emptype")?"active":"";
+  $apptype = ($this->active == "apptype")?"active":"";
+  $posttitle = ($this->active == "posttitle")?"active":"";
+  $postlevel = ($this->active == "postlevel")?"active":"";
+  $leavetype = ($this->active == "leavetype")?"active":"";
+  $payheadtype = ($this->active == "payheadtype")?"active":"";
+  $payhead = ($this->active == "payhead")?"active":"";
+  $payslab = ($this->active == "payslab")?"active":"";
+  $paygroup = ($this->active == "paygroup")?"active":"";
+  $incrementtype = ($this->active == "incrementtype")?"active":"";
+?>
+<br/>
+<ul class="nav nav-tabs padding-18" id="myTab">
+	<li class="<?php echo $emptype; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'emptype')); ?>">
+			<i class="blue ace-icon fa fa-user bigger-120"></i>
+			<span class="hidden-xs">Employee Category </span>
+		</a>
+	</li>
+	<li class="<?php echo $apptype; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'apptype')); ?>">
+			<i class="blue ace-icon fa fa-envelope-o bigger-120"></i>
+			<span class="hidden-xs">Appointment Type</span>
+		</a>
+	</li>
+	<li class="<?php echo $posttitle; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'posttitle')); ?>">
+			<i class="green ace-icon fa fa-child bigger-120"></i>
+			<span class="hidden-xs">Position Title</span>
+		</a>
+	</li>
+	<li class="<?php echo $postlevel; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'postlevel')); ?>">
+			<i class="orange ace-icon fa fa-level-up bigger-120"></i>
+			<span class="hidden-xs">Position Level</span>
+		</a>
+	</li>
+	<li class="<?php echo $leavetype; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'leavetype')); ?>">
+			<i class="red ace-icon fa fa-user-times bigger-120"></i> 
+			<span class="hidden-xs">Leave Type</span>
+		</a>
+	</li>
+	<li class="<?php echo $payheadtype; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'payheadtype')); ?>">
+			<i class="brown ace-icon fa fa-sitemap bigger-120"></i>
+			<span class="hidden-xs">Payhead Type</span>
+		</a>
+	</li>
+	<li class="<?php echo $payhead; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'payhead')); ?>">
+			<i class="brown ace-icon fa fa-credit-card bigger-120"></i>
+			<span class="hidden-xs">Pay Head</span>
+		</a>
+	</li>
+	<li class="<?php echo $payslab; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'payslab')); ?>">
+			<i class="purple ace-icon fa fa-paypal bigger-120"></i>
+			<span class="hidden-xs">Pay Slab</span>
+		</a>
+	</li>
+	<li class="<?php echo $paygroup; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'paygroup')); ?>">
+			<i class="blue ace-icon fa fa-tasks bigger-120"></i>
+			<span class="hidden-xs">Pay Group</span>
+		</a>
+	</li>
+	<li class="<?php echo $incrementtype; ?>">
+		<a href="<?php echo $this->url('master', array('action' => 'incrementtype')); ?>">
+			<i class="green ace-icon fa fa-tasks bigger-120"></i>
+			<span class="hidden-xs">Increment Type</span>
+		</a>
+	</li>
+</ul>

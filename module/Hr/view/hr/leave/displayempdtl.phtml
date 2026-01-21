@@ -1,0 +1,48 @@
+<?php foreach($this->empDtls as $dtl): ?>
+    <?php extract($dtl); ?>
+<?php endforeach; ?>
+<span class="col-xs-12 col-sm-9" id="convert-tab">
+			<h4 class="blue">
+				<span class="middle">Details : <?php echo $full_name; ?> (<strong><?php echo $type_code; ?></strong>)</span>
+				<span class="label label-<?php echo $status_color;?> arrowed-in-right">					
+					<i class="ace-icon fa fa-circle smaller-80 align-middle"></i>
+					<?php echo $status;?>
+				</span>
+			</h4>
+
+			<div class="profile-user-info">
+				<div class="profile-info-row">
+					<span class="profile-info-name"> EID / CID : </span>
+
+					<span class="profile-info-value">
+						<span><?php echo $emp_id;?> / <?php echo $cid;?></span>
+					</span>
+				</div>				
+
+				<div class="profile-info-row">
+					<span class="profile-info-name"> Email / Mobile : </span>
+
+					<span class="profile-info-value">
+						<span><?php echo $email;?> / <?php echo $mobile; ?></span>
+					</span>
+				</div>	
+				<div class="profile-info-row">
+					<span class="profile-info-name">Location. : </span>
+					<span class="profile-info-value">
+						<span><?php echo $location;?></span>
+					</span>
+				</div>
+				<div class="profile-info-row">
+					<span class="profile-info-name">Permanent Add:</span>
+
+					<span class="profile-info-value">
+						<i class="fa fa-map-marker light-orange bigger-110"></i>
+						<span><?php echo $dzongkhag;?></span>
+						<span><?php echo $gewog;?></span>
+						<span><?php echo $village;?></span>
+					</span>
+				</div>
+				
+				
+			</div>
+		</span>

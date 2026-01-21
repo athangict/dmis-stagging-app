@@ -1,0 +1,125 @@
+<?php
+/**
+ * 
+ *  Academic/MasterController/editinitiateacademicAction
+ * 
+ */
+$this->headTitle($this->title);
+ foreach($academic as $row):
+    // print_r($row);exit;
+    //extract($academics);
+ endforeach;
+?>
+<form id="#form" role="form" data-toggle="validator" action="<?php echo $this->url('curriculum', array('action' => 'editinitiateacademic','id'=>$page)); ?>" enctype="multipart/form-data" method="post" >
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <input type="hidden" name="id" value="<?php echo $row['id'];?>">
+    <div class="modal-body">
+    	<div class="panel panel-default">
+    		<div class="panel-body">
+			<div class="row">
+                    <div class="col-lg-12">
+                        <div  class="form-group">
+							<label for="class_name" class="control-label">Class Name</label>
+							<input type="text" name="class_name" id="class_name" value="<?php echo $row['class_name'];?>"class="form-control" placeholder="Eg. Section A Class 1" required/>
+                        </div>
+						<div  class="form-group">
+							<label for="course" class="control-label">Select Course</label>
+							<select id="course" name="course" class="form-control" data-placeholder="Select">
+							<option value=""></option>
+							<?php foreach($course as $course):?>
+								<option value="<?php echo $course['id']?>" <?php echo ($row['course']==$course['id'])?'selected':'';?>>
+									<?php echo $course['course'];?></option>
+							<?php endforeach;?>
+						</select>
+                        </div>
+					</div>
+						<div  class="form-group col-lg-6">
+							<label for="start_date" class="control-label">Start Date</label>
+							<input type="date" name="start_date" id="start_date" value="<?php echo $row['start_date'];?>" class="form-control" required/>
+                        </div>
+						<div  class="form-group col-lg-6">
+							<label for="end_date" class="control-label">End Date</label>
+							<input type="date" name="end_date" id="end_date" value="<?php echo $row['end_date'];?>" class="form-control" required/>
+                        </div>
+						<div class="col-lg-12">
+						<div  class="form-group ">
+							<label for="capacity" class="control-label">Capacity</label>
+							<input type="number" name="capacity" id="capacity" value="<?php echo $row['capacity']?>" class="form-control" placeholder="Capacity" required/>
+                        </div>
+						<div  class="form-group">
+							<label for="level" class="control-label">Level</label>
+							<select id="level" name="level" class="form-control" data-placeholder="Select">
+							<option value=""></option>
+							<?php foreach($classes as $class):?>
+								<option value="<?php echo $class['id']?>" <?php echo ($row['level']==$class['id'])?'selected':'';?>>
+									<?php echo $class['standard'];?></option>
+							<?php endforeach;?>
+						</select>
+						</select>
+                        </div>
+                    </div>
+                </div>
+			</div><!-- panel-body -->
+		</div><!-- panel panel-default -->	
+    </div> <!-- /modal-body -->
+	<div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="ace-icon fa fa-check"></i> Save</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="ace-icon fa fa-times"></i> Cancel</button> 
+    </div>
+</form>
+<script>
+$('document').ready(function(){
+	
+	$('select#class').on('change',function(){
+			$.post(
+				"<?php echo $this->url('curriculum', array('action' => 'getsection'));?>",
+				{
+					classId: $(this).val(),
+				},
+				function(data){
+					$('select#section').html(data.section);
+					$('select#section').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			organization: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide Organization.'
+					}
+				}
+			},
+			classes: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide class.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+
+});
+</script>

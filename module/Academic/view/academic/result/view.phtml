@@ -1,0 +1,65 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmployeeController/viewqualificationAction
+ * 
+ */
+    $this->headTitle($this->title);
+?>
+
+<?php 
+    foreach ($results as $res):
+    endforeach;  
+	//echo '<pre>';print_r($res);exit;
+	
+?>
+<?php echo $this->partial('academic/result/partial.phtml', array('active' => 'view', 'id' => $res['id'])); ?>
+<div class="card">
+	<div class="card-header">
+		<div class="btn-group pull-right">
+			<?php echo $this->button(2,$res['std_id']);?>
+		</div>
+	</div>
+	<div class="table-responsive">
+		<div class="table-header col-lg-4"> Result Details of <?php echo $this->student->getColumn($res['std_id'],'full_name'); ?> </div>
+		<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Subjects</th>
+					<th>marks</th>
+					<th class="no-sort no-print">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+					$i = 1; 
+					foreach ($this->results as $row):
+				?>
+						<tr>
+							<td><?php echo $i++; ?> </td> 
+							<td style="font-size:18px;"><?php echo $this->subject->getColumn($row['subjects'],'subject');; ?></td>   
+							<td><?php echo $row['marks']; ?></td>                             
+							<td>
+								<?php echo $this->button(1,$row['id']);?>                                                                  
+							</td>
+						</tr>
+				<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#dataTables').DataTable({"paging":   true,});
+});
+</script>
+

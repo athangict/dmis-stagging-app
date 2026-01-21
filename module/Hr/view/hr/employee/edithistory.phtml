@@ -1,0 +1,360 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmphltController/editAction
+ * 
+ */
+?>
+<?php 
+    foreach($this->emphistory as $emphis):
+   		extract($emphis);      
+		//echo "<pre>";print_r($emphis);
+    endforeach;
+?>
+<div class="row">
+	<div class="col-lg-12">
+        <div class="widget widget-box">
+            <div class="widget-header">
+            	<h5 class="widget-title lighter smaller">
+	            	<i class="fa fa-asterisk"></i> Edit Employee History of <b> <?php echo $this->employeeObj->getColumn($employee,'full_name'); ?></b> 
+	             </h5>
+            </div>
+            <div class="widget-body">
+				<div class="widget-main">
+					<form id="#form" method="post" action="<?php echo $this->url('employee', array('action' => 'edithistory', 'id' => $id)); ?>"  enctype="multipart/form-data" >                  
+						<div class="row">
+							<input type="hidden" name="employee" value="<?php echo $employee; ?>">
+							<div class="form-group col-lg-4">
+								<label for="appointment" class="control-label">Type of Appointment</label>
+								<select class="form-control" id="appointment" name="appointment" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->appoint as $appt):
+										$selected = ($apt_type_id==$appt['id'])?"selected":"";
+										?>
+										<option value="<?php echo $appt['id'];?>" <?php echo $selected;?>>
+											<?php echo $appt['type_of_appointment'];?>
+										</option>
+										<?php
+									endforeach;
+									?>
+								</select>  
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="start_date" class="control-label">Appointment Date</label>
+								<?php $default_start_date = (date('Y-m-d', strtotime($start_date)) > date('Y-m-d', strtotime('0000-00-00')))? $start_date:date('Y-m-d'); ?>					
+								<div class="date input-group" id="start_date" data-date="<?php echo $default_start_date;?>" data-date-format="yyyy-mm-dd" >
+									<input class="form-control span2" name="start_date" id="start_date" type="text" value="<?php echo $start_date;?>" placeholder="Start Date" readonly required>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="office_order_no" class="control-label">Office Order no</label>
+								<input type="text" class="form-control" name="office_order_no" id="office_order_no" value="<?php echo $office_order_no;?>" size="30" required> 
+							</div>
+						</div>
+						<div class="row">	
+							<div class="form-group col-lg-4">
+								<label for="office_order_date" class="control-label">Office Order Date</label>
+								<?php $default_office_order_date = (date('Y-m-d',strtotime($office_order_date)) > date('Y-m-d',strtotime('0000-00-00')))? $office_order_date:date('Y-m-d'); ?>	
+								<div class="date input-group" id="office_order_date" data-date="<?php echo date('Y-m-d', strtotime($default_office_order_date));?>" data-date-format="yyyy-mm-dd" >
+									<input class="form-control span2" name="office_order_date" id="office_order_date" value="<?php echo $office_order_date;?>" type="text" placeholder="Office Order Date" readonly required>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="activity" class="control-label">Acitvity</label>
+								<select class="form-control" data-placeholder="Select" name="activity" id="activity" required >
+									<option value=""></option>
+										<?php
+										foreach ($this->activities as $activity):
+											$selected = ($activity_id == $activity['id'])?'selected':'';
+										?>
+											<option value="<?php echo $activity['id'];?>" <?php echo $selected;?> >
+												<?php echo $activity['activity']; ?>
+											</option>
+										<?php 
+											endforeach;
+										?>
+								</select>
+							</div>   						
+							<div class="form-group col-lg-4">
+								<label for="department" class="control-label">Department</label>
+								<select class="form-control" id="department" name="department" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->dept as $dept):
+										$selected = ($department_id==$dept['id'])?"selected":"";
+										?>
+										<option value="<?php echo $dept['id'];?>" <?php echo $selected;?>>
+											<?php echo $dept['department'];?>
+										</option>
+										<?php
+									endforeach;
+									?>
+								</select> 
+							</div>
+						</div>
+						<div class="row">							
+							<div class="form-group col-lg-4">
+								<label for="region" class="control-label">Region</label>
+								<select class="form-control" id="region" name="region" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($regions as $region):
+									$selected = ($region_id==$region['id'])?'selected':'';
+									?>
+										<option value="<?php echo $region['id'];?>"<?php echo $selected; ?>>
+											<?php echo $region['region'];?>
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>        		
+							<div class="form-group col-lg-4">
+								<label for="location" class="control-label">Location</label>
+								<select class="form-control chosen-widget" id="location" name="location" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->locationObj->get(array('region' => $region_id)) as $location):
+									$selected = ($location_id==$location['id'])?'selected':'';
+									?>
+										<option value="<?php echo $location['id'];?>"<?php echo $selected; ?>>
+											<?php echo $location['location'];?>
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="designation" class="control-label">Designation</label>
+								<input type="text" class="form-control" name="designation" id="designation" size="30" value="<?php echo $designation; ?>" style="text-transform:uppercase" required> 
+							</div>
+						</div>
+						<div class="row">	
+							<div class="form-group col-lg-4">
+								<label for="post_level" class="control-label">Position Level</label>
+								<select class="form-control" id="post_level" name="post_level" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->postlevels as $post):
+										if($position_level_id == $post['id']){
+											$payscale = $post['min_pay']."-".$post['increment']."-".$post['max_pay'];
+										}
+										$selected = ($position_level_id==$post['id'])?"selected":"";
+										?>
+										<option value="<?php echo $post['id'];?>" <?php echo $selected;?>>
+											<?php echo $post['position_level']." (".$post['code'].")";?>
+										</option>
+										<?php
+									endforeach;
+									?>
+								</select> 
+							</div>					
+							<div class="form-group col-lg-4">
+								<label for="post_title" class="control-label">Position Title</label>
+								<select class="form-control" id="post_title" name="post_title" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									$posttitle = $this->position_titleObj->get(array('position_level' => $position_level_id));
+									foreach ($posttitle as $postt):
+										$selected = ($position_title_id==$postt['id'])?"selected":"";
+										?>
+										<option value="<?php echo $postt['id'];?>" <?php echo $selected;?>>
+											<?php echo $postt['position_title'];?>
+										</option>
+										<?php
+									endforeach;
+									?>
+								</select>  
+							</div>	
+							<div class="form-group col-lg-4">
+								<label for="pay_scale">Pay Scale</label>								
+								<input class="form-control" type="text" id="pay_scale" name="pay_scale" value="<?php echo $payscale;?>" placeholder="Pay scale" readonly />
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-lg-4">
+								<label for="type">Employee Category</label>
+								<select class="form-control" id="type" name="type" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->emptypes as $emptype):
+										$selected_emptype = ($emptype['id']==$emp_type_id)? 'selected':'';
+									?>
+										<option value="<?php echo $emptype['id'];?>" <?php echo $selected_emptype;?>>
+											<?php echo $emptype['emp_type'];?>(<?php echo $emptype['code'];?>)
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>			
+							<div class="form-group col-lg-4">
+								<label for="supervisor">Supervisor</label>
+								<select class="form-control" id="supervisor" name="supervisor" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->employees as $employee_row):
+									$selected = ($supervisor == $employee_row['id'])?'selected':'';
+									?>
+										<option value="<?php echo $employee_row['id'];?>" <?php echo $selected;?>>
+											<?php echo $employee_row['full_name'];?>(<?php echo $employee_row['emp_id'];?>)
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>							
+							<div class="form-group col-lg-4">
+								<label for="remark" class="control-label">Remark</label>
+								<textarea class="form-control" name="remark" id="remark" ><?php echo $reason;?></textarea>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12">
+								<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+								<button type="button" class="btn btn-warning" onclick="javascript:history.back();"><i class="fa fa-times"></i> Cancel </button>  
+							</div>
+						</div>
+					</form>			
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#post_level').on('change', function(){
+			//alert($(this).val());
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getptitlepscale')); ?>",
+				{
+					payscale_id: $(this).val(),
+				},
+				function(data){
+					//console.log(data);
+					$("#pay_scale").val(data.pay_scale);
+					$("#post_title").html(data.pt);
+					$("#post_title").trigger('chosen:updated');
+				},
+				'json'
+			);	
+		});        
+    
+	 $('#start_date').datepicker();
+	 $('#end_date').datepicker();
+	 $('#office_order_date').datepicker();
+	 $("#region").change(function() { 
+			$('#location').load("<?php echo $this->url('ajresponse', array('action' => 'getlocation')); ?>/"+ $("#region").val(), function() {
+				$("#location").trigger('chosen:updated');
+				$('form').formValidation('revalidateField','location');
+			});
+	 });
+	 
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			appointment: {
+				validators:{
+					notEmpty:{
+						message:'Please select appointment type.'
+					}
+				}
+			},
+			activity:{
+				validators:{
+					notEmpty:{
+						message:'Please select activity.'
+					}
+				}
+			},
+			department:{
+				validators:{
+					notEmpty:{
+						message:'Please select department.'
+					}
+				}
+			},
+			region: {
+				validators:{
+					notEmpty:{
+						message:'Please select region.'
+					}
+				}
+			},
+			location: {
+				validators:{
+					notEmpty:{
+						message:'Please select location.'
+					}
+				}
+			},
+			post_title:{
+				validators:{
+					notEmpty:{
+						message:'Please select position title.'
+					}
+				}
+			},
+			post_level:{
+				validators:{
+					notEmpty:{
+						message:'Please select position level.'
+					}
+				}
+			},
+			
+			start_date:{
+				validators:{
+					notEmpty:{
+						message:'Please select Appointment date.'
+					}
+				}
+			},
+			supervisor:{
+				validators:{
+					notEmpty:{
+						message:'Please select supervisor.'
+					}
+				}
+			},
+			office_order_no:{
+				validators:{
+					notEmpty:{
+						messsage:'Please provide office order no.'
+					}
+				}
+			},
+			office_order_date:{
+				validators:{
+					notEmpty:{
+						message:'Please select office order date.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('#start_date').on('changeDate',function(){
+		$('form').formValidation('revalidateField','start_date');
+	});
+	$('#office_order_date').on('changeDate',function(){
+		$('form').formValidation('revalidateField','office_order_date');
+	});
+});
+</script>

@@ -1,0 +1,219 @@
+﻿<?php
+/**
+ * Report -- of HR -- General Report
+**/
+	$this->headTitle($this->title);
+?>
+<?php echo $this->partial('hr/hreport/partial.phtml', array('active' => 'general')); ?><br/>
+<?php 
+	$regions = $this->regionObj->getAll();
+	$locations = $this->locationObj->get(array('l.region'=>$data['region']));
+	$departments = $this->departmentObj->getAll();
+	$activities = $this->activityObj->select(array('department'=>$data['department']));
+	$position_levels = $this->positionlevelObj->getAll();
+	$qlevels = $this->qlevelObj->getAll();
+	$empstatus = $this->empstatusObj->getAll();
+?>
+<div class="widget widget-box transparent">
+	<div class="widget-header">
+		<h4 class="widget-title"> 	
+			General Report
+		</h4>
+		<div class="widget-toolbar hidden-xs">
+			<a style='cursor:pointer' id="print">
+				<i class="ace-icon fa fa-file-pdf-o red"></i>
+			</a>
+		</div>
+	</div>
+	<div class="widget-body">
+		<div class="widget-main">
+			<form>
+				<div class="row">
+					<div class="form-group col-lg-2">
+						<label for="region" class="control-label">Region</label>
+						<select class="form-control" id="region" name="region" data-placeholder="Select"  required >
+							<option value="-1" <?php echo ($data['region'] == '-1')?'selected':'';?>>All</option>
+							<?php foreach($regions as $region):?>
+							<?php $selected = ($region['id'] == $data['region'])?'selected':'';?>
+								<option value="<?php echo $region['id'];?>" <?php echo $selected;?>>
+									<?php echo $region['region'];?>
+								</option>
+							<?php
+							endforeach;
+							?>
+						</select>
+					</div>        
+					<div class="form-group col-lg-2">
+						<label for="location" class="control-label">Location</label>
+						<select class="form-control" id="location" name="location" data-placeholder="Select" required >
+							<option value="-1" <?php echo ($data['location'] == '-1')?'selected':'';?>>All</option>
+							<?php foreach ($locations as $location):?>
+								<?php $selected = ($location['id'] == $data['location'])?'selected':'';?>
+								<option value="<?php echo $location['id'];?>" <?php echo $selected;?>>
+									<?php echo $location['location'];?>
+								</option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="form-group col-lg-2">
+						<label for="department" class="control-label">Department</label>
+						<select class="form-control" id="department" name="department" data-placeholder="Select" required >
+							<option value="-1" <?php echo ($data['department'] == '-1')?'selected':'';?>>All</option>
+							<?php foreach($departments as $department):?>
+								<?php $selected = ($department['id'] == $data['department'])?'selected':'';?>
+								<option value="<?php echo $department['id'];?>" <?php echo $selected;?>>
+									<?php echo $department['department'];?>
+								</option>
+							<?php
+							endforeach;
+							?>
+						</select>
+					</div> 
+					<div class="form-group col-lg-2">
+						<label for="activity" class="control-label">Division</label>
+						<select class="form-control" id="activity" name="activity" data-placeholder="Select" required />
+							<option value="-1" <?php echo ($data['activity'] == '-1')?'selected':'';?>>All</option>
+							<?php foreach($activities as $activity):?>
+								<option value="<?php echo $activity['id']?>" <?php echo ($activity['id'] == $data['activity'])?'selected':'';?>>
+									<?php echo $activity['activity'];?>
+								</option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="form-group col-lg-2">
+						<label for="position_level" class="control-label">Position Level</label>
+						<select class="form-control" id="position_level" name="position_level" data-placeholder="Select" required />
+							<option value="-1" <?php echo ($data['position_level'] == '-1')?'selected':'';?>>All</option>
+							<?php foreach($position_levels as $position_level):?>
+								<option value="<?php echo $position_level['id'];?>" <?php echo ($position_level['id'] == $data['position_level'])?'selected':'';?>>
+									<?php echo $position_level['position_level'].'-'.$position_level['code'];?>
+								</option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="form-group col-lg-2">
+						<label for="q_level" class="control-label">Qualification Level</label>
+						<select class="form-control" id="q_level" name="q_level" data-placeholder="Select" required />
+							<option value="-1" <?php echo ($data['q_level'] == '-1')?'selected':'';?>>All</option>
+							<?php foreach($qlevels as $qlevel):?>
+								<option value="<?php echo $qlevel['id'];?>" <?php echo ($qlevel['id'] == $data['q_level'])?'selected':'';?>>
+									<?php echo $qlevel['qualification_level'];?>
+								</option>
+							<?php endforeach;?>
+						</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-2">
+						<label for="emp_status" class="control-label">Employee Status</label>
+						<select class="form-control" id="emp_status" name="emp_status" data-placeholder="Select" required />
+							<option value="-1" <?php echo ($data['emp_status']=='-1')?'selected':'';?>>All</option>
+							<?php foreach($empstatus as $estatus):?>
+								<option value="<?php echo $estatus['id'];?>" <?php echo ($estatus['id']==$data['emp_status'])?'selected':'';?>>
+									<?php echo $estatus['status'];?>
+								</option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="form-group col-lg-1">
+						<label for="redirect" class="control-label">&nbsp;</label>
+						<button type="button" class="btn btn-sm btn-info" onclick="refresh()" ><i class="fa fa-refresh"></i> refresh</button>
+					</div>
+				</div>
+			</form>
+			<div class="row">
+				<div class="col-lg-12">
+					<?php $month = $data['month'];?>
+					<strong>
+						<h3>Human Resource Report</h3>
+						<label><i class="blue fa fa-globe"></i> Region: </label> <span><?php echo ($data["region"] == -1)? "All": $this->regionObj->getColumn($data["region"], 'region');?></span>
+						<label><i class="orange fa fa-map-marker"></i> Location: </label> <span><?php echo ($data["location"] == -1)? "All": $this->locationObj->getColumn($data["location"], 'location');?></span>
+						<label><i class="blue fa fa-map-marker"></i> Department: </label> <span><?php echo ($data["department"] == -1)? "All": $this->departmentObj->getColumn($data["department"], 'department');?></span>
+						<label><i class="blue fa fa-sitemap"></i> Activity: </label> <span><?php echo ($data["activity"] == -1)? "All": $this->activityObj->getColumn($data["activity"], 'activity');?></span>
+						&nbsp;<span class="label label-<?php echo $this->empstatusObj->getColumn($data['emp_status'],'color');?>"><?php echo $this->empstatusObj->getColumn($data['emp_status'],'status');?></span>
+					</strong>
+					<span class="pull-right"> Date:  <?php echo date('d/m/Y');?></span>
+				</div>
+			</div>	
+			<table class="table-condensed table-striped table-bordered table-hover" id="reportTable">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>EmpID</th>
+						<th>Emp Name</th>
+						<th>CID No.</th>
+						<th>DoB</th>
+						<th>Location</th>
+						<th>Department</th>
+						<th>Position Title</th>
+						<th>Position Level</th>
+						<th>Qualification</th>
+						<th>Joined Date</th>
+						<th>Inservice Duration</th>
+						<th>Permanent Address</th>
+						<th>Contact No.</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php 
+						$i = 1;
+						$employees = $this->employeeObj->getHreport();//$filter
+						foreach($employees as $emp):
+					?>
+					<tr>
+						<td><?php echo $i++;?></td>	
+						<td><?php echo $emp['emp_id'];?></td>	
+						<td><?php echo $emp['full_name'];?></td>	
+						<td><?php echo $emp['cid'];?></td>
+						<td><?php echo $emp['dob'];?></td>
+						<td><?php echo $emp['location'];?></td>
+						<td><?php echo $emp['department'];?></td>
+						<td><?php echo $emp['position_title'];?></td>
+						<td><?php echo $emp['position_level'];?></td>
+						<td><?php echo $emp[''];?></td>
+						<td><?php echo $emp[''];?></td>
+						<td><?php echo $emp[''];?></td>
+						<td><?php echo $emp['village'].'/'.$emp['gewog'].'/'.$emp['dzongkhag'];?></td>
+						<td><?php echo $emp['mobile'];?></td>
+					</tr>
+					<?php endforeach;?>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+	
+<script>
+	$('#reportTable').genpdftable({
+		src:"<?php echo $this->url('pdfxls', array('action' => 'pdf'));?>",
+		orentation:"L",//L =landscape, P = potrait
+		caller:"#print"
+	});
+	$("#region").change(function() { 
+		$.post( "<?php echo $this->url('ajresponse', array('action' => 'getlocation')); ?>/"+ $("#region").val(), function( data ) {
+			var newdata ="<option value='-1'>All</option>"+data
+			$('#location').html( newdata );
+			$("#location").trigger('chosen:updated');
+		});
+	});
+	$("#department").change(function() { 
+		$.post(
+			"<?php echo $this->url('hreport', array('action' => 'getactivity'));?>",
+			{
+				department: $(this).val(),
+			},
+			function(data){
+				//console.log(data);
+				$('#activity').html(data.newdata);
+				$("#activity").trigger('chosen:updated');
+			},
+			'json'
+		);	
+	});
+	//fuction to refresh 
+	function refresh(){
+		var id = $('#region').val()+'&'+$('#location').val()+'&'+$('#department').val()+'&'+$('#activity').val()+'&'+$('#position_level').val()+'&'+$('#q_level').val()+'&'+$('#emp_status').val();
+		location.href="<?php echo $this->url('hreport', array('action'=>'general'));?>/"+id;
+	}	
+</script>​
+

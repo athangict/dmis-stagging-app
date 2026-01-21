@@ -1,0 +1,71 @@
+<?php // view partial.phtml 
+  $employee = ($this->active == "employee")?"active":"";
+  $viewqualification = ($this->active == "viewqualification")?"active":"";
+  $viewfamily = ($this->active == "viewfamily")?"active":"";
+  $viewaward = ($this->active == "viewaward")?"active":"";
+  $emphistory = ($this->active == "emphistory")?"active":"";
+  $leave = ($this->active == "leave")?"active":"";
+  $training = ($this->active == "training")?"active":"";
+  $viewpaydetail = ($this->active == "viewpaydetail")?"active":"";
+?>
+<br/>
+<ul class="nav nav-tabs padding-18" id="myTab" >
+	<?php if($this->id > 0):?>
+		<li class="<?php echo $employee; ?>">
+			<a href="<?php echo $this->url('employee', array('action' => 'view', 'id' => $this->id)); ?>">
+				<i class="blue ace-icon fa fa-user bigger-120"> </i>
+				<span class="hidden-xs" >Basic Info</span>
+			</a>
+		</li>
+	<?php else: ?>
+		<li class="<?php echo $employee; ?>">
+			<a href="<?php echo $this->url('employee', array('action' => 'addemployee', 'id' => $this->id)); ?>">
+				<i class="blue ace-icon fa fa-user bigger-120"> </i>
+				<span class="hidden-xs" >Basic Info</span>
+			</a>
+		</li>
+	<?php endif;?>
+	<li class="<?php echo $viewqualification; ?>">
+		<a href="<?php echo $this->url('employee', array('action' => 'viewqualification', 'id' => $this->id)); ?>">
+			<i class="green ace-icon fa fa-book bigger-120"> </i>
+			<span class="hidden-xs" >Qualification</span>
+		</a>
+	</li>
+	<li class="<?php echo $viewfamily; ?>">
+		<a href="<?php echo $this->url('employee', array('action' => 'viewfamily', 'id' => $this->id)); ?>">
+			<i class="orange ace-icon fa fa-users bigger-120"> </i>
+			<span class="hidden-xs" >Family</span>
+		</a>
+	</li>
+	<li class="<?php echo $viewaward; ?>">
+		<a href="<?php echo $this->url('employee', array('action' => 'viewaward', 'id' => $this->id)); ?>">
+			<i class="red ace-icon fa fa-certificate bigger-120"> </i>
+			<span class="hidden-xs" >Awards</span>
+		</a>
+	</li>
+	<li class="<?php echo $emphistory; ?>">
+		<a href="<?php echo $this->url('employee', array('action' => 'history', 'id' => $this->id)); ?>">
+			<i class="orange ace-icon fa fa-header bigger-120"> </i>
+			<span class="hidden-xs" > Employee Histroy</span>
+		</a>
+	</li>
+	<li class="<?php echo $leave; ?>">
+		<a href="<?php echo $this->url('employee', array('action' => 'leave', 'id' => $this->id)); ?>">
+			<i class="red ace-icon fa fa-user-times bigger-120"> </i>
+			<span class="hidden-xs" >Leave</span>
+		</a>
+	</li>
+	<li class="<?php echo $training; ?>">
+		<a href="<?php echo $this->url('employee', array('action' => 'training', 'id' => $this->id)); ?>">
+			<i class="pink ace-icon fa fa-book bigger-120"> </i>
+			<span class="hidden-xs" >Training</span>
+		</a>
+	</li>
+	<li class="<?php echo $viewpaydetail; ?>">
+		<a href="<?php echo $this->url('employee', array('action' => 'viewpaydetail', 'id' => $this->id)); ?>">
+			<i class="green ace-icon fa fa-book bigger-120"> </i>
+			<span class="hidden-xs" >Pay Details</span>
+		</a>
+	</li>
+</ul>
+

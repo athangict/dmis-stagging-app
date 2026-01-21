@@ -1,0 +1,170 @@
+<?php
+/**
+ * 
+ * View -- of Hr/TrainingController/addAction
+ * 
+ */
+    $this->headTitle($this->title);
+?>
+<?php 
+foreach($this->employees as $emp):
+    extract($emp);
+endforeach;
+?>
+<div class="card">
+	<div class="card-header">
+	<h3 class="card-title text-125 text-orange-d4">
+		<i class="fa fa-asterisk"></i> New Training to <b><?php echo $full_name;?></b>
+	</h3>
+	</div>
+	<div class="card-body px-3 pb-1">
+	<form id="#form" method="post" action="<?php echo $this->url('employee', array('action' => 'addemployee')); ?>" enctype="multipart/form-data">
+	<div class="row">	
+		<div class="form-group col-lg-4">
+			<label for="training_name" class="control-label">Training Name :</label>
+			<input type="text" name="training_name" id="training_name" class="form-control" placeholder="Training Name" required />
+		</div> 
+		<div class="form-group col-lg-4">
+			<label for="start_date" class="control-label">Start Date</label>
+			<input type="date" class="form-control" name="start_date" id="start_date" required> 
+		</div>    
+		<div class="form-group col-lg-4">
+			<label for="end_date" class="control-label">End Date</label>
+			<input type="date" class="form-control" name="end_date" id="end_date" required> 
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group col-lg-4">
+			<label for="level" class="control-label">Level :</label>
+			<input type="text" name="level" id="level" class="form-control" placeholder="Level" required />
+		</div>
+		
+		<div class="form-group col-lg-4">
+			<label for="country" class="control-label">Training Type</label>
+			<div class="radio">
+				<label>
+					<input class="ace" type="radio" name="country" id="country" value="1" checked />
+					<span class="lbl"> In country</span> 
+				</label>
+				<label>
+					<input class="ace" type="radio" name="country" id="country" value="2" />
+					<span class="lbl"> Ex-country</span> 
+				</label>
+			</div>
+		</div> 
+		<div class="form-group col-lg-4">
+			<label for="location" class="control-label">Location :</label>
+			<input type="text" name="location" id="location" class="form-control" placeholder="location" required />
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group col-lg-4">
+			<label for="funding" class="control-label">Funding :</label>
+			<input type="text" name="funding" id="funding" class="form-control" placeholder="funding" required />
+		</div>  
+		
+		<div class="form-group col-lg-4">
+			<label for="govt_approval_no" class="control-label">Government Approval No. :</label>
+			<input type="text" name="govt_approval_no" id="govt_approval_no" class="form-control" placeholder="government approval no" required onchange="check(this);"/>
+		</div>  
+		
+		<div class="form-group col-lg-4">
+			<label for="result" class="control-label">Result :</label>
+			<input type="text" name="result" id="result" class="form-control" placeholder="result" />
+		</div>  
+	</div>
+			<div class="mt-2 border-t-1 bgc-secondary-l4 brc-secondary-l2 py-35 mx-n25 text-right">
+				<div class="offset-md-3 col-md-9 text-nowrap">
+				<button type="submit" class="btn btn-success"><span class="fa fa-check"></span> Save</button>
+						<a class="btn btn-warning" onclick="javascript:history.back();"><span class="fa fa-times"></span> Cancel </a> 
+				</div>
+			</div>
+		</form>
+	</div><!-- /.card-body -->
+</div><!-- /.card -->
+<script>
+$('document').ready(function(){
+	$('#start_date').datepicker();
+    $('#end_date').datepicker();
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			training_name: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide training name',
+					}
+				}
+			},
+			start_date: {
+				validators: {
+					notEmpty: {
+						message: 'Please select start date.'
+					}
+				}
+			},
+			end_date: {
+				validators: {
+					notEmpty: {
+						message: 'Please select end date.'
+					}
+				}
+			},
+			level: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide level.'
+					}
+				}
+			},
+			country: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide country.'
+					}
+				}
+			},
+			location: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide location.'
+					}
+				}
+			},
+			funding: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide funding.'
+					}
+				}
+			},
+			govt_approval_no:{
+				validators: {
+					notEmpty: {
+						message: 'Please provide government approval no.'	 
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('#start_date').on('changeDate', function(){
+            $('form').formValidation('revalidateField', 'start_date');
+    });
+	$('#end_date').on('changeDate', function(){
+		$('form').formValidation('revalidateField', 'end_date');
+	});
+});
+</script>

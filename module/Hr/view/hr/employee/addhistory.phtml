@@ -1,0 +1,347 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmphltController/addAction
+ * 
+ */
+?>
+<?php 
+	foreach($this->latest_info as $row):
+		extract($row);
+		//echo "<pre>"; print_r($row);
+	endforeach; //exit;
+	// $payscale = $min_pay."-".$increment."-".$max_pay;
+?>
+<div class="row">
+	<div class="col-lg-12">
+        <div class="widget widget-box">
+            <div class="widget-header">
+            	<h5 class="widget-title lighter smaller">
+	            	<i class="fa fa-asterisk"></i> New Record for <b><?php echo $this->employeeObj->getColumn($employee,'full_name'); ?></b> 
+	             </h5>
+            </div>
+            <div class="widget-body">
+				<div class="widget-main">
+					<form id="#form" method="post" action="<?php echo $this->url('employee', array('action' => 'addhistory', 'id'=> $this->emp_id)); ?>"  enctype="multipart/form-data" >
+						<div class="row">  
+							<div class="form-group col-lg-4">
+								<label for="appointment" class="control-label">Type of Appointment</label>
+								<select class="form-control" id="appointment" name="appointment" data-placeholder="-Select-" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->appoint as $appointrow):
+									?>
+										<option value="<?php echo $appointrow['id'];?>">
+											<?php echo $appointrow['type_of_appointment'];?>
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>							
+							<div class="form-group col-lg-4">
+								<label for="employee" class="control-label">Appointment Date</label>
+								<div class="input-group">
+								<input class="form-control" type="date" placeholder="Select" id="start_date" name="start_date" value="" autocomplete="off" required/>
+									<!-- <span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span> -->
+								</div>
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="employee" class="control-label">Office Order no</label>
+								<input type="text" class="form-control" name="office_order_no" id="office_order_no" size="30" required>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-lg-4">
+								<label for="office_order_date">Office Order Date</label>
+								<div class="input-group">
+									<input class="form-control" type="date" placeholder="Select" id="office_order_date" name="office_order_date" value="" autocomplete="off" required/>
+								</div>
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="activity" class="control-label">Acitvity</label>
+								<select class="form-control" data-placeholder="Select" name="activity" id="activity" required >
+									<option value=""></option>
+										<?php
+										foreach ($this->activities as $activity):
+											$selected_act = ($activity['id']== $activity_id)?'selected':'';
+										?>
+											<option value="<?php echo $activity['id'];?>" <?php echo $selected_act;?>>
+												<?php echo $activity['activity']; ?>
+											</option>
+										<?php 
+											endforeach;
+										?>
+								</select>
+							</div>   
+							<div class="form-group col-lg-4">
+								<label for="department" class="control-label" >Department</label>
+								<select class="form-control" id="department" name="department" data-placeholder="Select"  required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->dept as $deptrow):
+										$selected_dept = ($deptrow['id']==$department_id)? 'selected':'';
+									?>
+										<option value="<?php echo $deptrow['id'];?>" <?php echo $selected_dept;?>>
+											<?php echo $deptrow['department'];?>
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>	
+							</div>							
+						</div>
+						<div class="row">  
+							<div class="form-group col-lg-4">
+								<label for="region" class="control-label">Region</label>
+								<select class="form-control" id="region" name="region" data-placeholder="Select"  required >
+									<option value=""></option>
+									<?php 
+									foreach ($regions as $region):
+										$selected_region = ($region['id']== $region_id)?'selected':'';
+									?>
+										<option value="<?php echo $region['id'];?>" <?php echo $selected_region;?>>
+											<?php echo $region['region'];?>
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div> 			     
+							<div class="form-group col-lg-4">
+								<label for="location" class="control-label">Location</label>
+								<select class="form-control" id="location" name="location" data-placeholder="Select" >
+									<option value=""></option>
+									<?php foreach($locationObj->get(array('region'=>$region_id)) as $location):
+										$selected_location = ($location['id']== $location_id)?'selected':'';
+									?>
+										<option value="<?php echo $location['id'];?>" <?php echo $selected_location;?>>
+											<?php echo $location['location'];?>
+										</option>
+									<?php endforeach;?>
+								</select>
+							</div>	
+							<div class="form-group col-lg-4">
+								<label for="designation" class="control-label">Designation</label>
+								<input type="text" class="form-control" name="designation" id="designation" size="30" value="<?php echo $designation;?>" style="text-transform:uppercase" required> 
+							</div>	
+						</div>
+						<div class="row">	
+							<div class="form-group col-lg-4">
+								<label for="employee" class="control-label">Position Level</label>
+								<select class="form-control" id="post_level" name="post_level" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->postlevels as $plrow):
+										$selected_plevel = ($plrow['id']==$position_level_id)? 'selected':'';
+									?>
+										<option value="<?php echo $plrow['id'];?>" <?php echo $selected_plevel;?> >
+											<?php echo $plrow['position_level']." (".$plrow['code'].")";?>
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>	
+							<div class="form-group col-lg-4">
+								<label for="post_title" class="control-label">Position Title</label>
+								<select class="form-control" id="post_title" name="post_title" data-placeholder="-Select-" required >
+									<option value=""></option>
+									<?php 
+									$posttitle = $this->position_titleObj->get(array('position_level' => $position_level_id));
+									foreach ($posttitle as $ptrow):
+										$selected_ptitle = ($ptrow['id']==$position_title_id)? 'selected':'';
+									?>
+										<option value="<?php echo $ptrow['id'];?>" <?php echo $selected_ptitle;?> >
+											<?php echo $ptrow['position_title'];?>
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select> 
+							</div>							
+							<div class="form-group col-lg-4">
+								<label for="pay_scale">Pay Scale</label>								
+								<input class="form-control" type="text" id="pay_scale" name="pay_scale" value="<?php echo $payscale;?>" placeholder="Pay scale" readonly />
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-lg-4">
+								<label for="type">Employee Category</label>
+								<select class="form-control" id="type" name="type" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->emptypes as $emptype):
+										$selected_emptype = ($emptype['id']==$emp_type_id)? 'selected':'';
+									?>
+										<option value="<?php echo $emptype['id'];?>" <?php echo $selected_emptype;?>>
+											<?php echo $emptype['emp_type'];?>(<?php echo $emptype['code'];?>)
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>	
+							<div class="form-group col-lg-4">
+								<label for="supervisor">Supervisor</label>
+								<select class="form-control" id="supervisor" name="supervisor" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php 
+									foreach ($this->employees as $employee):
+										$selected_super = ($employee['id']==$supervisor)? 'selected':'';
+									?>
+										<option value="<?php echo $employee['id'];?>" <?php echo $selected_super;?>>
+											<?php echo $employee['full_name'];?>(<?php echo $employee['emp_id'];?>)
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>					
+							<div class="form-group col-lg-4">
+								<label for="employee" class="control-label">Remark</label>
+								<textarea class="form-control" name="remark" id="remark" ></textarea>
+							</div>
+						</div>	
+						<div class="row">			
+							<div class="col-lg-12">
+								<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+								<button type="button" class="btn btn-warning" onclick="javascript:history.back();"><i class="fa fa-times"></i> Cancel </button>  
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#post_level').on('change', function(){
+			//alert($(this).val());
+			$.post(
+				"<?php echo $this->url('employee', array('action' => 'getptitlepscale')); ?>",
+				{
+					payscale_id: $(this).val(),
+				},
+				function(data){
+					//console.log(data);
+					$("#pay_scale").val(data.pay_scale);
+					$("#post_title").html(data.pt);
+					$("#post_title").trigger('chosen:updated');
+				},
+				'json'
+			);	
+		});        
+     $('#start_date').datepicker();
+	 $('#end_date').datepicker();
+	 $('#office_order_date').datepicker();
+	 $("#region").change(function() { 
+		$('#location').load("<?php echo $this->url('ajresponse', array('action' => 'getlocation')); ?>/"+ $("#region").val(), function() {
+			$("#location").trigger('chosen:updated');
+			$('form').formValidation('revalidateField','location');
+		});
+    });	 
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			appointment: {
+				validators:{
+					notEmpty:{
+						message:'Please select appointment type.'
+					}
+				}
+			},
+			activity:{
+				validators:{
+					notEmpty:{
+						message:'Please select activity.'
+					}
+				}
+			},
+			department:{
+				validators:{
+					notEmpty:{
+						message:'Please select department.'
+					}
+				}
+			},
+			region: {
+				validators:{
+					notEmpty:{
+						message:'Please select region.'
+					}
+				}
+			},
+			location: {
+				validators:{
+					notEmpty:{
+						message:'Please select location.'
+					}
+				}
+			},
+			post_title:{
+				validators:{
+					notEmpty:{
+						message:'Please select position title.'
+					}
+				}
+			},
+			post_level:{
+				validators:{
+					notEmpty:{
+						message:'Please select position level.'
+					}
+				}
+			},				
+			start_date:{
+				validators:{
+					notEmpty:{
+						message:'Please select Appointment date.'
+					}
+				}
+			},
+			supervisor:{
+				validators:{
+					notEmpty:{
+						message:'Please select supervisor.'
+					}
+				}
+			},
+			office_order_no:{
+				validators:{
+					notEmpty:{
+						messsage:'Please provide office order no.'
+					}
+				}
+			},
+			office_order_date:{
+				validators:{
+					notEmpty:{
+						message:'Please select office order date.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('#start_date').on('changeDate',function(){
+			$('form').formValidation('revalidateField','start_date');
+		});
+	$('#office_order_date').on('changeDate',function(){
+		$('form').formValidation('revalidateField','office_order_date');
+	});
+});
+</script>

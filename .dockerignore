@@ -1,0 +1,36 @@
+# Vendor directories
+vendor/
+node_modules/
+
+# Cache and temporary files
+data/cache/
+*.log
+
+# Environment files
+.env
+.env.local
+config/autoload/local.php
+config/autoload/*.local.php
+
+# Development files
+.git/
+.gitignore
+README.md
+*.md
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.tar.gz
+*.zip
+
+# Upload directories (optional - comment out if you want uploads in image)
+public/uploads/
+data/uploads/

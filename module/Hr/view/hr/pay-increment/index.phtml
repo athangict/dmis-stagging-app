@@ -1,0 +1,75 @@
+<?php
+/**
+ * View -- of Hr/PayIncrementController/indexAction
+ */
+	$this->headTitle($this->title);
+?>
+<div class="card">
+	<div class="card-header">
+		<div class="btn-group pull-right">
+			<a class="red pull-right DTTT_button btn btn-white btn-info btn-bold" data-tooltip="tooltip" data-placement="top" title="Add Pay Increment" href="<?php echo $this->url('payincrement', array('action'=>'addincrement'));?>" >
+				<span class="red"><i class="fa fa-plus"></i> <span class="hidden-sm hidden-xs">&nbsp;Add</span></span>
+			</a>
+		</div>
+	</div>
+	<div class="table-responsive">
+		<table class="table card-table text-nowrap" id="dataTables">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Increment No</th>
+					<th>Increment Date</th>
+					<th>Increment Type</th>
+					<th>Status</th>
+					<th class="no-sort no-printpdf">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+					$i = 1; 
+					foreach ($pay_increment as $rows):
+				?>
+					<tr data-href="<?php echo $this->url('payincrement', array('action'=>'viewincrement', 'id'=>$rows['id']));?>">
+						<td><?php echo $i++; ?> </td>
+						<td><b><?php echo $rows['increment_no']; ?></b></td>
+						<td><?php echo $rows['increment_date']; ?></td>
+						<td><?php echo $this->increment_typeObj->getColumn($rows['increment_type'],'increment_type'); ?></td>
+						<td >
+							<?php $this->status($rows['status']);?>
+						</td>
+						<td class="action">
+							<div class="btn-group">
+								<a class="btn btn-xs btn-danger" data-toggle="modal" data-target="#modal" href="<?php echo $this->url('acl', array('action' => 'activitylog', 'id' => "25-".$rows['id'])); ?>" title="View Activity Logs">
+									<i class="ace-icon fa fa-plus bigger-120" ></i>  
+								</a>
+							</div>
+						</td>	
+					</tr>
+				<?php 
+					endforeach;  
+				?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$("tr[data-href]").each(function(){
+		$(this).find('td').not('td.action').each(function(){
+			$(this).css('cursor','pointer');
+			$(this).bind('click',function() {
+				window.document.location = $(this).closest('tr').attr("data-href");
+			});
+		});
+	});
+	$('document').ready(function(){
+		$('#dataTables').DataTable({"paging":   true,});
+	});
+</script>
+
+

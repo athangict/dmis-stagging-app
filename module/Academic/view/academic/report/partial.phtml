@@ -1,0 +1,15 @@
+<?php // partial.phtml 
+	$resultreport = ($this->active == "resultreport")?"active":"";
+	
+?>
+<br/>
+<ul class="nav nav-tabs padding-18" id="myTab">	
+	<li class="<?php echo $payregister; ?>">
+		<a href="<?php echo $this->url('report', array('action' => 'resultreport')); ?>" title="Pay Register">
+			<i class="blue ace-icon fa fa-bar-chart bigger-120"></i>
+			<span class="hidden-xs">Result Report</span>
+		</a>
+	</li>
+</ul>
+
+

@@ -1,0 +1,145 @@
+<?php
+/**
+ * 
+ * View -- of Accounts/DemographyController/addactivityAction
+ * 
+ */
+$this->headTitle($this->title);
+foreach($equipment as $eq):
+	//echo"<pre>"; print_r($eq); exit; 
+    extract($eq);
+endforeach;
+foreach($organizations as $or):
+	//echo"<pre>"; print_r($eq); exit; 
+    extract($or);
+endforeach;
+?>
+<?php foreach($equipment as $row);?>
+
+<form method="post" action="<?php echo $this->url('ef', array('action' => 'editequipment', 'id' => $row['id'])); ?>"  enctype="multipart/form-data" >                  
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    
+    <div class="modal-body">       
+		<div class="panel panel-default">                       
+			<div class="panel-body"> 
+			    <div class="form-group">
+					<label for="location" class="control-label">Location</label>
+					<select class="form-control" id="location" name="location" data-placeholder="Select" required >
+						<option value=""></option>
+						<?php 
+						foreach ($locations as $loc):
+							$selected=($location==$loc['id'])?"selected":"";
+						?>
+							<option value="<?php echo $loc['id'];?>"<?php echo $selected;?>>
+								<?php echo $loc['location'];?>
+							</option>
+						<?php
+						endforeach;
+						?>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="location" class="control-label">Organization</label>
+					<select class="form-control chosen-widget" id="organization" name="organization" data-placeholder="Select" required >
+						<option value=""></option>
+						<?php 
+						foreach ($this->organizationObj->get(array('location'=>$location)) as $orgs):
+							$selected=($organization==$orgs['id'])?"selected":"";
+						?>
+							<option value="<?php echo $orgs['id'];?>"<?php echo $selected;?>>
+								<?php echo $orgs['department'];?>
+							</option>
+						<?php
+						endforeach;
+						?>
+					</select>
+				</div>        
+			    <div class="form-group">
+				    <input type="hidden" id="equipment_id" name="equipment_id" value="<?php echo $row['id'];?>" />
+					<label for="type" class="control-label">Type</label>
+					<select id="type" name="type" class="form-control" data-placeholder="Select" required >
+						<option value=""></option>
+						<?php 
+						foreach ($equipmenttypes as $type):
+						$selected = ($equipment_type == $type['id'])?'selected':'';
+						?>
+							<option value="<?php echo $type['id'];?>" <?php echo $selected;?>>
+							<?php echo $type['name'];?>
+							</option>
+						<?php 
+						endforeach;
+						?>
+					</select>
+				</div> 
+				<div class="form-group">
+					<label for="equip" class="control-label">Equipment Name</label>
+					<input type="text" class="form-control" name="equip" id="equip" value="<?php echo $row['equipment_name'];?>" size="30" required> 
+				</div>
+				<div class="form-group">
+					<label for="usable" class="control-label">Usable No.</label>
+					<input type="text" class="form-control" name="usable" id="usable" value="<?php echo $row['usable'];?>" size="30" required> 
+				</div>
+				<div class="form-group">
+					<label for="notusable" class="control-label">Equipment No.</label>
+					<input type="text" class="form-control" name="notusable" id="notusable" value="<?php echo $row['not_usable'];?>" size="30" required> 
+				</div>
+			</div>
+		</div>
+	</div> <!-- /modal-body -->    
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>
+</form>
+<script>
+	$('document').ready(function(){
+		$('#location').on('change', function(){
+			//alert($(this).val());
+			$.post(
+				"<?php echo $this->url('ef', array('action' => 'getorganization')); ?>",
+				{
+					location_id: $(this).val(),
+				},
+				function(data){
+					//console.log(data);
+					$("#organization").html(data.org);
+					$("#organization").trigger('chosen:updated');				
+				},
+				'json'
+			);	
+		});
+		const fv = FormValidation.formValidation(document.getElementById('#form'), {
+			fields: {
+				equip: {
+					validators: {
+						notEmpty: {
+							message: 'Please provide bank ref type.'
+						}
+					}
+				},
+			},
+			plugins: {
+				trigger: new FormValidation.plugins.Trigger(),
+				bootstrap3: new FormValidation.plugins.Bootstrap3(),
+				submitButton: new FormValidation.plugins.SubmitButton(),
+				defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+			},
+		}).on('core.element.validated', function (e) {
+			if (e.valid) {
+				$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+				$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+			} else {
+				$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+				$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+			}
+		});
+		$('form select').chosen().change(function () {
+			fv.revalidateField($(this).attr('name'));
+		});
+	});
+</script>

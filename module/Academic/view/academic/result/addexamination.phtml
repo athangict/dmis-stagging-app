@@ -1,0 +1,155 @@
+<?php 
+/**
+ * View -- of Academic/MonkController/addstudentdetails
+ * chophel@athang.com
+ */
+$this->headTitle($this->title);
+?>
+<form id="#form" method="post" action="<?php echo $this->url('curriculum', array('action' => 'addexamination','id'=>$page)); ?>"  enctype="multipart/form-data" >                  
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">   
+				<div class="row">
+					<div class="form-group col-lg-4">  
+						<label class="control-label" for="academic_year">Academic Year</label>
+						<select id="academic_year" name="academic_year" class="form-control" data-placeholder="Select">
+							<option value=""></option>	
+							<?php foreach ($academic_year as $academic_years): ?>
+								<option value="<?php echo $academic_years;?>">
+									<?php echo $academic_years; ?>
+								</option>
+							<?php endforeach; ?>	
+						</select>
+					</div>
+					<div class="form-group col-lg-4">  
+						<label class="control-label" for="organization">Organization</label>
+						<select id="organization" name="organization" class="form-control" data-placeholder="Select">
+							<option value="-1" selected>None</option>
+						</select>
+					</div>
+					<div class="form-group col-lg-4">  
+						<label class="control-label" for="class">Class</label>
+						<select id="class" name="class" class="form-control" data-placeholder="Select">
+							<option value="-1" selected>None</option>
+							<?php foreach($class as $classes):?>
+								<option value="<?php echo $classes['id']?>">
+									<?php echo $classes['standard'];?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="form-group col-lg-4">  
+						<label class="control-label" for="section">Section</label>
+						<input type="text" class="form-control" name="section" id="section" placeholder="Section"  /> 
+					</div>
+					<div class="form-group col-lg-4">  
+						<label class="control-label" for="batch">Batch</label>
+						<select id="batch" name="batch" class="form-control" data-placeholder="Select">
+							<option value=""></option>	
+							<?php foreach ($batch as $batchs): ?>
+								<option value="<?php echo $batchs;?>">
+									<?php echo $batchs; ?>
+								</option>
+							<?php endforeach; ?>	
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> <!-- /modal-body -->    
+    <div class="modal-footer">
+		<button type="submit" class="btn btn-success"><i class="ace-icon fa fa-check"></i>Save</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="ace-icon fa fa-times"></i>Cancel</button> 
+    </div>
+</form>
+<script>
+$(function(){
+	$('select#district').on('change',function(){
+			$.post(
+				"<?php echo $this->url('monk', array('action' => 'getorganization'));?>",
+				{
+					rdzoId: $(this).val(),
+				},
+				function(data){
+					$('select#organization').html(data.organization);
+					$('select#organization').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#class').on('change',function(){
+			$.post(
+				"<?php echo $this->url('result', array('action' => 'getsection'));?>",
+				{
+					rdzoId: $(this).val(),
+				},
+				function(data){
+					$('select#organization').html(data.organization);
+					$('select#organization').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			region: {
+				validators: {
+					notEmpty: {
+						message: 'Please select region.'
+					}
+				}
+			},
+			location_type: {
+				validators: {
+					notEmpty: {
+						message: 'Please select location type.'
+					}
+				}
+			},
+			location: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide location name.'
+					}
+				}
+			},
+			district: {
+				validators: {
+					notEmpty: {
+						message: 'Please select dzongkhag.'
+					}
+				}
+			},
+			status: {
+				validators: {
+					notEmpty: {
+						message: 'Please select status.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('form select').chosen().change(function () {
+		fv.revalidateField($(this).attr('name'));
+	});
+});
+</script>

@@ -1,0 +1,75 @@
+<?php
+/**
+ * View -- of Administration/DomainController/locationAction
+ * chophel@athang.com
+ */
+	$this->headTitle($this->title);
+?>
+<div class="card">
+	<div class="table-responsive">
+	<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+				<th>#</th>
+					<th>Organization Name</th>
+					<th>Organization Type</th>
+					<th>Organization Level</th>
+					<th>Dzongkhag</th>
+					<th>Status</th>
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>	
+				</tr>
+			</thead>
+			<tbody>
+			<?php 
+				$i=1;
+				foreach ($paginator as $row):
+					// print_r($row);
+					// exit;
+					?>
+				<tr>
+					<td><?php  echo $i++; ?></td>								       
+					<td class="uchen"><?php echo $row['location']; ?></td>
+					<td><?php echo $this->locationtypeObj->getColumn($row['location_type'],'location_type'); ?></td>
+					<td><?php echo $this->orglevel->getColumn($row['organization_level'],'organization_level'); ?></td>
+					<!-- <td><?php echo $row['location_code'];?></td> -->
+					<!-- <td><?php echo ($row['region']!='0')?$this->regionObj->getColumn($row['region'],'region'):'-'; ?></td> -->
+					<td><?php echo ($row['district']!='0')?$this->districtObj->getColumn($row['district'],'district'):'-'; ?></td>
+					<td><?php echo $this->status($row['status']); ?></td>
+					<?php if($this->button(1)!=""):?>
+						<td><?php echo $this->button(1,$row['id']);?>
+					</td>
+
+					<?php endif;?>
+				</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	</div>
+	<div class="card-footer d-flex align-items-center">
+		<?php echo $this->paginationControl($this->paginator,'Sliding','aca_pagination.phtml', 
+			array('route' => 'curriculum/paginator','action'=>'viewcurriculum','id'=>'0'));?>
+	</div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+$('document').ready(function(){
+	$("tr[data-href]").each(function(){ 
+		if($(this).attr('data-href')!='#'){
+			$(this).css('cursor','pointer');
+			$(this).bind('click',function() {
+				window.document.location = $(this).attr("data-href");
+			});
+		}
+	});
+	$('#dataTables').DataTable();
+});
+</script>

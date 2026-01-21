@@ -1,0 +1,158 @@
+<?php
+/**
+ * 
+ * View -- of Accounts/DemographyController/editcurrencyAction
+ * 
+ */
+$this->headTitle($this->title);
+//echo '<pre>';print_r($currencies);exit;
+foreach($connectivities as $con):
+	//echo"<pre>"; print_r($eq); exit; 
+    extract($con);
+endforeach;
+foreach($organizations as $or):
+	//echo"<pre>"; print_r($eq); exit; 
+    extract($or);
+endforeach;
+
+?>
+<?php foreach($connectivity as $row);?>                      
+<form method="post" action="<?php echo $this->url('fac', array('action' => 'editconnectivity', 'id' => $row['id'])); ?>"  enctype="multipart/form-data" >                 
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+	<div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">  
+			<div class="form-group">
+					<label for="location" class="control-label">Location</label>
+					<select class="form-control" id="location" name="location" data-placeholder="Select" required >
+						<option value=""></option>
+						<?php 
+						foreach ($locations as $loc):
+							$selected=($location==$loc['id'])?"selected":"";
+						?>
+							<option value="<?php echo $loc['id'];?>"<?php echo $selected;?>>
+								<?php echo $loc['location'];?>
+							</option>
+						<?php
+						endforeach;
+						?>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="location" class="control-label">Organization</label>
+					<select class="form-control chosen-widget" id="organization" name="organization" data-placeholder="Select" required >
+						<option value=""></option>
+						<?php 
+						foreach ($this->organizationObj->get(array('location'=>$location)) as $orgs):
+							$selected=($organization==$orgs['id'])?"selected":"";
+						?>
+							<option value="<?php echo $orgs['id'];?>"<?php echo $selected;?>>
+								<?php echo $orgs['department'];?>
+							</option>
+						<?php
+						endforeach;
+						?>
+					</select>
+				</div>        
+				<div class="row"> 
+					<div class="col-lg-12">
+					<div class="form-group">
+					<input type="hidden" id="connectivity_id" name="connectivity_id" value="<?php echo $row['id'];?>" />
+				    <label for="btn" class="control-label">Do your location have road connection?</label>
+					<div class="radio">
+						<label>
+							<input class="ace" type="radio" name="road" id="road" value="1"<?php echo ($row['road_connectivity']=='1')?"checked":"";?>/>
+							<span class="lbl"> Yes </span>
+						</label>
+						<label>
+							<input class="ace" type="radio" name="road" id="road" value="0" <?php echo ($row['road_connectivity']=='0')?"checked":"";?>/>
+							<span class="lbl"> No </span>
+						</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="estimated_distance" class="control-label">Estimated Distance</label>
+					<input class="form-control" placeholder="estimated_distance" name="estimated_distance" id="estimated_distance" value="<?php echo $row['road_distance'];?>" required >
+				</div>
+				<div class="form-group">
+				    <label for="btn" class="control-label">Do you have internet connection?</label>
+					<div class="radio">
+						<label>
+							<input class="ace" type="radio" name="internet" id="internet" <?php echo ($row['internet_connectivity']=='1')?"checked":"";?>  />
+							<span class="lbl"> Yes </span>
+						</label>
+						<label>
+							<input class="ace" type="radio" name="internet" id="internet"  <?php echo ($row['internet_connectivity']=='0')?"checked":"";?> />
+							<span class="lbl"> No </span>
+						</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="accssible_to" class="control-label">Internet Accessible to</label>
+					<input class="form-control" placeholder="accssible_to" name="accssible_to" id="accssible_to" value="<?php echo $row['accssible_to'];?> " required >
+				</div>
+				<div class="form-group">
+				    <label for="btn" class="control-label">Do you have electricity connection?</label>
+					<div class="radio">
+						<label>
+							<input class="ace" type="radio" name="electricity" id="electricity" value="1" <?php echo ($row['electricity_connectivity']=='1')?"checked":"";?>  />
+							<span class="lbl"> Yes </span>
+						</label>
+						<label>
+							<input class="ace" type="radio" name="electricity" id="electricity" value="0"  <?php echo ($row['electricity_connectivity']=='0')?"checked":"";?>/>
+							<span class="lbl"> No </span>
+						</label>
+					</div>
+				</div>
+					</div>
+				</div>
+		    </div>
+	    </div>
+    </div>       
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div><!-- /modal-footer -->
+</form>
+<script>
+	$('select').chosen({ allow_single_deselect: true });		
+	$('document').ready(function(){
+		const fv = FormValidation.formValidation(document.getElementById('#form'), {
+			fields: {
+				fur: {
+					validators: {
+						notEmpty: {
+							message: 'Please provide Furniture.'
+						}
+					}
+				},
+			},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('form select').chosen().change(function () {
+		fv.revalidateField($(this).attr('name'));
+	});
+	});
+</script>
+
+                                
+
+      

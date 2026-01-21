@@ -1,0 +1,215 @@
+<?php
+/**
+ * Layout --- Top Navbar
+ * chophel@athang.com
+ */
+?>
+<?php if($this->identity()): $user = $this->identity(); endif; ?>
+<nav class="navbar navbar-expand-lg navbar-fixed navbar-darkblue">
+	<div class="navbar-inner">
+		<div class="navbar-intro justify-content-xl-between">
+
+			<button type="button" class="btn btn-burger burger-arrowed static collapsed ml-2 d-flex d-xl-none" data-toggle-mobile="sidebar" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
+				<span class="bars"></span>
+			</button><!-- mobile sidebar toggler button -->
+
+			<a class="navbar-brand text-white" style="font-size:30px" href="#">
+				<img src="<?php echo $this->basePath() . '/images/logo-nav2.png' ?> "/>
+				<span>གཞུང་གྲྭ་ཚང་།</span>
+			</a><!-- /.navbar-brand -->
+
+			<button type="button" class="btn btn-burger mr-2 d-none d-xl-flex" data-toggle="sidebar" data-target="#sidebar" aria-controls="sidebar" aria-expanded="true" aria-label="Toggle sidebar">
+				<span class="bars"></span>
+			</button><!-- sidebar toggler button -->
+
+		</div><!-- /.navbar-intro -->
+
+		<div class="navbar-content">
+			<button class="navbar-toggler py-2" type="button" data-toggle="collapse" data-target="#navbarSearch" aria-controls="navbarSearch" aria-expanded="false" aria-label="Toggle navbar search">
+				<i class="fa fa-search text-white text-90 py-1"></i>
+			</button><!-- mobile #navbarSearch toggler -->
+
+			<div class="collapse navbar-collapse navbar-backdrop" id="navbarSearch">
+				<form class="d-flex align-items-center ml-lg-4 py-1" data-submit="dismiss">
+				<i class="fa fa-search text-white d-none d-lg-block pos-rel"></i>
+				<input type="text" class="navbar-input mx-3 flex-grow-1 mx-md-auto pr-1 pl-lg-4 ml-lg-n3 py-2 autofocus" placeholder="SEARCH ..." aria-label="Search" />
+				</form>
+			</div>
+		</div><!-- .navbar-content -->
+
+		<!-- mobile #navbarMenu toggler button -->
+		<button class="navbar-toggler ml-1 mr-2 px-1" type="button" data-toggle="collapse" data-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navbar menu">
+			<span class="pos-rel">
+				<img class="border-2 brc-white-tp1 radius-round" width="36" src="<?php echo $this->basePath() . '/assets/image/avatar/avatar6.jpg';?>" alt="Jason's Photo">
+				<span class="bgc-warning radius-round border-2 brc-white p-1 position-tr mr-n1px mt-n1px"></span>
+			</span>
+		</button>
+
+
+		<div class="navbar-menu collapse navbar-collapse navbar-backdrop" id="navbarMenu">
+
+			<div class="navbar-nav">
+				<ul class="nav">
+
+					<li class="nav-item dropdown dropdown-mega">
+						<a class="nav-link dropdown-toggle pl-lg-3 pr-lg-4" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+							<i class="fa fa-bell text-110 icon-animated-bell mr-lg-2"></i>
+
+							<span class="d-inline-block d-lg-none ml-2">Notifications</span><!-- show only on mobile -->
+							<span id="id-navbar-badge1" class="badge badge-sm bgc-warning-d2 text-white radius-round text-85 border-1 brc-white-tp5">3</span>
+
+							<i class="caret fa fa-angle-left d-block d-lg-none"></i>
+							<div class="dropdown-caret brc-white"></div>
+						</a>
+						<div class="dropdown-menu dropdown-sm dropdown-animated p-0 bgc-white brc-primary-m3 border-b-2 shadow">
+							<ul class="nav nav-tabs nav-tabs-simple w-100 nav-justified dropdown-clickable border-b-1 brc-secondary-l2" role="tablist">
+								<li class="nav-item">
+									<a class="d-style px-0 mx-0 py-3 nav-link active text-600 brc-blue-m1 text-dark-tp5 bgc-h-blue-l4" data-toggle="tab" href="#navbar-notif-tab-1" role="tab">
+										<span class="d-active text-blue-d1 text-105">Notifications</span>
+										<span class="d-n-active">Notifications</span>
+									</a>
+								</li>
+							</ul><!-- .nav-tabs -->
+
+
+							<div class="tab-content tab-sliding p-0">
+
+								<div class="tab-pane mh-none show active px-md-1 pt-1" id="navbar-notif-tab-1" role="tabpanel">
+
+								<div data-ace-scroll='{"ignore": "mobile", "height": 300, "smooth":true}'>
+									<?php $notificationResult = $this->notification($user->id);
+										foreach($notificationResult as $notify):?>
+										<a href="<?php echo $this->url($notify['route'], array('action'=>$notify['action'], 'id'=>$notify['key'].'-1-'.$notify['id']));?>" class="d-flex mb-0 border-0 list-group-item list-group-item-action btn-h-lighter-secondary">
+											<div>
+												<span class="text-primary-m1 font-bolder">Alex:</span>
+												<span class="text-grey text-90"><?php echo $notify['desc']; ?></span>
+												<br />
+												<span class="text-grey-m1 text-85">
+													<i class="far fa-clock"></i>
+													<?php echo $notify['created']; ?>
+												</span>
+											</div>
+										</a>
+										<hr class="my-1px brc-grey-l3" />
+										<?php endforeach; ?>
+									</div><!-- ace-scroll -->
+
+									<hr class="my-1px brc-secondary-l2 border-double" />
+									<a href="<?php echo $this->url('application', array('action'=>'allnotification'));?>" class="mb-0 py-3 border-0 list-group-item text-purple text-uppercase text-center text-85 font-bolder">
+										See All Notifications
+										<i class="ml-2 fa fa-arrow-right text-muted"></i>
+									</a>
+								</div><!-- .tab-pane : notifications -->
+							</div>
+						</div>
+					</li>
+					<li class="nav-item dd-backdrop dropdown dropdown-mega">
+						<a class="nav-link dropdown-toggle pl-lg-3 pr-lg-4" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+							<i class="fa fa-flask text-110 icon-animated-vertical mr-lg-1"></i>
+
+							<span class="d-inline-block d-lg-none ml-2">Tasks</span><!-- show only on mobile -->
+							<span id="id-navbar-badge2" class="badge badge-sm text-95 text-yellow-l4">+2</span>
+
+							<i class="caret fa fa-angle-left d-block d-lg-none"></i>
+							<div class="dropdown-caret brc-warning-l2"></div>
+						</a>
+						<div class="dropdown-menu dropdown-xs dropdown-animated animated-1 p-0 bgc-white brc-warning-l1 shadow">
+							<div class="bgc-orange-l2 py-25 px-4 border-b-1 brc-orange-l2">
+								<span class="text-dark-tp4 text-600 text-90 text-uppercase">
+									<i class="fa fa-check mr-2px text-warning-d2 text-120"></i>
+									4 Tasks to complete
+								</span>
+							</div>
+							<div class="px-4 py-2">
+								<div class="text-95">
+								<span class="text-grey-d1">Customer support</span>
+								</div>
+								<div class="progress mt-2">
+								<div class="progress-bar bgc-danger" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">30%</div>
+								</div>
+							</div>
+							<hr class="my-1 mx-4" />
+
+							<div class="px-4 py-2">
+								<div class="text-95">
+								<span class="text-grey-d1">Fixing bugs</span>
+								</div>
+								<div class="progress mt-2">
+								<div class="progress-bar bgc-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
+								</div>
+							</div>
+
+							<hr class="my-1px mx-2 brc-info-l2 " />
+							<a href="#" class="d-block bgc-h-primary-l4 py-3 border-0 text-center text-blue-m2">
+								<span class="text-85 text-600 text-uppercase">See All Tasks</span>
+								<i class="ml-2 fa fa-arrow-right text-muted"></i>
+							</a>
+						</div>
+					</li>
+
+
+					<li class="nav-item dropdown order-first order-lg-last">
+						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+							
+							<img id="id-navbar-user-image" class="d-none d-lg-inline-block radius-round border-2 brc-white-tp1 mr-2 w-6" src="<?php echo ($user->photo=='0')?$this->basePath() . '/images/avatar.jpg':$this->basePath() . '/uploads/user/'.$user->photo;?>" alt="<?php echo strstr($user->name, ' ', true);?>">
+							
+							<span class="d-inline-block d-lg-none d-xl-inline-block">
+								<span class="text-90" id="id-user-welcome">Welcome,</span>
+								<span class="nav-user-name"><?php echo explode(' ',trim($user->name))[0];?></span>
+							</span>
+
+							<i class="caret fa fa-angle-down d-none d-xl-block"></i>
+							<i class="caret fa fa-angle-left d-block d-lg-none"></i>
+						</a>
+
+						<div class="dropdown-menu dropdown-caret dropdown-menu-right dropdown-animated brc-primary-m3 py-1">
+							<div class="d-none d-lg-block d-xl-none">
+								<div class="dropdown-header">
+									Welcome, <?php echo explode(' ',trim($user->name))[0];?>
+								</div>
+								<div class="dropdown-divider"></div>
+							</div>
+							
+						<a class="mt-1 dropdown-item btn btn-outline-grey bgc-h-primary-l3 btn-h-light-primary btn-a-light-primary" href="<?php echo $this->url('user', array('action'=>'view', 'id'=>$user->id));?>">
+								<i class="fa fa-user text-primary-m1 text-105 mr-1"></i>
+								Profile
+							</a>
+
+							<div class="dropdown-divider brc-primary-l2"></div>
+
+							<a id="logoutButton" class="dropdown-item btn btn-outline-grey bgc-h-secondary-l3 btn-h-light-secondary btn-a-light-secondary" href="<?php echo $this->url('auth', array('action' => 'logout'));?>">
+								<i class="fa fa-power-off text-warning-d1 text-105 mr-1"></i>
+								Logout
+							</a>
+						</div>
+					</li><!-- /.nav-item:last -->
+
+				</ul><!-- /.navbar-nav menu -->
+			</div><!-- /.navbar-nav -->
+		</div><!-- /#navbarMenu -->
+	</div><!-- /.navbar-inner -->
+</nav>
+
+<script>
+function clearLanguageCookie() {
+  document.cookie = "selectedLanguage=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+// Function to clear the selectedLanguage value from local storage
+function clearLanguageLocalStorage() {
+  localStorage.removeItem("selectedLanguage");
+}
+
+// Function to clear the selectedLanguage value
+function clearSelectedLanguage() {
+  clearLanguageCookie();
+  clearLanguageLocalStorage();
+}
+
+// Add an event listener for the logout button
+var logoutButton = document.getElementById("logoutButton");
+logoutButton.addEventListener("click", function() {
+  // Perform logout logic
+  clearSelectedLanguage();
+});
+</script>

@@ -1,0 +1,130 @@
+<?php
+/**
+ * 
+ * View -- of Hr/PayIncrementController/viewincrement
+ * 
+ */
+?>
+<?php 
+	foreach($increments as $increment):
+		extract($increment);
+		//echo "<pre>"; print_r($increment);
+	endforeach;
+?>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="widget widget-box">
+				<div class="widget-header">
+					<h5 class="widget-title lighter smaller">
+						# Pay Increment :<strong>&nbsp;&nbsp;<?php echo $increment_no; ?> </strong>
+						<?php $this->status($status);?>
+					</h5>
+					<div class="widget-toolbar hidden-xs">
+						<a style='cursor:pointer' id="print">
+							<i class="ace-icon fa fa-file-pdf-o red"></i>
+						</a>
+					</div>
+				</div>
+			</form>
+			<div class="widget-body">
+				<div class="widget-main padding-12">
+					<div id="report-print">
+						<div class="row" id="convert-tb0">
+							<div class="col-lg-8" id="convert-tb1">
+								<ul class="list-unstyled spaced">
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>
+										Pay Increment No : <b class="red"><?php echo $increment_no; ?></b>
+									</li>
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>
+										Increment Type : <b class="red"><?php echo $this->incrementtypeObj->getColumn($increment_type,'increment_type'); ?></b>
+									</li>
+								</ul>
+							</div>
+							<div class="col-lg-4" id="convert-tb2">
+								<ul class="list-unstyled spaced">
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>
+										Increment Date : <b class="red"><?php echo $increment_date; ?></b>
+									</li>
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>
+										Increment Commit Date : <b class="red"><?php echo ($status == '3')?$commit_date:'Not Commited'; ?></b>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="space-6"></div>
+						<div class="row">
+							<div class="col-lg-12" >
+								<table class="table" style="border-top:2px solid #ddd;">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>EmpID</th>
+											<th>Employee</th>
+											<th>Location</th>
+											<th>Activity</th>
+											<th>Position Level</th>
+											<th>PayScale</th>
+											<th>Old Pay</th>
+											<th>Increment</th>
+											<th>New Pay</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php 
+											$sl = 1;
+											foreach($increment_dtls as $row):
+												$employee = $this->employeeObj->get($row['employee']);
+												foreach($employee as $emp);
+												$positionlevels = $this->positionlevelObj->get($emp['position_level_id']);
+												foreach($positionlevels as $level);
+										?>
+										<tr>
+											<td><?php echo $sl++;?></td>
+											<td><?php echo $emp['emp_id'];?></td>
+											<td><?php echo $emp['full_name'];?></td>
+											<td><?php echo $emp['location'];?></td>
+											<td><?php echo $emp['activity'];?></td>
+											<td><?php echo $emp['position_level'];?></td>
+											<td><?php echo $level['min_pay'].'-'.$level['increment'].'-'.$level['max_pay'];?></td>
+											<td><?php echo $row['old_pay'];?></td>
+											<td><?php echo $row['increment'];?></td>
+											<td><?php echo $row['new_pay'];?></td>
+										</tr>
+										<?php endforeach;?>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-7">
+						</div>
+						<div class="col-lg-5" style="text-align: right">
+							<?php if($status == '1'):?>
+								<a href="<?php echo $this->url('payincrement', array('action'=>'editincrement', 'id'=>$id));?>" class="btn btn-info"> <i class="fa fa-pencil"></i> Edit </a>
+								<a href="<?php echo $this->url('payincrement', array('action'=>'commitincrement', 'id'=>$id));?>" class="btn btn-success"> <i class="fa fa-check"></i> Commit </a>
+								<a href="<?php echo $this->url('payincrement', array('action'=>'cancelincrement', 'id'=>$id));?>" class="btn btn-danger"> <i class="fa fa-times"></i> Cancel </a>
+							<?php endif;?>
+						</div>
+					</div>
+					<!-- Upload and Download file attachments -->			
+					<?php   
+					  // echo $this->partial('partial/attachment.phtml', array('process' => '1', 'process_id'=> $po_id , 'status' => $po_status));
+					?>					
+				    <!-- End of attachment -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$('#print').genpdfinvoice({
+		content: '#report-print',
+		src:"<?php echo $this->url('pdfxls', array('action' => 'pdf'));?>",
+		orentation:"L",//L =landscape, P = potrait
+	});
+</script>

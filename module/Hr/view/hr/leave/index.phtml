@@ -1,0 +1,99 @@
+<?php
+/**
+ * 
+ * View -- of Hr/LeaveController/indexAction
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="clearfix">
+			<div class="pull-right tableTools-container"></div>
+			<?php echo $this->button(2);?>
+		</div>
+		<div>
+     		<?php
+					  $subRoles = $this->userRoleObj->get(array('user'=>$this->userID, 'subrole'=>array('1','2','17')));  
+					  if(sizeof($subRoles) >0 ){
+						  $leaves = $this->leaveObj->getAll();
+					  }else{						  
+						  $userEmp = $this->userObj->getColumn($this->userID, 'employee'); 
+						  if($userEmp > 0)
+						  {  
+							 $leaves = $this->leaveObj->getAll($userEmp, $this->userID);	
+						  }					  
+					  }					 
+					  $i = 1; 
+					if(sizeof($leaves) > 0): 
+					?>
+					  <table class="table table-striped table-hover table-condensed" style="width:100%;" id="dataTables">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Employee</th>
+								<th>Location</th>
+								<th>Leave Type</th>
+								<th>Leave (From  -  To)</th>
+								<th>No. of Days</th>
+								<th>Leave Status</th>
+								<th>Log</th>
+							</tr>
+						</thead>
+						<tbody>
+					<?php					
+					  foreach ($leaves as $rows):					  
+						foreach($this->employeeObj->get($rows['employee']) as $emp);						
+					?>
+						<tr data-href="<?php echo $this->button(4, $rows['id']); ?>">
+							<td><?php echo $i; ?> </td>
+							<td><strong><?php echo $emp['full_name']; ?></strong> ,&nbsp; <i> <?php echo $emp['designation']; ?> </i> </td>
+							<td><?php echo $emp['location']; ?></td>	
+							<td><?php echo $rows['type']; ?></td>							
+							<td><?php echo $rows['start_date']; ?>&nbsp; - &nbsp; <?php echo $rows['end_date']; ?></td>
+							<td><?php echo $rows['no_of_days']; ?></td>
+							<td >
+                                    <?php echo $this->status($rows['status']); ?>
+							</td>
+							<td class="action">
+										<a class="btn btn-xs btn-danger" data-toggle="modal" data-target="#modal" 
+							   href="<?php echo $this->url('acl', array('action' => 'activitylog', 'id' => "22-".$rows['id'])); ?>" title="View Activity Logs">
+										<i class="ace-icon fa fa-plus smaller-120" ></i>  
+							   </a>
+				         </td>
+						</tr>
+					<?php 
+					$i++;
+					endforeach;  
+					?>
+				</tbody>
+			</table>
+			<?php else:  ?>
+			   <span class="alert alert-warning fade in"> No leave Application to view. </div>
+			<?php endif; ?>
+		</div>
+	</div>
+</div>
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$("tr[data-href]").each(function(){
+		$(this).find('td').not('td.action').each(function(){
+			$(this).css('cursor','pointer');
+			$(this).bind('click',function() {
+				window.document.location = $(this).closest('tr').attr("data-href");
+			});
+		});
+	});
+
+	$('#dataTables').genpdftable({
+		src:"<?php echo $this->url('pdfxls', array('action' => 'pdf'));?>",
+		orentation:"P",//L =landscape, P = potrait
+	});
+</script>
+
+

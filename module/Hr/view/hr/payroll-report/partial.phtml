@@ -1,0 +1,70 @@
+<?php // partial.phtml 
+	$payregister = ($this->active == "payregister")?"active":"";
+	$phreport = ($this->active == "phreport")?"active":"";
+	$loanreport = ($this->active == "loanreport")?"active":"";
+	$gis = ($this->active == "gis")?"active":"";
+	$saving = ($this->active == "saving")?"active":"";
+	$cashreport = ($this->active == "cashreport")?"active":"";
+	$pfreport = ($this->active == "pfreport")?"active":"";
+	$htpitreport = ($this->active == "htpitreport")?"active":"";
+	$controlsummary = ($this->active == "controlsummary")?"active":"";
+?>
+<br/>
+<ul class="nav nav-tabs padding-18" id="myTab">	
+	<li class="<?php echo $payregister; ?>">
+		<a href="<?php echo $this->url('preport', array('action' => 'payregister')); ?>" title="Pay Register">
+			<i class="blue ace-icon fa fa-bar-chart bigger-120"></i>
+			<span class="hidden-xs">Pay Register</span>
+		</a>
+	</li>
+	<li class="<?php echo $phreport; ?>">
+		<a href="<?php echo $this->url('preport', array('action' => 'phreport')); ?>" title="Pay Head Report">
+			<i class="green ace-icon fa fa-area-chart bigger-120"></i>
+			<span class="hidden-xs">Payhead Report</span>
+		</a>
+	</li>
+	<li class="<?php echo $loanreport; ?>">
+		<a href="<?php echo $this->url('preport', array('action' => 'loanreport')); ?>" title="Loan Report">
+			<i class="orange ace-icon fa fa-pie-chart bigger-120"></i>
+			<span class="hidden-xs">Loan Report</span>
+		</a>
+	</li>
+	<li class="<?php echo $gis; ?>">
+		<a href="<?php echo $this->url('preport', array('action' => 'gis')); ?>" title="GIS Report">
+			<i class="red ace-icon fa fa-line-chart bigger-120"></i>
+			<span class="hidden-xs">GIS Report</span>
+		</a>
+	</li>
+	<li class="<?php echo $saving; ?>">
+		<a href="<?php echo $this->url('preport', array('action' => 'saving')); ?>" title="Bank Report">
+			<i class="blue ace-icon fa fa-university bigger-120"></i>
+			<span class="hidden-xs">Bank Report</span>
+		</a>
+	</li>
+	<li class="<?php echo $cashreport; ?>">
+		<a href="<?php echo $this->url('preport', array('action' => 'cashreport')); ?>" title="Cash Report">
+			<i class="red ace-icon fa fa-money bigger-120"></i>
+			<span class="hidden-xs">Cash Report</span>
+		</a>
+	</li>
+	<li class="<?php echo $pfreport; ?>">
+		<a href="<?php echo $this->url('preport', array('action' => 'pfreport')); ?>" title="Providend Fund Report">
+			<i class="green ace-icon fa fa-database bigger-120"></i>
+			<span class="hidden-xs">PF Report</span>
+		</a>
+	</li>
+	<li class="<?php echo $htpitreport; ?>">
+		<a href="<?php echo $this->url('preport', array('action' => 'htpitreport')); ?>" title="Health Tax & PIT Report">
+			<i class="blue ace-icon fa fa-tags bigger-120"></i>
+			<span class="hidden-xs">HT & PIT Report</span>
+		</a>
+	</li>
+	<li class="<?php echo $controlsummary; ?>">
+		<a href="<?php echo $this->url('preport', array('action' => 'controlsummary')); ?>" title="Control Summary">
+			<i class="orange ace-icon fa fa-sitemap bigger-120"></i>
+			<span class="hidden-xs">Control Summary</span>
+		</a>
+	</li>
+</ul>
+
+

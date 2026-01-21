@@ -1,0 +1,15 @@
+﻿<?php
+/**
+ * 
+ * Report -- of Payroll
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<?php echo $this->partial('hr/payroll-report/partial.phtml', array('active' => 'payregister')); ?><br/>
+<?php	
+	$earning=ceil(count($earningHead)/2); //no of earning columns
+	$deduction=ceil(count($deductionHead)/2); //no of deduction columns
+?>
+
+

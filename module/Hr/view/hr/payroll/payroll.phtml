@@ -1,0 +1,170 @@
+<?php
+/**
+ * 
+ * Index -- of Payroll
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<div class="space-12"></div>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="clearfix">
+			<?php echo $this->button(2);?>
+		</div>
+		<form>
+			<div class="row">
+				<div class="col-lg-2">
+					<label for="month" class="control-label">Month </label>
+					<select class="form-control" name="month" id="month" data-placeholder="Select" required >
+						<option value=""></option>
+						<?php 
+							for($m=1;$m<=12;$m++):
+								$selected = ($this->month == $m)?'selected':'';
+						?>
+							<option value="<?php echo $m;?>" <?php echo $selected;?>>
+								<?php echo date("F", strtotime(date("d-$m-y"))); ?>
+							</option>
+						<?php endfor; ?>
+					</select>
+				</div>
+				<div class="col-lg-2">
+					<label for="year" class="control-label">Year </label>
+					<select class="form-control" name="year" id="year" data-placeholder="Select" required >
+						<option value=""></option>
+						<?php for($y=date('Y');$y >2005;$y--):
+							$selected = ($this->year == $y)?'selected':'';?>
+							<option value="<?php echo $y;?>" <?php echo $selected;?>>
+								<?php echo $y; ?>
+							</option>
+						<?php endfor; ?>
+					</select>
+				</div>
+				<div class="form-group col-lg-1">
+					<label class="control-label"> </label>
+					<button type="button" class="btn btn-sm btn-info" onclick="refresh()" ><i class="fa fa-refresh"></i> refresh</button>
+				</div>
+				<div class="form-group col-lg-4"></div>
+				<div class="form-group col-lg-3"><br>
+					<div class="pull-right tableTools-container"></div>
+				</div>
+			</div>
+		</form>
+		<h4 class="widget-title"> 	
+			Payroll for the month of <strong><?php echo date('F, Y', strtotime('1-'.$this->month.'-'.$this->year));?></strong>
+		</h4>
+		<div class="hr dotted"></div>
+		<table class="table card-table text-nowrap" id="dataTables">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Employee</th>
+                                        <th>Activity</th>
+                                        <th>Location</th>
+					<th>Gross</th>
+					<th>Total Ded.</th>
+					<th>Net Pay</th>
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$i = 1; 
+				$total_net =0;
+				$total_gross =0;
+				$total_ded =0;
+                $total_earning_lwp = 0;
+				$total_deduction_lwp = 0;
+				foreach ($this->payroll as $row):
+				    $employeedtls = $this->employeeObj->get(array('e.id'=>$row['employee_id']));
+					foreach($employeedtls as $edtls);
+					foreach($this->actObj->get(array('a.id'=>$edtls['activity_id']))as $act);
+					$row_id = $row['employee_id'].'-'.$row['year'].'-'.$row['month'];
+				?>
+					<tr data-href="<?php echo $this->button(4, $row_id); ?>" >
+						<td><?php echo $i; ?> </td>
+						<td>
+							<strong><?php echo $row['full_name']; ?></strong> <i><?php echo $row['emp_id']; ?>, 
+							<?php echo $row['designation'];?></i> <strong>(<?php echo $row['type_code']; ?>)</strong>
+							, <?php echo $row['location'];?>
+						</td>
+						<td><strong><?php echo $act['activity']; ?></strong></td>
+                                                <td><strong><?php echo $row['location'];?></strong></td>
+						<td style ="text-align:right"><strong><?php echo $gross = $row['gross']; ?> </strong></td>
+						<td style ="text-align:right"><strong><?php echo $deduc = $row['total_deduction']; ?> </strong></td>
+						<td style ="text-align:right" ><strong><?php echo $net_pay = (($gross+$row['bonus']+$row['leave_encashment'])-$deduc); ?></strong></td>
+						<?php $total_net += $net_pay; $total_ded +=$deduc; $total_gross += $gross; 
+                                                      $total_earning_lwp += $row['earning_dlwp'];
+					              $total_deduction_lwp += $row['deduction_dlwp'];?>
+						<td><?php echo $this->button(1, $row_id);?></td> 
+					</tr>
+				<?php 
+				$i++;
+				endforeach;  
+				?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-12">
+		<h3 class="widget-title"> Sumarray: </h3>
+		<div class="hr dotted"></div>
+		<div class="row">
+			<div class="col-md-1">
+				<label> Total Employee: </label> <strong><?php echo $i-1;?></strong>
+			</div>
+			<div class="col-md-3">
+				<label> Total Gross Pay: </label> <strong><?php echo $this->currency($total_gross);?></strong>
+			</div>
+			<div class="col-md-3">
+				<label> Total Deduction: </label> <strong><?php echo $this->currency($total_ded);?></strong>
+			</div>
+			<div class="col-md-2">
+				<label> Total LWPD: </label> <strong><?php echo $this->currency($total_earning_lwp + $total_deduction_lwp);?></strong>
+			</div>
+			<div class="col-md-3">
+				<label> Total Net Pay: </label><strong><?php echo $this->currency($total_net - $total_earning_lwp + $total_deduction_lwp);?></strong>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="hr dotted"></div>
+<div class="space-12"></div>
+<center>
+	<form method="post" action="<?php echo $this->url('payroll', array('action'=>'booksalary'));?>">
+		<input type="hidden" name="year" id="year" value="<?php echo $this->year;?>"/>
+		<input type="hidden" name="month" id="month" value="<?php echo $this->month;?>"/>
+		<?php $disabled = ($this->bookingbutton)? 'disabled':'';
+			$advance_disabled = ($this->advancebutton)? 'disabled':'';
+			$ym = $this->year.'-'.$this->month;?>
+		<a class="btn btn-primary" href="<?php echo $this->url('payroll',array('action'=>'bookadvancesalary','id'=>$ym));?>" <?php echo $advance_disabled;?> > Book Advance Salary (<?php echo DateTime::createFromFormat('!m', $this->month)->format('F').",".$this->year;?>)</a>
+		<button class="btn btn-success" type="submit" <?php echo $disabled;?> > Book Salary (<?php echo DateTime::createFromFormat('!m', $this->month)->format('F').",".$this->year;?>)</button>
+	</form>
+</center>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script>
+	 //fuction to refresh 
+	 function refresh(){
+		var id = $('#year').val()+'-'+$('#month').val();
+		location.href="<?php echo $this->url('payroll', array('action'=>'payroll'));?>/"+id;
+	 }
+	$("tr[data-href]").each(function(){ 
+		if($(this).attr('data-href')!='#'){
+			$(this).css('cursor','pointer');
+			$(this).bind('click',function() {
+				window.document.location = $(this).attr("data-href");
+			});
+		}
+	});
+	$('document').ready(function(){
+		$('#dataTables').DataTable();
+	});
+</script>

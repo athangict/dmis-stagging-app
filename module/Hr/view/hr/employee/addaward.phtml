@@ -1,0 +1,87 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmployeeController/addfamilyAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+
+<form method="post" action="<?php echo $this->url('employee', array('action' => 'addaward', 'id' => $this->id)); ?>"  enctype="multipart/form-data" >    
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->    
+    <div class="modal-body">       
+		<div class="panel panel-default">                       
+			<div class="panel-body">
+				<div class="form-group">
+					<label for="particular" class="control-label">Particular</label>
+					<input type="text" class="form-control" name="particular" id="particular" required> 
+				</div>
+				<div class="form-group">
+					<label for="award" class="control-label">Award</label>
+					<input type="text" class="form-control" name="award" id="award" required> 
+				</div>
+				<div class="form-group ">
+					<label for="award_date" class="control-label">Award Date</label>
+					<div class="input-group">
+					<input class="form-control" name="award_date" id="award_date" type="date"  placeholder="Award Date" >
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="authority" class="control-label">Authority</label>
+					<input type="text" class="form-control" name="authority" id="authority" required> 
+			</div>
+			</div>
+		</div>
+	</div> <!-- /modal-body -->        
+	<div class="modal-footer">
+		<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+		<button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>  
+</form>   
+<script>
+	$('#award_date').datepicker();
+	$('document').ready(function(){
+		$('form').formValidation({
+			excluded: ':disabled',
+			message: 'Please enter a value.',
+			fields: {
+				particular: {
+					validators: {
+						notEmpty: {
+							message:'Please provide particular.'
+						}
+					}
+				},
+				award:{
+					validators:{
+						notEmpty:{
+							message:'Please provide award.'
+						}
+					}
+				},	
+				award_date:{
+					validators:{
+						notEmpty:{
+							message:'Please select award date.'
+						}
+					}
+				},
+				authority:{
+					validators:{
+						notEmpty:{
+							message:'Please provide authority.'
+						}
+					}
+				},
+			}	
+		});
+		$('#award_date').on('changeDate',function(){
+			$('form').formValidation('revalidateField', 'award_date');
+		});
+	});
+</script> 

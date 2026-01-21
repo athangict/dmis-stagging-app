@@ -1,0 +1,317 @@
+<?php
+/**
+ * 
+ * View -- of Accounts/ReportController/genprofitlossAction
+ * 
+ */
+?>
+<?php echo $this->partial('hr/payroll/partial.phtml', array('active' => 'payslip')); ?><br/>
+<?php
+	$minYear = (int)date('Y', strtotime($this->minDate));
+	$currentYear = (int)date('Y');
+?>
+<div class="row">
+	<div class="col-lg-12">	
+		<div class="widget widget-box transparent">
+			<div class="widget-header">
+				<h4 class="widget-title"> 	
+					Generate Pay Slip
+				</h4>
+			</div>
+		</div>
+		<div class="space-6"></div>
+		<form data-toggle="validator" method="post" action=""  enctype="multipart/form-data" >    
+			<div class="row"> 
+				<div class="form-group col-lg-2">
+					<label for="year" class="control-label">Year</label>
+					<select name="year" id="year" class="form-control">
+						<?php for($year = $currentYear; $year >= $minYear; $year--):
+							$selected = ($this->year == $year)?'selected':''; ?>
+							<option value="<?php echo $year;?>" <?php echo $selected;?>> <?php echo $year; ?> </option>
+						<?php endfor;?>
+					</select>
+				</div> 		   
+				<div class="form-group col-lg-2">
+					<label for="month" class="control-label">Month</label>
+					<select name="month" id="month" class="form-control">
+						<?php for($month=1;$month<=12;$month++):
+							$selected = ($this->month == $month)?'selected':''; ?>
+							<option value="<?php echo $month;?>" <?php echo $selected;?>>
+								<?php echo date("F", strtotime(date("1-$month-$this->year"))); ?>
+							</option>
+						<?php endfor; ?>
+					</select>
+				</div>
+				<div class="form-group col-lg-2">
+					<label for="region" class="control-label">Region</label>
+					<select class="form-control" name="region" id="region" data-placeholder="Select" >
+						<option value="-1">All</option>
+						<?php foreach ($regions as $region):
+							$selected = ($this->region_id == $region['id'])?'selected':''; ?>
+							<option value="<?php echo $region['id'];?>" <?php echo $selected;?>>
+								<?php echo $region['region']; ?>
+							</option>
+						<?php endforeach;?>									
+					</select>
+				</div>
+				<div class="form-group col-lg-2">
+					<label for="location" class="control-label">Location</label>
+					<select class="form-control" name="location" id="location" data-placeholder="Select">
+						<option value="-1">All</option>	
+						<?php if($this->region_id >0):
+							$locations = $this->locationObj->get(array('l.region'=>$this->region_id));
+							foreach ($locations as $location):
+								$selected = ($this->location_id == $location['id'])?'selected':''; ?>
+								<option value="<?php echo $location['id'];?>" <?php echo $selected;?>>
+									<?php echo $location['location']; ?>
+								</option>
+							<?php endforeach;?>	
+						<?php endif; ?>					
+					</select>
+				</div>
+				<div class="form-group col-lg-2">
+					<label for="location" class="control-label">Employee</label>
+					<select class="form-control" name="employee" id="employee" data-placeholder="Select">
+						<option value="-1">All</option>	
+						<?php if($this->location_id >0):
+							$employees = $this->employeeObj->get(array('e.location'=>$this->location_id,'e.status'=>array(1,4,5)));
+							foreach ($employees as $emp):
+								$selected = ($this->employee_id == $emp['id'])?'selected':''; ?>
+								<option value="<?php echo $emp['id'];?>" <?php echo $selected;?>>
+									<?php echo $emp['full_name']; ?> (<?php echo $emp['emp_id'];?>)
+								</option>
+							<?php endforeach;?>	
+						<?php endif; ?>					
+					</select>
+				</div>
+				<div class ="col-lg-1">
+					<label for="location" class="control-label"></label>
+					<button type="submit" class="btn btn-sm btn-success form-control"><i class="fa fa-gear"></i> Generate </button>
+				</div>
+				<div class ="col-lg-1">
+					<label for="location" class="control-label"></label>
+					<?php $pr_id = $this->employee_id.'&'.$this->year.'&'.$this->month.'&'.$this->location_id.'&'.$this->region_id;?>
+					<a id="recipt" class="btn btn-sm btn-warning form-control" data-toggle="modal" data-target="#recipt_modal" href="<?php echo $this->url('pdfxls', array('action' => 'payrecipt', 'id' => $pr_id));?>">
+						<i class="ace-icon fa fa-print fa-lg"></i>
+					</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<?php 
+if($this->employee_id > 0):
+	$payrolls = $this->payrollObj->get(array('pr.employee' => $this->employee_id, 'month' => $this->month, 'year' => $this->year));
+elseif($this->location_id > 0):
+	$payrolls = $this->payrollObj->get(array('his.location' => $this->location_id, 'month' => $this->month, 'year' => $this->year));
+elseif($this->region_id > 0):
+	$payrolls = $this->payrollObj->get(array('l.region' => $this->region_id, 'month' => $this->month, 'year' => $this->year));
+else:
+	if($this->employee_id != '' && $this->location_id != '' && $this->region_id != ''){
+		$payrolls = $this->payrollObj->get(array('month' => $this->month, 'year' => $this->year));
+	}else{	// $payROLL below for display of message	
+		$payROLL = $this->payrollObj->get(array('month' => $this->month, 'year' => $this->year));
+		if(sizeof($payROLL) > 0):?>
+		<div class="alert alert-success fade in">  
+			<strong>Click the Generate button after selecting required region, location and employee</strong>
+		 </div>	
+	<?php endif;}
+endif;
+ $i=1;
+if(sizeof($payrolls) > 0):
+foreach($payrolls as $payroll):
+	foreach($this->employeeObj->get($payroll['employee_id']) as $employee);
+	$payroll_id = $payroll['id'];?>
+	<div class="col-lg-12">
+	<div class="hr hr8 hr-double hr-dotted"></div>
+		<a style="cursor:pointer;" class="pull-right" id="print<?php echo $i;?>">
+			<i class="ace-icon fa fa-file-pdf-o fa-lg red">pdf</i>
+		</a>
+		<div class="widget widget-box transparent" id="report-print<?php echo $i;?>">
+			<div class="widget-body">   
+				<div class="widget-main padding-24"> 
+					<div class="row" id="convert-table1">
+						<h5>
+							<b class="dark-blue">Pay Slip for the month of 
+								<?php echo date("F", strtotime(date("1-$this->month-$this->year"))).', '.$this->year; ?> 
+							</b>
+						</h5>	
+						<div class="col-lg-6" id="convert-tab11">
+							<ul class="list-unstyled spaced pull-left">
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>Name: <b class="dark-blue"><?php echo $employee['full_name']; ?> (<?php echo $employee['emp_id']; ?>) </b>
+								</li>
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>Position: <b class="dark-blue"><?php echo $employee['position_title'];?> (<?php echo $employee['position_level'];?>) </b>
+								</li>
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>Department:	<b class="dark-blue"><?php echo $employee['department']; ?> </b>
+								</li>
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>Leave Without Pay:  <b class="dark-blue"><?php echo $payroll['leave_without_pay']; ?> </b>
+								</li>		
+							</ul>
+						</div>
+						<div class="col-lg-6" id="convert-tab12">
+							<ul class="list-unstyled spaced pull-right">
+								
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>Region, Location: <b class="dark-blue"><?php echo $payroll['region'].', '.$payroll['location'];?> </b>
+								</li>
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>Bank Account No.: <b class="dark-blue"><?php echo $employee['bank_account_no'];?> </b>
+								</li>
+								<li>
+									<i class="ace-icon fa fa-caret-right blue"></i>Bank Address: <b class="dark-blue"><?php echo $employee['bank_address'];?> </b>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<?php 
+					//if($payroll_id > 0):?>			        			
+						<div class="row" id="convert-table2">
+							<div class="col-lg-6" id="convert-tab21">
+								<h4 class="header smaller">Earnings</h4>
+								<table id="earning_table" class="table table-striped table-bordered table-condensed">
+									<thead>
+										<tr>
+											<th>Earning</th>
+											<th>Amount</th>
+										</tr>
+									</thead>
+									<tbody>
+									<?php foreach ($this->paydetailObj->get(array('pay_roll' => $payroll_id)) as $paydetail):	
+										if($paydetail['deduction'] == "0"):?>
+											<tr>
+												<td> <?php echo $paydetail['pay_head'];?> </td>
+												<td> <?php echo $this->currency($paydetail['amount']);?> </td>
+											</tr>
+										<?php endif;
+									endforeach;?>				
+									</tbody>
+									<tfoot>
+										<tr>
+											<td class="text-right">
+												<b>Gross Amount :</b>
+											</td>
+											<td>
+												<b><?php $gross = $payroll['gross']; 
+												echo $this->currency($gross);?> </b>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>		        
+							<div class="col-lg-6" id="convert-tab22">
+								<h4 class="header smaller">Deductions</h4>
+								<table id="deduction_table" class="table table-striped table-bordered table-condensed">
+									<thead>
+										<tr>
+											<th>Deduction</th>
+											<th>Amount</th>
+										</tr>
+									</thead>
+									<tbody>		                                
+									<?php foreach ($this->paydetailObj->get(array('pay_roll' => $payroll_id)) as $paydetail):	
+										if($paydetail['deduction'] == "1"):?>
+											<tr>
+												<td> <?php echo $paydetail['pay_head'];?> </td>
+												<td> <?php echo $this->currency($paydetail['amount']);?> </td>
+											</tr>
+										<?php endif;
+									endforeach;?>		
+									</tbody>
+									<tfoot>
+										<tr>
+											<td class="text-right">
+												<b>Total Deduction :</b>
+											</td>
+											<td>
+												<b><?php $total_deduction =  $payroll['total_deduction'];
+												echo $this->currency($total_deduction);?></b>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+						<div class="row">
+							<div class="hr hr8 hr-dotted"></div>
+							<div class="col-lg-4">
+								<h4 class="smaller">
+									Bonus : <?php  $bonus = $payroll['bonus']; 
+									echo $this->currency($bonus);?>
+								</h4>
+							</div>
+							<div class="col-lg-4">
+								<h4 class="pull-left smaller">
+									LWP Amount from Earnings/Deductions : <?php echo $this->currency($payroll['earning_dlwp']); ?>/<?php echo $this->currency($payroll['deduction_dlwp']); ?>
+								</h4>
+							</div>
+							<div class="col-lg-4">
+								<h4 class="pull-right smaller">
+									<?php  $net = $payroll['net_pay']; ?>
+									Net : <?php echo $this->currency($net);?>
+								</h4>								
+							</div>
+						</div>
+					<?php //else:?>
+						
+					<?php //endif;?>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php $i++; endforeach;
+else:
+	if(!sizeof($payROLL) > 0):
+?>
+	<div class="alert alert-warning">
+		<button class="close" data-dismiss="alert" type="button">
+			<i class="ace-icon fa fa-times"></i>
+		</button>
+		<strong>  Warning! </strong>
+		Pay roll not prepared, Prepare payroll first.<br></br>
+	</div>
+<?php endif; endif;?>
+<!--for modal -->
+<div id="recipt_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog" style="width:400px;">
+		<div class="modal-content"> </div>
+	</div>
+</div>
+<script>
+	$(function(){
+		$("#region").change(function() { 
+			$.post( "<?php echo $this->url('ajresponse', array('action' => 'getlocation')); ?>/"+ $("#region").val(), function( data ) {
+				var newdata ="<option value='-1'>All</option>"+data;
+				$('#location').html( newdata );
+				$("#location").trigger('chosen:updated');
+			});
+	    });
+		$("#location").change(function() { 
+			$.post(
+				"<?php echo $this->url('payroll', array('action' => 'getemployee'));?>",
+				{
+					location: $(this).val(),
+				},
+				function(data){
+					console.log(data);
+					$('#employee').html(data.emp);
+					$('#employee option:selected').removeAttr('selected');
+					$('#employee').trigger('chosen:updated');
+				},
+				'json'
+			);	
+	    });
+	    for(var j=1; j< <?php echo $i;?>; j++){
+			$('#print'+j).genpdfpayslip({
+				content: '#report-print'+j,
+				src:"<?php echo $this->url('pdfxls', array('action' => 'pdf'));?>",
+				orentation:"P",//L =landscape, P = potrait
+			});
+		}		
+	});
+	
+</script>
+

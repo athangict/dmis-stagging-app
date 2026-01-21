@@ -1,0 +1,226 @@
+<?php
+/**
+ * View -- of Application/IndexController/panel4Action
+ * chophel@athang.com
+ */
+	$this->headTitle($title);
+	//echo '<pre>';print_r($permitted_districts);exit;
+?>
+<div class="container-xl">
+	<!-- Page title -->
+	<div class="page-header d-print-none">
+		<div class="row align-items-center">
+			<div class="col">
+				<!-- Page pre-title -->
+                <div class="page-pretitle">Overview</div>
+                <h2 class="page-title">Dashboard</h2>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="page-body">
+	<div class="container-xl">
+		<div class="row row-deck row-cards">
+		    <div class="col-lg-6">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Total Employees | Organization Based</h5>
+						<div id="chart1" style="height: 370px;"></div>
+						<?php
+							$Total_employees = array();
+							//foreach($$location_from_user as $location);
+							foreach($this->locationObj->get(array('status'=>'1')) as $locations):
+								$employees = $this->employeeObj->getCount(array('location'=>$locations['id']));
+								array_push($Total_employees,array("y"=>$employees,"label"=>$locations['code']));
+								
+							endforeach;
+							//echo '<pre>';print_r($Total_employees);
+							//exit;
+						?>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Total Employees | All Organizations | Position Based</h5>
+						<div id="chart2" style="height: 370px;"></div>
+						<?php
+							$hr_position_title_wise = array();
+							//foreach($$location_from_user as $location);
+							foreach($this->positiontitleObj->get(array('status'=>'1')) as $positions):
+								$hr_position_count = $this->employeeObj->getCount(array('position_title'=>$positions['id']));
+								array_push($hr_position_title_wise,array("y"=>$hr_position_count,"label"=>$positions['position_title']));
+							endforeach;
+						?>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row row-deck row-cards">
+		    <div class="col-lg-6">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Total Students | Organization Based</h5>
+						<div id="chart3" style="height: 370px;"></div>
+						<?php
+							$total_students_in_org = array();
+							$total_students_in_org_male = array();
+							$total_students_in_org_female = array();
+							foreach($this->locationObj->get(array('status'=>'1')) as $locations):
+								$total_in_class = $this->studentObj->getCount(array('organization'=>$locations['id']));
+								$male_students = $this->studentObj->getCount(array('organization'=>$locations['id'],'gender'=>'1','staff'=>'1'));
+								$female_students = $this->studentObj->getCount(array('organization'=>$locations['id'],'gender'=>'0','staff'=>'1'));
+								array_push($total_students_in_org,array("y"=>$total_in_class,"label"=>$locations['code']));
+								array_push($total_students_in_org_male,array("y"=>$male_students,"label"=>$locations['code']));
+								array_push($total_students_in_org_female,array("y"=>$female_students,"label"=>$locations['code']));
+							endforeach;
+						//echo '<pre>';print_r($total_students_in_org_male);
+							//echo '<pre>';print_r($total_students_in_org_female);
+							//exit;
+						?>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Total Students | All Organizations | Standard Based</h5>
+						<div id="chart4" style="height: 370px;"></div>
+						<?php
+							$Total_students_with_standard = array();
+							foreach($this->standardObj->get(array('status'=>'1')) as $standards):
+								$total_in_org = $this->resultObj->getCount(array('class'=>$standards['id'],'academic_year'=>$distinctyear));
+								array_push($Total_students_with_standard,array("y"=>$total_in_org,"label"=>$standards['standard']));
+							//echo '<pre>';print_r($Total_students_with_standard);
+							endforeach;
+							//exit;
+						?>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+    $(function () {
+		var chart1 = new CanvasJS.Chart("chart1", {
+            animationEnabled: true,
+			exportFileName: "Total Employees in all organization",
+            exportEnabled: true,
+            legend: {
+                verticalAlign: "center",
+                horizontalAlign: "right",
+            },
+			axisX: {
+				title: "Organization"
+			},
+			axisY: {
+				title: "No. of Employees"
+			},
+            theme: "light2",
+			axisX: {
+						interval: 2
+					},
+            data: [
+				{
+					type: "bar",
+					dataPoints: <?php echo json_encode($Total_employees, JSON_NUMERIC_CHECK); ?>
+				},
+            ]
+        });
+        chart1.render();
+		var chart2 = new CanvasJS.Chart("chart2", {
+            animationEnabled: true,
+			exportFileName: "Total Teacher",
+            exportEnabled: true,
+            legend: {
+                verticalAlign: "center",
+                horizontalAlign: "right",
+            },
+			axisX: {
+				title: "Organization"
+			},
+			axisY: {
+				title: "No. of Employees"
+			},
+            theme: "light2",
+			axisX: {
+						interval: 1
+					},
+            data: [
+				{
+					type: "column",
+					dataPoints: <?php echo json_encode($hr_position_title_wise, JSON_NUMERIC_CHECK); ?>
+				},
+            ]
+        });
+        chart2.render();
+		var chart3 = new CanvasJS.Chart("chart3", {
+            animationEnabled: true,
+			exportFileName: "Total Students",
+            exportEnabled: true,
+            legend: {
+                verticalAlign: "center",
+                horizontalAlign: "right",
+            },
+			axisX: {
+				title: "Organization"
+			},
+			axisY: {
+				title: "No. of Students",
+			},
+            theme: "line",
+			axisX: {
+						interval: 2
+					},
+            data: [
+				{
+					type: "stackedBar",
+					toolTipContent: "Total Male:{y}",
+					legendText: "Total Male Students",
+					showInLegend: "true",
+					indexLabelPlacement: "outside",
+					dataPoints: <?php echo json_encode($total_students_in_org_male, JSON_NUMERIC_CHECK); ?>
+				},
+				{
+					type: "stackedBar",
+					toolTipContent: "Total Female:{y}",
+					legendText: "Total Female Students",
+					showInLegend: "true",
+					indexLabel: "#total",
+					indexLabelPlacement: "outside",
+					dataPoints: <?php echo json_encode($total_students_in_org_female, JSON_NUMERIC_CHECK); ?>
+				}
+            ]
+        });
+        chart3.render();
+		var chart4 = new CanvasJS.Chart("chart4", {
+            animationEnabled: true,
+			exportFileName: "Pass Percentage",
+            exportEnabled: true,
+            legend: {
+                verticalAlign: "center",
+                horizontalAlign: "right",
+            },
+			axisX: {
+				title: "Organization"
+			},
+			axisY: {
+				title: "Total Students in different Classes",
+				suffix: "%"
+			},
+            theme: "light2",
+			axisX: {
+						interval: 1
+					},
+            data: [
+				{
+					type: "doughnut",
+					dataPoints: <?php echo json_encode($Total_students_with_standard, JSON_NUMERIC_CHECK); ?>
+				}
+            ]
+        });
+        chart4.render();
+	});
+</script>

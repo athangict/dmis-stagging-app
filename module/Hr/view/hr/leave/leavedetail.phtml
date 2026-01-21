@@ -1,0 +1,262 @@
+<?php
+/**
+ * 
+ * View -- of Hr/LeaveController/indexAction
+ * 
+ */
+$this->headTitle($this->title);
+foreach($this->leavedetail as $row);
+foreach($this->employeeObj->get($row['employee']) as $emp);
+//print_r($emp); exit;
+$flag = false;
+$subRoles = $this->userRoleObj->get(array('user'=>$this->userID, 'subrole'=>array('1','2','17')));  
+if(sizeof($subRoles) >0 && sizeof($this->leavedetail)>0){
+  $flag = true;
+}else{	
+  $results = $this->ActivityLogObj->get(array('process'=>22, 'process_id'=>$row['id']));
+  $activity_user = array();
+  foreach($results as $log):  array_push($activity_user, $log['author']);  endforeach;
+  $userEmp = $this->usersObj->getColumn($this->userID, 'employee');
+  if($userEmp == $row['employee'] || $userEmp == $row['delegation'] || in_array($this->userID,$activity_user))
+  {
+	$flag = true;
+  }					  
+}
+if($flag):
+?>
+<div class="row" id="report-print">
+	<div class="col-lg-12">
+		<div class="widget-box transparent ">
+			<div class="widget-header widget-header-large">
+			       <a class="btn btn-xs btn-danger" data-toggle="modal" data-target="#modal" 
+				   href="<?php echo $this->url('acl', array('action' => 'activitylog', 'id' => "22-".$row['id'])); ?>" title="View Activity Logs">
+							<i class="ace-icon fa fa-plus smaller-120"></i>  
+				   </a>
+				   &nbsp;&nbsp;
+				<h3 class="widget-title grey lighter">
+					Leave Application &nbsp;&nbsp; <span class="orange">Dated:-<?php echo date('d-m-y',strtotime($row['created']));?></span>
+					&nbsp;&nbsp;<?php $this->status($row['status']); ?> 					
+				</h3>
+				<div class="widget-toolbar">
+					<a class ="hidden-xs" style='cursor:pointer' id="print">
+						<i class="ace-icon fa fa-file-pdf-o red"></i>
+					</a>
+					<?php //echo $this->button(3, $row['id']); ?>		
+				</div>
+			</div>
+			<div class="widget-body">
+				<div class="widget-main padding-12">
+					<div id="report-print">	
+                        <div class="row">
+							<div class="col-lg-6">
+							   <ul class="list-unstyled spaced">
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>
+										Employee Name | EID : <b class="blue"><?php echo $emp['full_name']." | ".$emp['emp_id']; ?></b>
+									</li>
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>
+										Location: <b class="blue"> <?php echo $emp['location']; ?></b>
+									</li>	
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>
+										Designation: <b class="blue"><?php echo $emp['designation']; ?> </b>
+									</li>									
+                                    <li>
+								       <i class="ace-icon fa fa-caret-right blue"></i>
+										Email | Contact No: <b class="blue"><?php echo $emp['email']; ?> | <?php echo $row['contact']; ?> </b>
+									</li>																		
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>
+										Officiating : <b class="blue"><?php echo $this->employeeObj->getColumn($row['delegation'],'full_name'); ?></b>
+									</li>
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>
+										Sanction No. : <b class="blue"><?php echo $row['sanction_order_no']; ?></b>
+									</li>									
+								</ul>		
+								<h3 class="widget-title grey lighter">Leave Application Details</h3>
+							  <table class="table table-striped table-hover table-condensed">
+								<tr><th>Leave Type</th><th>Start Date</th><th>End Date</th><th>No. of Days</th></tr>
+								 <tr> 
+								     <td><?php echo $row['type']; ?></td>
+									 <td><?php echo $row['start_date']; ?></td>
+									 <td><?php echo $row['end_date']; ?></td>										 
+									 <td><?php echo $row['no_of_days']; ?></td>									
+								 </tr>
+							  </table>	
+                              <ul class="list-unstyled spaced">
+									<li>
+										<i class="ace-icon fa fa-caret-right blue"></i>Remarks: <b class="red"><?php echo $row['remarks'];?> </b>
+									</li>
+							   </ul>							   
+                            </div>
+                        </div>		
+                        <div class="row">
+						  <div class="col-lg-6">						
+							<?php 
+							 $Status = array('1', '2', '5', '8');
+							 if(in_array($row['status'], $Status)):?>						
+								<h3 class="widget-title grey lighter"> Leave Summary and History</h3>							   
+									<div class="form-group col-lg-3">
+										<label for="casual_bal" class="control-label">Casual Bal:</label>
+										<b class="red"><?php echo $casual_bal;?></b>
+									</div>	
+									<div class="form-group col-lg-3">
+										<label for="earned_bal" class="control-label">Earned Bal:</label>
+										<b class="red"><?php echo $earned_bal;?></b>
+									</div>	
+									<div class="form-group col-lg-3">
+										<label for="total_leave" class="control-label">Total Taken:</label>
+										<b class="red"><?php echo $total_leave;?></b>
+									</div>
+									<div class="form-group col-lg-3">
+										<label for="total_bal" class="control-label">Total Bal:</label>
+										<b class="red"><?php echo $total_bal;?></b>
+									</div>								 
+								<table class="table table-striped table-hover table-condensed" >
+								  <thead>
+									<tr><th>#</th><th>Leave Type</th><th>Leave From &nbsp; - &nbsp; To </th><th>No. of Days</th><th>Remarks</th></tr>
+								  </thead>									 
+								  <tbody>
+								  <?php 
+								   $leaveResult = $this->leaveObj->get(array('ld.employee' => $emp['id'], 'ld.status'=>array('6','7'))); 
+									if(sizeof($leaveResult) > 0):
+            							$sl =1; 
+										foreach ($leaveResult as $result): ?>
+										  <tr><td><?php echo $sl++; ?></td><td><?php echo $result['type'];?></td>
+										  <td><?php echo $result['start_date']." &nbsp; - &nbsp; ".$result['start_date']; ?></td>
+										  <td><?php echo $result['no_of_days']; ?></td>
+										  <td><a href="<?php echo $this->url('leave', array('action'=>'leavedetail', 'id'=>$result['id']));?>"><?php echo substr($result['remarks'], 0 ,25); ?></a></td>
+										  </tr>    
+								  <?php endforeach;
+								    else:
+									   ?> <tr><td colspan="5"><i>No previous leave record</i></td></tr><?php
+									endif; 
+								  ?>									     
+								  </tbody>
+								</table>							
+							<?php endif;?>	
+						    </div>
+						</div>									
+					    <!-- Upload and Download file attachments -->			
+					<?php   
+						   echo $this->partial('partial/attachment.phtml', array('process' => '22', 'process_id'=> $row['id'] , 'status' => $row['status']));
+					?>					
+				    <!-- End of attachment -->
+					
+					<div class="row">
+						<div class="col-lg-7">
+						</div>
+						<div class="col-lg-5" style="text-align: right">	
+                        <?php
+                           $employeeUser = $this->usersObj->getColumn(array('employee'=>$emp['id']), 'id');	
+						   $activity = $this->leaveFlowObj->getMax($column='activity', $where=array('application'=>$row['id'], 'process'=>'22'));
+						   $flows = $this->leaveFlowObj->get(array('application'=>$row['id'],'activity'=>$activity, 'process'=>'22'));
+						   foreach($flows as $flow);		   
+						   
+						   if(($row['status'] == "1" || $row['status'] == "8" ) && $this->userID == $employeeUser && ($this->userID == $flow['routing'] || $flow['routing'] == "")){ ?>
+								<form method="post" action="<?php echo $this->url('leave', array('action' => 'leavedetail')); ?>">	
+									<a data-toggle="modal" data-target="#modal" href="<?php echo $this->url('leave', array('action'=>'process', 'id'=>$row['id'].'-1'));?>" class="btn btn-success"> 
+									<i class="fa fa-check-square-o"></i> Apply Leave </a>								
+									<input type="hidden" value="<?php echo $row['id']; ?>" name="application_id">									
+									<button type="submit" value="1" name="cancel" class="btn btn-danger" onClick="return confirm('Are you sure to Cancel this leave?')"> 
+									<i class="fa fa-times"></i> Cancel Leave </button>
+									<a href="<?php echo $this->url('leave', array('action'=>'editleave', 'id'=>$row['id']));?>" class="btn btn-info"> 
+								    <i class="fa fa-pencil"></i> Edit </a>									
+                                </form>									
+                        <?php }
+							  elseif(in_array($row['status'],array('2','1', '8'))){							      
+								   foreach($flows as $flow);
+								   if($this->userID == $flow['routing']):
+									   $buttons = explode('|',$flow['action']); 
+									   for($i=0;$i<count($buttons);$i++):	
+										  $leaveActions = $this->leaveActionObj->get($buttons[$i]); 
+										  foreach($leaveActions as $leaveAction);	
+										  ?>
+										  <a data-toggle="modal" data-target="#modal" href="<?php echo $this->url('leave', array('action'=>'process', 'id'=>$row['id']."-".$leaveAction['id']));?>"  class="btn btn-<?php echo $leaveAction['label']; ?>"> 
+										    <?php echo $leaveAction['action']; ?>
+										  </a>
+										  <?php
+									   endfor;
+									endif;
+							  }
+							elseif($this->userID == $row['leave_official'] && sizeof($flows) == 0 && $row['status'] == "5"){							   
+							   ?>
+							   <form method="post" action="<?php echo $this->url('leave', array('action' => 'leavedetail')); ?>">	
+									<a data-toggle="modal" data-target="#modal" href="<?php echo $this->url('leave', array('action'=>'process', 'id'=>$row['id'].'-3'));?>" class="btn btn-success"> 
+								     <i class="fa fa-check-square-o"></i> Approve </a>								
+									<input type="hidden" value="<?php echo $row['id']; ?>" name="application_id">									
+									<button type="submit" value="1" name="cancel" class="btn btn-danger" onClick="return confirm('Are you sure to Cancel this leave?')"> 
+									<i class="fa fa-times"></i> Cancel Leave </button>
+									<a href="<?php echo $this->url('leave', array('action'=>'editleave', 'id'=>$row['id']));?>" class="btn btn-info"> 
+								    <i class="fa fa-pencil"></i> Edit </a>									
+                                </form>		
+							
+							   <?php
+							}									
+						  ?>								
+						</div>
+					</div>
+					
+					<?php 
+					$timestamp_start = strtotime(date('Y-m-d'));
+				    $timestamp_end = strtotime($row['end_date']); 
+					if($row['status'] == "7"){
+					?>
+					<div class="row">
+					  <div class="col-lg-7">
+					  <?php 
+					     $difference = abs($timestamp_end - $timestamp_start); // that's it!
+						 $days = floor($difference/(60*60*24));	
+						 if($timestamp_start > $timestamp_end ){  
+						    $no_of_days = "-".$days; 
+							$info = "* Inform Leave official to complete you leave";
+						 }else{
+						    $no_of_days = $days; 
+							$info ="";
+						 } 
+						 ?>
+					     <h3 class="widget-title grey lighter">Leave Count Down: <span class="orange"><?php echo $no_of_days; echo ($days > '1')?" Days":" Day"; ?> </span></h3>
+					     <span class="orange">  <?php echo $info; ?></span>
+					  </div>
+					  <?php 
+					    $leaveFlow = $this->leaveFlowObj->get(array('application'=>$row['id'], 'process'=>'22'));
+						$actors = array();
+						foreach($leaveFlow as $flow):						
+						   if(!in_array($flow['actor'],$actors)){			   
+							  array_push($actors, $flow['actor']);				 
+						   }
+						endforeach;
+					
+					   if(($timestamp_start >  $timestamp_end || $timestamp_end == $timestamp_start) && $this->userID != $employeeUser && in_array($this->userID, $actors)): ?>
+					    <div class="col-lg-5" style="text-align: right"> 
+						  <a data-toggle="modal" data-target="#modal" href="<?php echo $this->url('leave', array('action'=>'process', 'id'=>$row['id']."-7"));?>"  class="btn btn-danger"> 
+								Complete Leave
+						  </a>
+					    </div>
+					  <?php endif; ?>
+					</div>					
+					<?php 				   
+					}	?>
+					
+				    </div>
+			    </div>
+		    </div>	
+	    </div>
+    </div>
+</div>
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		</div>
+	</div>
+</div>
+<?php endif; ?>
+<script type="text/javascript">
+	$('#print').genpdfinvoice({
+		content: '#report-print',
+		src:"<?php echo $this->url('pdfxls', array('action' => 'pdf'));?>",
+		orentation:"P",//L =landscape, P = potrait
+	});
+</script>

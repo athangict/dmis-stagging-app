@@ -1,0 +1,187 @@
+<?php
+/**
+ * View -- of Humanresource/EmployeeController/viewAction
+ */
+    $this->headTitle($this->title);
+	foreach ($paginator as $row):
+		extract($row);
+	endforeach; 
+	
+?>
+<?php echo $this->tabs_helper(array(2811,2844,2845),$id); ?>
+<div class="container mt-5">
+    <div class="row">
+		<div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+			<div class="card">
+				<img class="editable img-responsive"; alt="<?php echo $full_name; ?>" id="<?php echo $full_name; ?>" src="<?php echo $this->basePath() . '/images/avatar2.jpg';?>" />
+				<div class="card-body">
+					<h6 class="card-title">
+						<span class="middle"><?php echo strtoupper($full_name); ?></span>
+						<span class="label label-<?php echo $status_color;?> arrowed-in-right">					
+							<i class="ace-icon fa fa-circle smaller-80 align-middle"></i>
+							<?php echo $this->status($row['status'])?>
+						</span>
+					</h6>
+					<p class="card-text"><?php echo $this->button(3, $id);?></p>
+					<p class="card-text"><strong>Email Address:</strong> 
+						<span class="profile-info-value">
+							<span><?php echo $email;?></span>
+						</span>
+					</p>
+					<p class="card-text"><strong>Phone Number:</strong> 
+						<span class="profile-info-value">
+							<span><?php echo $mobile;?></span>
+						</span>
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-9 col-md-4 col-sm-6 col-12 mb-4">
+			<div class="card">
+				<div class="card-body">
+					<div class="card-header">
+						<h5 class="card-title">
+							<div class="profile-info-row">
+								<span class="profile-info-name"><strong> NAME: </strong></span><strong>
+								<span class="middle"><?php echo strtoupper($full_name); ?></span>
+								<span class="label label-<?php echo $status_color;?> arrowed-in-right">					
+									<i class="ace-icon fa fa-circle smaller-80 align-middle"></i>
+									<?php echo $this->status($row['status'])?>
+								</span>
+							</div>
+						</h5>
+                    </div>
+					<p class="card-text"><span class="profile-info-value">
+					    <div class="profile-info-row">
+							<span class="profile-info-name"><strong> EID / CID : </strong></span>
+							<span class="profile-info-value">
+							<span><?php echo $monk_id;?> / <?php echo $cid;?></span>
+							</span>
+						</div> 
+					</p>
+					<p class="card-text">
+					    <div class="profile-info-row">
+							<span class="profile-info-name"><strong>DOB / GENDER : </strong></span>
+							<span class="profile-info-value">
+								<span><?php echo $dob;?> /  <?php echo $gender; ?></span>
+							</span>
+                        </div> 
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>EMAIL / MOBILE :</strong></span>
+							<span class="profile-info-value">
+								<span><?php echo $email;?> / <?php echo $mobile; ?></span>
+							</span>
+						</div>
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>BLOOD GROUP :</strong></span>
+							<span class="profile-info-value">
+							<span><?php echo $blood_group; ?></span>
+							</span>
+					    </div>
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>PERMANENT ADDRESS :</strong></span>
+							<span class="profile-info-value">
+						<i class="fa fa-map-marker light-orange bigger-110"></i>
+						<span><td><?php echo $this->dzongkhags->getColumn($row['dzongkhag'],'district')?></td></span>
+						<span><?php echo $this->gewogs->getColumn($row['gewog'],'block')?></span>
+						<span><?php echo $this->villages->getColumn($row['village'],'village')?></span>
+					</span>
+						</div>
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>THRAM No. / House No. : </strong></span>
+							<span class="profile-info-value">
+								<span><?php echo $thram_no;?> / <?php echo $house_no;?></span>
+							</span>
+						</div>
+					</p>
+				</div>
+			</div>
+			<div class="card">
+			    <div class="card-header ">
+					<h6 class="card-title ">QUALIFICATIONS & FAMILIES</h6>
+				</div>
+				<div class="card-body">
+					<p>Qualifications</p>
+					<table class="table table-sm ">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Course</th>
+								<th>Institute</th>
+								<th>Location</th>
+								<th>Completion Year</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 
+							$i = 1; 
+							foreach($this->qualification as $qrow):?>
+							<tr>
+								<td><?php echo $i; ?> </td>
+								<td><?php  echo $qrow['course'];?></td>
+								<td><?php  echo $qrow['organization'];?></td>
+								<td><?php  echo $qrow['location'];?></td>
+								<td><?php  echo $qrow['to_date'];?></td>
+							</tr>
+							<?php 
+							$i++;
+							endforeach;?>
+						</tbody>
+					</table>
+				</div>
+				<div class="card-body">
+					<p>Family</p>
+					<table class="table table-sm ">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Name</th>
+								<th>Relation</th>
+								<th>Contact</th>
+								<th>Occupation</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 
+							$i = 1; 
+							foreach($family as $frow):
+							?>
+							<tr>
+								<td><?php echo $i; ?> </td>
+								<td><?php  echo $frow['name'];?></td>
+								<td><?php  echo $frow['relation'];?></td>
+								<td><?php  echo $frow['contact'];?></td>
+								<td><?php  echo $frow['occupation'];?></td>
+							
+							</tr>
+						<?php 
+						$i++;
+						endforeach;?>
+					</table>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script type="text/javascript">
+	$('#print').genpdfprofile({
+		content: '#report-print',
+		src:"<?php echo $this->url('pdfxls', array('action' => 'pdf'));?>",
+		orentation:"P",//L =landscape, P = potrait
+	});
+</script>   
+

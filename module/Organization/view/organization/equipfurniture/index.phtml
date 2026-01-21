@@ -1,0 +1,53 @@
+<?php 
+/**
+ * Equipment & Furniture Index View
+ */
+	$this->headTitle($this->title);
+?>
+<?php echo $this->tabs_helper(array(2702,2705)); ?>
+<div class="card">
+	<div class="card-header">
+		<h5 class="card-title text-dark-m3">
+			<i class="fa fa-table mr-1"></i>
+			Equipment & Furniture Management
+		</h5>
+	</div>
+	<div class="card-body">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="card border-primary">
+					<div class="card-header bg-primary text-white">
+						<h6 class="mb-0">
+							<i class="fa fa-laptop mr-2"></i>
+							Equipment
+						</h6>
+					</div>
+					<div class="card-body">
+						<p class="text-secondary-d2">Manage organization equipment inventory</p>
+						<a href="<?php echo $this->url('organization/default', array('controller'=>'equipfurniture', 'action'=>'equipment')); ?>" class="btn btn-primary">
+							<i class="fa fa-list mr-1"></i>
+							View Equipment List
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card border-success">
+					<div class="card-header bg-success text-white">
+						<h6 class="mb-0">
+							<i class="fa fa-chair mr-2"></i>
+							Furniture
+						</h6>
+					</div>
+					<div class="card-body">
+						<p class="text-secondary-d2">Manage organization furniture inventory</p>
+						<a href="<?php echo $this->url('organization/default', array('controller'=>'equipfurniture', 'action'=>'furniture')); ?>" class="btn btn-success">
+							<i class="fa fa-list mr-1"></i>
+							View Furniture List
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

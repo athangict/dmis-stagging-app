@@ -1,0 +1,500 @@
+﻿<?php
+/**
+ * 
+ * Report -- of Payroll
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<?php echo $this->partial('hr/payroll-report/partial.phtml', array('active' => 'payregister')); ?><br/>
+<?php	
+	$earning=ceil(count($earningHead)/2); //no of earning columns
+	$deduction=ceil(count($deductionHead)/2); //no of deduction columns
+$minYear = ($this->minYear > 0)?$this->minYear:date('Y');
+?>
+<div class="widget widget-box transparent">
+	<div class="widget-header">
+		<h4 class="widget-title"> 	
+			Pay Register
+		</h4>
+		<div class="widget-toolbar hidden-xs">
+			<a style='cursor:pointer' id="print">
+				<i class="ace-icon fa fa-file-pdf-o red"></i>
+			</a>
+		</div>
+	</div>
+	<div class="widget-body">
+		<div class="widget-main">
+			<form>
+				<div class="row">
+					<div class="form-group col-lg-2">
+						<label for="year" class="control-label">Year</label>
+						<select id="year" name="year" class="form-control" data-placeholder="Select">
+							<?php 
+							for($year=date('Y');$year >= $minYear;$year--):
+							?>
+								<?php $selected = ($year == $data['year'])?"selected":"";?>
+								<option value="<?php echo $year;?>" <?php echo $selected;?>>
+									<?php echo $year;?> 
+								</option>
+							<?php endfor; ?>
+						</select>
+					</div>
+					<div class="form-group col-lg-2">
+						<label for="month" class="control-label">Month</label>
+						<select id="month" name="month" class="form-control" data-placeholder="Select">
+							<?php for($month=1; $month<13; $month++):?>
+								<?php $selected = ($month == $data['month'])?'selected':'';?>
+								<option value="<?php echo $month;?>" <?php echo $selected; ?>>
+									<?php echo DateTime::createFromFormat('!m', $month)->format('F');?>
+								</option> 
+							<?php endfor;?>
+						</select>
+					</div>
+					<div class="form-group col-lg-2">
+						<label for="region" class="control-label">Region</label>
+						<select class="form-control" id="region" name="region" data-placeholder="Select"  required >
+							<option value="-1">All</option>
+							<?php 
+							foreach ($regions as $region):
+							?>
+							<?php $selected = ($region['id'] == $data['region'])?'selected':'';?>
+								<option value="<?php echo $region['id'];?>" <?php echo $selected;?>>
+									<?php echo $region['region'];?>
+								</option>
+							<?php
+							endforeach;
+							?>
+						</select>
+					</div>        
+					<div class="form-group col-lg-2">
+						<label for="location" class="control-label">Location</label>
+						<select class="form-control" id="location" name="location" data-placeholder="Select" required >
+							<option value="-1">All</option>
+							<?php 
+							foreach ($location as $location):
+							?>
+								<?php $selected = ($location['id'] == $data['location'])?'selected':'';?>
+								<option value="<?php echo $location['id'];?>" <?php echo $selected;?>>
+									<?php echo $location['location'];?>
+								</option>
+							<?php
+							endforeach;
+							?>
+						</select>
+					</div>
+					<div class="form-group col-lg-2">
+						<label for="department" class="control-label">Department</label>
+						<select class="form-control" id="department" name="department" data-placeholder="Select" required >
+							<option value="-1">All</option>
+							<?php 
+							foreach ($department as $department):
+							?>
+								<?php $selected = ($department['id'] == $data['department'])?'selected':'';?>
+								<option value="<?php echo $department['id'];?>" <?php echo $selected;?>>
+									<?php echo $department['department'];?>
+								</option>
+							<?php
+							endforeach;
+							?>
+						</select>
+					</div> 
+					<div class="form-group col-lg-1">
+						<label for="redirect" class="control-label">&nbsp;</label>
+						<button type="button" class="btn btn-sm btn-info" onclick="refresh()" ><i class="fa fa-refresh"></i> refresh</button>
+					</div>
+				</div>
+			</form>
+		<?php if($data['region'] !='' && $data['location'] != '' && $data['department'] != ''):?>
+			<div class="row">
+				<div class="col-lg-12">
+					<?php $month = $data['month'];?>
+					<strong>
+						<h3>Pay Register for the Month of : <?php echo date("F", strtotime(date("d-$month-y"))); ?>, <?php echo $data['year']; ?>
+						<?php
+							$filter = array(
+								'year'=>$data['year'], 
+								'month'=>$data['month'], 
+								'pr.status'=>'1'									
+							);
+							if($data['region'] > 0):
+								$filter['l.region'] = $data['region']; 
+							endif;
+							if($data['location'] > 0):
+								$filter['e.location'] = $data['location']; 
+							endif;
+							if($data['department'] > 0):
+								$filter['e.department'] = $data['department']; 
+							endif;
+							$pay_rolls = $this->payrollObj->getforReport($filter);
+							if(sizeof($pay_rolls) > 0):
+								//Payroll is generated
+							else:
+								$temp_payrolls = $this->temppayrollObj->getforReport($filter);
+								if(sizeof($temp_payrolls)>0): //Draft
+						?>
+							<span class="label label-danger">DRAFT</span>
+						<?php else: //Payroll is not Prepared?>
+							<span class="label label-warning"><i class="fa fa-exclamation-triangle"></i> NOT PREPARED</span>
+						<?php	endif;
+							endif;
+						?>
+						</h3>
+						<label>  <i class="blue fa fa-globe"></i> Region: </label> <span><?php echo $region = ($data["region"] == -1)? "All": $this->regionObj->getColumn($data["region"], 'region');?></span>
+						<label>  <i class="orange fa fa-map-marker"></i> Location: </label> <span><?php echo $loc = ($data["location"] == -1)? "All": $this->locationObj->getColumn($data["location"], 'location');?></span>
+						<label>  <i class="blue fa fa-sitemap"></i> Department: </label> <span><?php echo $dept = ($data["department"] == -1)? "All": $this->departmentObj->getColumn($data["department"], 'department');?></span>
+						
+						<input type="hidden" name="payroll_date" id="payroll_date" value="<?php echo date("F", strtotime(date("d-$month-y"))).','.$data['year'];?>" />
+					</strong>
+					<span class="pull-right"> Date:  <?php echo date('d/m/Y');?></span>
+				</div>
+			</div>	
+			<div class="space-12"></div>
+			<table class="table table-condensed table-bordered" id="example">
+				<thead>
+					<tr>
+						<th rowspan="2">#</th>
+						<th rowspan="2">EmpName. EmpNo.</th>
+						<th rowspan="2">Position. Department.</th>
+						<th rowspan="2">Grade</th>
+						<th colspan="<?php echo $earning;?>" style="text-align:center">Earnings</th>
+						<th colspan="<?php echo $deduction;?>" style="text-align:center">Deductions</th>
+						<th colspan="3" style="text-align:center">Summary</th>
+					</tr>
+					<tr>
+						<!-- Earnings columns -->
+						<?php foreach ($this->earningHead as $key => $row):?>
+							<?php if($key%2==0):?><th><?php endif; ?>
+							<?php echo $row['code'].".";?>
+							<?php if($key%2==0):?><br><?php endif; ?>
+							<?php if($key%2!=0):?></th><?php endif; ?>
+						<?php endforeach;?> 
+						
+						<!-- Deduction columns -->
+						<?php foreach ($this->deductionHead as $key => $row):?>
+							<?php if($key%2==0):?><th><?php endif; ?>
+							<?php echo $row['code'].".";?>
+							<?php if($key%2==0):?><br><?php endif; ?>
+							<?php if($key%2!=0):?></th><?php endif; ?>
+						<?php endforeach;?>								
+						<th>Bonus</th>
+						<th>Leave Enc</th>
+						<th>Net Pay</th>
+					</tr>
+				</thead>
+				<tbody>	
+					<?php $sl = 1; 
+					$sum_amounts = array();
+					$filter = array(
+							'year'=>$data['year'], 
+							'month'=>$data['month'], 
+							'pr.status'=>'1'									
+					);
+					if($data['region'] > 0):
+						$filter['l.region'] = $data['region']; 
+					endif;
+					if($data['location'] > 0):
+						$filter['e.location'] = $data['location']; 
+					endif;
+					if($data['department'] > 0):
+						$filter['e.department'] = $data['department']; 
+					endif;
+					$tot_earning = array();
+					$tot_deduction = array();
+					$tot_bonus = 0;
+					$tot_leave_encashment = 0;
+					$tot_net = 0;
+					$pay_rolls = $this->payrollObj->getforReport($filter);
+					if(sizeof($pay_rolls) > 0):
+						foreach ($pay_rolls as $pay_roll):
+						$row1 = array(); $row2 = array(); $row3 = array(); $row4 = array();
+							$earning1 = array(); $earning2 = array(); $deduct3 = array(); $deduct4 = array();
+							foreach ($this->earningHead as $key => $row):
+								$amount = $this->paydetailObj->getColumn(array('pay_roll' => $pay_roll['id'], 'pay_head' => $row['id']), 'amount');
+								$tot_earning[$key] += $amount;
+								if($key%2==0):
+									array_push($row1,$amount);
+									array_push($earning1,$tot_earning[$key]);
+								else:
+									array_push($row2,$amount);
+									array_push($earning2,$tot_earning[$key]);
+								endif;
+							endforeach;
+							foreach ($this->deductionHead as $key => $row):
+								$amount = $this->paydetailObj->getColumn(array('pay_roll' => $pay_roll['id'], 'pay_head' => $row['id']), 'amount');
+								$tot_deduction[$key] += $amount;
+								if($key%2==0):
+									array_push($row3,$amount);
+									array_push($deduct3,$tot_deduction[$key]);
+								else:
+									array_push($row4,$amount);
+									array_push($deduct4,$tot_deduction[$key]);
+								endif;
+							endforeach;
+						?>
+						<tr>
+							<td style="border-top: 1px solid #c52626;"><?php echo $sl++; ?></td>
+							<td style="border-top: 1px solid #c52626;"><?php echo $pay_roll['full_name']; ?></td>
+							<td style="border-top: 1px solid #c52626;"><?php echo $pay_roll['position_title'];?></td>
+							<td style="border-top: 1px solid #c52626;"><?php echo $pay_roll['position_level'];?></td>
+							<?php for($i=0;$i<sizeof($row1);$i++):?>
+								<td style="border-top: 1px solid #c52626;text-align:right;">
+									<?php echo (isset($row1[$i]))?$this->decimal($row1[$i]):'';?>
+								</td>
+							<?php endfor;?>
+							<?php for($i=0;$i<sizeof($row3);$i++):?>
+								<td style="border-top: 1px solid #c52626;text-align:right;">
+									<?php echo (isset($row3[$i]))?$this->decimal($row3[$i]):'';?>
+								</td>
+							<?php endfor;?>
+							<!-- values form payroll -->
+							 <td style="border-top: 1px solid #c52626;text-align:right;">
+							 <?php
+								$bonus = $this->payrollObj->getColumn(array('employee' => $pay_roll['employee_id'], 'year' => $data['year'], 'month' => $data['month']), 'bonus');
+								echo $this->decimal($bonus);
+								$tot_bonus += $bonus;
+							 ?>
+							 </td>
+							  <td style="border-top: 1px solid #c52626;text-align:right;">
+							 <?php
+								$leave_encashment = $this->payrollObj->getColumn(array('employee' => $pay_roll['employee_id'], 'year' => $data['year'], 'month' => $data['month']), 'leave_encashment');
+								echo $this->decimal($leave_encashment);
+								$tot_leave_encashment +=$leave_encashment;
+							 ?>
+							 </td>
+							 <td style="border-top: 1px solid #c52626;text-align:right;">
+							 <?php
+								$net_pay = $this->payrollObj->getColumn(array('employee' => $pay_roll['employee_id'], 'year' => $data['year'], 'month' => $data['month']), 'net_pay');
+								echo $this->decimal($net_pay);
+								$tot_net +=$net_pay;
+							 ?>
+							 </td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><?php echo $pay_roll['emp_id']; ?></td>
+							<td><?php echo $pay_roll['department'];?></td>
+							<td></td>
+							<?php for($i=0;$i<sizeof($row1);$i++):?>
+								<td style="text-align:right;"><?php echo (isset($row2[$i]))?$this->decimal($row2[$i]):'';?></td>
+							<?php endfor;?>
+							<?php for($i=0;$i<sizeof($row3);$i++):?>
+								<td style="text-align:right;"><?php echo (isset($row4[$i]))?$this->decimal($row4[$i]):'';?></td>
+							<?php endfor;?>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<?php 
+						endforeach;
+					else:
+						$temp_payrolls = $this->temppayrollObj->getforReport($filter);
+						foreach($temp_payrolls as $temp_payroll):
+							$row1 = array(); $row2 = array(); $row3 = array(); $row4 = array();
+							$earning1 = array(); $earning2 = array(); $deduct3 = array(); $deduct4 = array();
+							foreach ($this->earningHead as $key => $row):
+								$amount = $this->paystructureObj->getColumn(array('employee' => $temp_payroll['employee_id'], 'pay_head' => $row['id']), 'amount');
+								$tot_earning[$key] += $amount;
+								if($key%2==0):
+									array_push($row1,$amount);
+									array_push($earning1,$tot_earning[$key]);
+								else:
+									array_push($row2,$amount);
+									array_push($earning2,$tot_earning[$key]);
+								endif;
+							endforeach;
+							foreach ($this->deductionHead as $key => $row):
+								$amount = $this->paystructureObj->getColumn(array('employee' => $temp_payroll['employee_id'], 'pay_head' => $row['id']), 'amount');
+								$tot_deduction[$key] += $amount;
+								if($key%2==0):
+									array_push($row3,$amount);
+									array_push($deduct3,$tot_deduction[$key]);
+								else:
+									array_push($row4,$amount);
+									array_push($deduct4,$tot_deduction[$key]);
+								endif;
+							endforeach;
+						?>
+						<tr>
+							<td style="border-top: 1px solid #c52626;"><?php echo $sl++; ?></td>
+							<td style="border-top: 1px solid #c52626;"><?php echo $temp_payroll['full_name']; ?></td>
+							<td style="border-top: 1px solid #c52626;"><?php echo $temp_payroll['position_title'];?></td>
+							<td style="border-top: 1px solid #c52626;"><?php echo $temp_payroll['position_level'];?></td>
+							<?php for($i=0;$i<sizeof($row1);$i++):?>
+								<td style="border-top: 1px solid #c52626;text-align:right;">
+									<?php echo (isset($row1[$i]))?$this->decimal($row1[$i]):'';?>
+								</td>
+							<?php endfor;?>
+							<?php for($i=0;$i<sizeof($row3);$i++):?>
+								<td style="border-top: 1px solid #c52626;text-align:right;">
+									<?php echo (isset($row3[$i]))?$this->decimal($row3[$i]):'';?>
+								</td>
+							<?php endfor;?>
+							<!-- values form payroll -->
+							 <td style="border-top: 1px solid #c52626;text-align:right;">
+							 <?php
+								$bonus = $this->temppayrollObj->getColumn(array('employee' => $temp_payroll['employee_id'], 'year' => $data['year'], 'month' => $data['month']), 'bonus');
+								echo $this->decimal($bonus);
+								$tot_bonus += $bonus;
+							 ?>
+							 </td>
+							  <td style="border-top: 1px solid #c52626;text-align:right;">
+							 <?php
+								$leave_encashment = $this->temppayrollObj->getColumn(array('employee' => $temp_payroll['employee_id'], 'year' => $data['year'], 'month' => $data['month']), 'leave_encashment');
+								echo $this->decimal($leave_encashment);
+								$tot_leave_encashment +=$leave_encashment;
+							 ?>
+							 </td>
+							 <td style="border-top: 1px solid #c52626;text-align:right;">
+							 <?php
+								$net_pay = $this->temppayrollObj->getColumn(array('employee' => $temp_payroll['employee_id'], 'year' => $data['year'], 'month' => $data['month']), 'net_pay');
+								echo $this->decimal($net_pay);
+								$tot_net +=$net_pay;
+							 ?>
+							 </td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><?php echo $temp_payroll['emp_id']; ?></td>
+							<td><?php echo $temp_payroll['department'];?></td>
+							<td></td>
+							<?php for($i=0;$i<sizeof($row1);$i++):?>
+								<td style="text-align:right;"><?php echo (isset($row2[$i]))?$this->decimal($row2[$i]):'';?></td>
+							<?php endfor;?>
+							<?php for($i=0;$i<sizeof($row3);$i++):?>
+								<td style="text-align:right;"><?php echo (isset($row4[$i]))?$this->decimal($row4[$i]):'';?></td>
+							<?php endfor;?>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<?php endforeach;
+					endif;?>
+					<tr>
+						<th style="border-top: 1px solid #5add55;"></th>
+						<th style="border-top: 1px solid #5add55;"></th>
+						<th style="border-top: 1px solid #5add55;"></th>
+						<th style="border-top: 1px solid #5add55;">Total:</th>
+						<?php for($i=0;$i<sizeof($row1);$i++):?>
+							<th style="border-top: 1px solid #5add55;text-align:right;">
+								<?php echo (isset($earning1[$i]))?$this->decimal($earning1[$i]):'';?>
+							</th>
+						<?php endfor;?>
+						<?php for($i=0;$i<sizeof($row3);$i++):?>
+							<th style="border-top: 1px solid #5add55;text-align:right;">
+								<?php echo (isset($deduct3[$i]))?$this->decimal($deduct3[$i]):'';?>
+							</th>
+						<?php endfor;?>
+						<th style="border-top: 1px solid #5add55;"><?php echo $this->decimal($tot_bonus);?></th>
+						<th style="border-top: 1px solid #5add55;"><?php echo $this->decimal($tot_leave_encashment);?></th>
+						<th style="border-top: 1px solid #5add55;"><?php echo $this->decimal($tot_net);?></th>
+					</tr>
+					<tr>
+						<th></th>
+						<th></th>
+						<th></th> 
+						<th></th>
+						<?php for($i=0;$i<sizeof($row1);$i++):?>
+							<th style="text-align:right;"><?php echo (isset($earning2[$i]))?$this->decimal($earning2[$i]):'';?></td>
+						<?php endfor;?>
+						<?php for($i=0;$i<sizeof($row3);$i++):?>
+							<th style="text-align:right;"><?php echo (isset($deduct4[$i]))?$this->decimal($deduct4[$i]):'';?></td>
+						<?php endfor;?>
+						<th></th>
+						<th></th>
+						<th></th>
+					</tr>	
+				</tbody>
+			</table>
+		<?php 
+			else:
+			?>
+			<div class="alert alert-success fade in">  
+				<strong>Click the Refresh button after selecting required region, location and department</strong>
+			 </div>	
+			<?php 
+			endif;?>
+		</div>
+	</div>
+</div>
+	
+<script>
+	var title_table = 'Pay Register for the Month : '+$('#payroll_date').val();
+	
+	$('#example').DataTable( {
+		scrollX:        true,
+		ordering: false,
+		dom: 'Bfrtip',
+		lengthMenu: [
+			[ 10, 25, 50, -1 ],
+			[ '10 rows', '25 rows', '50 rows', 'Show all' ]
+		],
+		columnDefs: [ {
+			visible: false
+		} ],
+		buttons: [
+			{
+				extend: 'copy',
+				exportOptions: {
+					columns: ':visible'
+				},
+				text: '<i class="fa fa-files-o"></i> Copy',
+				titleAttr: 'Copy'
+			},
+			{
+				extend: 'csv',
+				title: title_table,
+				exportOptions: {
+					columns: ':visible'
+				},
+				text: '<i class="fa fa-file-text-o"></i> Csv',
+				titleAttr: 'CSV'
+			},
+			{
+				extend: 'excel',
+				title: title_table,
+				exportOptions: {
+					columns: ':visible'
+				},
+				text: '<i class="fa fa-file-excel-o"></i> Excel',
+				titleAttr: 'Excel'
+			},
+			{
+				extend: 'pdfHtml5',
+				title: title_table,
+				exportOptions: {
+					columns: ':visible'
+				},
+				orientation: 'landscape',
+				pageSize: 'A2',
+				text: '<i class="fa fa-file-pdf-o"></i> Pdf',
+				titleAttr: 'PDF'
+			},
+			{
+				extend: 'print',
+				title: title_table,
+				exportOptions: {
+					columns: ':visible'
+				},
+				text: '<i class="fa fa-print"></i> Print',
+				titleAttr: 'Print'
+			},
+			'pageLength','colvis'
+		],
+		select:true
+	} );
+	
+	$("#region").change(function() { 
+		$.post( "<?php echo $this->url('ajresponse', array('action' => 'getlocation')); ?>/"+ $("#region").val(), function( data ) {
+			var newdata ="<option value='-1'>All</option>"+data
+			$('#location').html( newdata );
+			$("#location").trigger('chosen:updated');
+		});
+	});
+	//fuction to refresh 
+	function refresh(){
+		var id = $('#region').val()+'&'+$('#location').val()+'&'+$('#department').val()+'&'+$('#year').val()+'&'+$('#month').val();
+		location.href="<?php echo $this->url('preport', array('action'=>'payregister'));?>/"+id;
+	}	
+</script>​
+

@@ -1,0 +1,103 @@
+<?php
+/**
+ * 
+ * View -- of Hr/MasterController/editlocationAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<?php 
+    foreach($this->paygroup as $paygroup):
+        extract($paygroup);
+    endforeach;
+?> 
+<form id="#form" method="post" action="<?php echo $this->url('master', array('action' => 'editpaygroup', 'id' => $id)); ?>"  enctype="multipart/form-data" >                 
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="form-group">
+					<label for="pay_head" class="control-label">Pay Head </label>
+					<select class="form-control" id="pay_head" name="pay_head" data-placeholder="Select" required>
+						<option value=""></option>
+						<?php 
+						foreach ($payheads as $payhead):
+						 $selected = ($pay_head_id == $payhead['id'])? "selected":"";
+						?>
+							<option value="<?php echo $payhead['id'];?>" <?php echo $selected;?>>
+								<?php echo $payhead['pay_head'];?>
+							</option>
+						<?php
+						endforeach;
+						?>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="group" class="control-label">Group</label>
+					<input class="form-control" name="group" id="group" value="<?php echo $group; ?>" required >
+				</div>
+				<div class="form-group">
+					<label for="value" class="control-label">Value</label>
+					<input class="form-control" name="value" id="value" value="<?php echo $value; ?>" required >
+				</div>				
+			</div><!-- panel-body -->
+        </div><!-- panel panel-default -->
+    </div><!-- modal-body -->
+                    
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="reset" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>
+    </div><!-- /modal-footer -->
+</form>
+<script>
+$('document').ready(function(){
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			pay_head: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide pay head.'
+					}
+				}
+			},
+			value: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide value.'
+					}
+				}
+			},
+			group: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide group.'
+					}		
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+});
+</script>
+
+                                
+
+      

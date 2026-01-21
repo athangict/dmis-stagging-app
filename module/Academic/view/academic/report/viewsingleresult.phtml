@@ -1,0 +1,108 @@
+<?php
+/**
+ * 
+ * View -- of Humanresource/EmployeeController/viewAction
+ * 
+ */
+    $this->headTitle($this->title);
+?>
+
+<?php 
+    foreach ($student as $row):
+            extract($row);
+    endforeach; 
+ foreach ($this->personal->getPesonalReport($row['id'])as $personals):
+    endforeach;	
+	
+	$gewog=$this->villageObj->getColumn(array('id'=>$personals['village']),'block');
+	$dzo=$this->gewogObj->getColumn(array('id'=>$gewog),'district');
+  	
+?>
+<style>
+th.h{
+	font-size:18px;
+}
+</style>
+<div class="card-body">
+	<table class="table table-sm  card-table text-wrap">
+		<tbody>
+			<tr>
+				<td class="text-center">
+				   <img src="<?php echo $this->basePath() . '/images/logo.png';?>" class="card-img-top img-fluid" style="height:150px;width:auto;";alt="..." onclick="onClick(this)" class="w3-hover-opacity">
+				</td>
+				<td class="text-center">
+					<h1>༄༅།  དཀོན་མཆོག་རིན་ཆེན་གསུམ་གྱིས་དགེ་ལེགས་སྕོལ།</h1>
+					<h2>དཔལ་ལྡན་འབྲུག་པའི་མཁན་སློབ་དགེ་འདུན་ཆོས་རྒྱུགས་ལྷན་ཆོགས།།</h2>
+				</td>
+				<td class="text-center">
+					<img src="<?php echo $this->basePath().'/images/logo2.jpg';?>" class="card-img-top img-fluid" style="height:170px;width:auto;";alt="..." onclick="onClick(this)" class="w3-hover-opacity">
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+	
+	<div class="card-body">
+		<span class="border border-dark"><div class="bs-example">
+			<div class="row">
+			  <div class="col-xs-12">Name:<?php echo $personals['full_name'] ?></div>
+			</div>
+			<div class="row">
+			  <div class="col-xs-4">Dzongkhag:<?php echo $this->dzongkhagObj->getColumn($dzo,'district');?></div>
+			  <div class="col-xs-4">Gewog:<?php echo $this->gewogObj->getColumn($gewog,'block');?></div>
+			  <div class="col-xs-4">Village:<?php echo $this->villageObj->getColumn($personals['village'],'village');?></div>
+			</div>
+			<div class="row">
+			  <div class="col-xs-4">Year:<?php echo $personals['yoe'] ?></div>
+			  <div class="col-xs-4">DOB:<?php echo $personals['dob'] ?></div>
+			  <div class="col-xs-4">CID:<?php echo $personals['cid'] ?></div>
+			</div>
+			</div>
+		 </span>
+	</div>
+	<div class="card-body">
+		<table class="table table-sm  card-table text-wrap" >
+			<tbody>
+				<tr>
+					<td class="text-center">
+					</td>
+					<td class="text-center">
+						<h1>དཔལ་ལྡན་འབྲུག་པའི་འབྲིང་རིམ་སློབ་གྲྦའི་དབུ་མ་གོང་མ་ལོ་རིམ་གཉིས་པའི་སྐུགས་ཤོག  །</h1>
+						<h1><?php echo $this->classObj->getColumn($personals['class'],'class'); ?></h1>
+					</td>
+					<td class="text-center">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="card-body">
+		<table class="table table-sm table-bordered card-table text-wrap">
+			 <tbody>
+				<tr>
+				  <th class='h' scope="row">Subjects</th>
+				   <th class='h' scope="row">Total</th>
+				   <th  class='h'scope="row">Pass Marks</th>
+				   <th class='h' scope="row">Score</th>
+				</tr>
+			 <?php foreach ($this->subject->get(array('class_id'=>$row['class'])) as $subjects): ?>
+					 <tr>	
+						<td style="font-size:20px;"> <?php echo $subjects['subject'];?></td>
+						<td scope="row">100</td>
+						<td scope="row">40</td>
+						<td><?php echo $this->marks->getColumn(array('subjects'=>$subjects['id'],'std_id'=>$row['std_id'],'class'=>$row['class']),'marks'); ?></td>	
+					</tr>
+				<?php  endforeach; ?>
+			 </tbody>
+		</table>
+	</div>
+<!-- Styles (so that we can see the grid) -->
+<style scoped>
+.bs-example  div[class^="col"] {
+	border: 1px solid white;
+	background: #f5f5f5;
+	text-align: center;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	}
+</style>

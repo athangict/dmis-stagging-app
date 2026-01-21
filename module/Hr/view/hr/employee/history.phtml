@@ -1,0 +1,95 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmployeeController/indexAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<?php foreach ($this->employee as $emprows):
+	extract ($emprows);
+endforeach;
+?>
+<?php echo $this->tabs_helper(array(812,813,815,816,818,824),$id);?>
+<div class="card">
+	<div class="card-header">
+		<div class="btn-group pull-right">
+			<?php echo $this->button(2,$id);?>
+		</div>
+	</div>
+	<div class="table-responsive">
+	<div class="table-header col-lg-6 bgc-primary text-white pt-2 pb-2"> Employement History of <?php echo $full_name?> </div>
+		<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Appointment (Date)</th>
+					<th>Placement</th>
+					<th>Position Title/Level</th>
+					<th>Office Order No (Date)</th>
+					<th>Supervisor</th>
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+					$i = 1; 
+					foreach ($this->emphistory as $rows):
+				?>
+					<tr>
+						<td><?php echo $i; ?> </td>
+						<td><?php echo $rows['app_type']; ?> (<?php echo $rows['start_date']; ?>) </td>
+						<td><?php echo $rows['activity']; ?> /<?php echo $rows['department']; ?> / <?php echo $rows['location']; ?></td>
+						<td><?php echo $rows['position_title']; ?> / <?php echo $rows['position_level']; ?></td>
+						<td><?php echo $rows['office_order_no'];?> ( <?php echo $rows['office_order_date'];?> ) </td>
+						<td><?php echo $supervisor = ($rows['supervisor']>0)?$this->employeeObj->getColumn($rows['supervisor'],'full_name'):'';?>  </td>
+						<?php if($this->button(1)!=""):?>
+						<td><?php echo $this->button(1, $rows['id']);?></td>
+						<?php endif;?>
+					</tr>
+				<?php 
+				$i++;
+				endforeach;  
+				?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#dataTables').DataTable({"paging":   true,});
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

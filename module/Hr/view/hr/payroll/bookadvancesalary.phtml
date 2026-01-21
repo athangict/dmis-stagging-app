@@ -1,0 +1,423 @@
+<?php
+/**
+ * 
+ * View -- of Accounts/AssetController/edittransactionAction
+ * 
+ */
+?>
+<?php 
+	$total_debit = 0;
+	$total_credit = 0;
+?>
+<div class="row">
+	<div class="col-lg-12">
+	   &nbsp;
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<i class="fa fa-pencil-square-o"></i> Advance Salary Booking Adjustment
+			</div>
+			<div class="panel-body">
+				<form id="transForm" method="post" action="<?php echo $this->url('payroll', array('action' => 'bookadvancesalary')); ?>"  enctype="multipart/form-data" >
+				<?php
+					$data = array(
+						'year' => $this->data['year'],
+						'month' => $this->data['month'],
+					);
+					$sad_employees = $this->payrollObj->getSADEmp($data);
+					$Yes_subhead = array();
+					$No_subhead = array();
+					foreach($sad_employees as $sad_emp):
+						$sub_head = $this->subheadObj->get(array('sh.head'=>'219','sh.type'=>'8','sh.ref_id'=>$sad_emp['employee']));
+						if(sizeof($sub_head)>0):
+							array_push($Yes_subhead,$sad_emp['employee']);
+						else:
+							array_push($No_subhead,$sad_emp['employee']);
+						endif;
+					endforeach;
+					if(sizeof($No_subhead)>0):
+				?>
+				<div>
+					<i class="fa fa-check"></i><strong class="yellow">Salary Booking has been inappropriate.</strong><br>
+					<a class="btn btn-xs pull-right btn-danger" id="print" title="Print">
+						<i class="ace-icon fa fa-file-pdf-o bigger-120"></i>
+					</a>
+					<div id="report-print">
+					<strong class="yellow">Following <?php echo sizeof($No_subhead);?> Employees doesn't have Advance Salary Subhead for booking in Finance:</strong><br>
+					<div class="space-6"></div>
+					
+					<table class="table table-condensed table-bordered table-striped">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Employee</th>
+								<th>Designation</th>
+								<th>Location</th>
+								<th>Activity</th>
+								<th>Department</th>
+								<th>Position Level</th>
+								<th>Emp Type</th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php $j = 1;
+							for($sh=0;$sh<sizeof($No_subhead);$sh++):
+							$employee = $this->employeeObj->get($No_subhead[$sh]);
+							foreach($employee as $emp);
+						?>
+							<tr>
+								<td><?php echo $j++;?></td>
+								<td><?php echo $emp['full_name'];?></td>
+								<td><?php echo $emp['designation'];?></td>
+								<td><?php echo $emp['location'];?></td>
+								<td><?php echo $emp['activity'];?></td>
+								<td><?php echo $emp['department'];?></td>
+								<td><?php echo $emp['position_level'];?></td>
+								<td><?php echo $emp['type_code'];?></td>
+							</tr>
+						<?php endfor;?>
+						</tbody>
+					</table>
+					<strong class="yellow">Please create Subheads for these employees for advance salary booking. And try again.</strong>
+					</div>
+				</div>
+				<?php else:?>   
+					<div class="row"> 
+						<div class="col-lg-4">    
+							<div class="form-group">
+								<label for="voucher_date" class="control-label">Voucher Date</label>
+								<div class="date input-group" id="voucher_date" data-date="<?php echo date('Y-m-d');?>" data-date-format="yyyy-mm-dd" >
+									<input class="form-control span2" name="voucher_date" id="voucher_date" type="text" placeholder="Voucher Date" value="<?php echo date('Y-m-d');?>" readonly required>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-4">
+							<div class="form-group">
+								<label for="voucher_type">Voucher Type</label>
+								<select id="voucher_type" name="voucher_type" class="form-control " data-placeholder="Select"  required readonly>
+									<option value=""></option>
+									<?php 
+									foreach ($journals as $journal):
+										$selected =($journal['id']==4)? 'selected':'';
+									?>
+										<option value="<?php echo $journal['id'];?>" <?php echo $selected;?>>
+											<?php echo $journal['journal']; ?>
+										</option>
+									<?php 
+									endforeach;
+									?>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-4">
+							<div class="form-group">
+								<label for="doc_id">Document ID</label>
+								<input type="text" class="form-control" name="doc_id" id="doc_id" value="" > 
+							</div> 
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-4">
+							<div class="form-group">
+								<label for="doc_type">Document Type</label>
+								<input type="text" class="form-control" name="doc_type" id="doc_type" value="" > 
+							</div>
+						</div>
+						
+						<div class="col-lg-4">
+							<div class="form-group">
+								<label for="voucher_amount">Voucher Amount(<?php echo $this->currency_code();?>)</label>
+								<input type="text" class="form-control" name="voucher_amount" id="voucher_amount" value="" required  readonly > 
+							</div>
+						</div>    
+					</div>
+					
+					<div class="row">
+						<div class="col-lg-12"> 
+							<label>Transaction Details</label>
+							<table id="trdetails_table" class="table small-padding">
+								<thead>
+									<tr>
+										<th>Location</th>
+										<th>Activity</th>
+										<th>Head</th>
+										<th>Sub Head</th>
+										<th>Cheque No</th>
+										<th>Debit(<?php echo $this->currency_code();?>)</th>
+										<th>Credit(<?php echo $this->currency_code();?>)</th>
+										<th>&nbsp;</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php 
+									$rownum = 1;
+									foreach($this->locations as $loc_row):
+										$activities = $this->payrollObj->salaryBookingActivity($loc_row['location_id']);
+										foreach($activities as $act_row):
+											$data = array(
+												'year' => $this->data['year'],
+												'month' => $this->data['month'],
+												'location' => $loc_row['location_id'],
+												'activity' => $act_row['activity_id'],
+											);
+											$subheads = $this->payrollObj->salaryAdvanceSubhead($data);
+											foreach($subheads as $subhead_row):
+												$payroll_id = $this->payrollObj->getColumn(array('employee' =>$subhead_row['ref_id'],'year'=>$data['year'],'month'=>$data['month']),'id'); 	
+												$amt = $this->paydetailObj->getColumn(array('pay_roll'=>$payroll_id,'pay_head'=>'12'),'amount');
+												
+												if((int)$amt > 0):
+													$credit_amt = $amt;
+													$debit_amt = '0.00';
+													$total_debit += $debit_amt;
+													$total_credit += $credit_amt;
+												?>
+													<tr id="<?php echo $rownum;?>">
+														<td class="col-lg-2">
+															<?php echo $loc_row['location'];?>
+														</td>
+														<td class="col-lg-2">
+															<?php echo $act_row['activity'];?>
+														</td>
+														<td class="col-lg-2">
+															<?php echo $subhead_row['head']; ?>
+														</td>
+														<td class="col-lg-2">
+															<?php echo $subhead_row['code']; ?>
+														</td>
+														<td class="col-lg-2" >       
+														</td>
+														<td class="col-lg-1">
+															<?php echo $debit_amt;?>      
+														</td>
+														<td class="col-lg-1"> 
+															<?php echo $credit_amt;?>        
+														</td>
+														<td width="30px;">
+														</td>
+													</tr>
+													<?php $rownum++;?>
+												<?php endif;
+											endforeach;//end of subhead foreach
+										endforeach; //end of activity foreach
+									endforeach;//end of location foreach
+									?>
+									<tr id="<?php echo $rownum; ?>">
+										<td class="col-lg-2">
+											<div class="form-group">
+												<select id="location" name="location[]" class="form-control" data-placeholder="Select" required >
+													<option value=""></option>
+													<?php foreach ($regionObj->getAll() as $region_row): ?>
+														<optgroup label="<?php echo $region_row['region'];?>">
+															<?php 
+															$locations = $locationObj->get(array('l.region'=>$region_row['id']));
+															foreach ($locations as $location_row):?>
+																<option value="<?php echo $location_row['id']; ?>" <?php echo $selected_loc;?>>
+																	<?php echo $location_row['location']; ?>
+																</option>
+															<?php endforeach; ?>
+														</optgroup>
+													<?php  endforeach; ?>
+												</select>
+											</div>
+										</td>
+										<td class="col-lg-2">
+											<div class="form-group">
+												<select id="activity" name="activity[]" class="form-control"  required data-placeholder="Select">
+													<option value=""></option> 
+													<?php foreach ($activityObj->getAll() as $activity_row): ?>
+														<option value="<?php echo $activity_row['id'];?>" <?php echo $selected_act;?>>
+															<?php echo $activity_row['activity']; ?>
+														</option>
+													<?php  endforeach;  ?>														
+												</select>
+											</div>
+										</td>
+										<td class="col-lg-2">
+											<div class="form-group">
+												<select id="head" name="head[]" class="form-control" data-placeholder="Select" >
+													<option value=""></option>
+													<?php foreach ($heads as $head_row):?>
+														<option value="<?php echo $head_row['id']; ?>" <?php echo $selected_sh;?>>
+															<?php echo $head_row['code']; ?>
+														</option>
+													<?php  endforeach; ?>
+												</select>
+											</div>
+										</td>
+										<td class="col-lg-2">
+											<div class="form-group">
+												<select id="sub_head" name="sub_head[]" class="form-control" data-placeholder="Select" >
+													<option value=""></option>
+												</select>
+											</div>
+										</td>
+										<td class="col-lg-2" >
+											<div class="form-group">
+												<input type="text" class="form-control" name="cheque_no[]" id="cheque_no" value="" >
+											</div>       
+										</td>
+										<td class="col-lg-1">
+											<div class="form-group">
+												<input type="text" class="form-control tr_debit" name="debit[]" id="debit" value="0.00"  >
+											</div>     
+										</td>
+										<td class="col-lg-1">
+											<div class="form-group">
+												<input type="text" class="form-control tr_credit" name="credit[]" id="credit" value="0.00" >
+											</div>      
+										</td>
+										<td width="30px;">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-6"></div>
+						<div class="col-lg-3">
+							<div class="form-group">
+								<label for="total_debit">Total Debit(<?php echo $this->currency_code();?>)</label>
+								<input type="text" class="form-control" name="total_debit" id="total_debit" data-match="#total_credit" value="<?php echo $total_debit;?>" readonly />
+								<div class="help-block with-errors"></div> 
+							</div>
+						</div> 
+						<div class="col-lg-3">
+							<div class="form-group">
+								<label for="total_credit">Total Credit(<?php echo $this->currency_code();?>)</label>
+								<input type="text" class="form-control" name="total_credit" id="total_credit"  value="<?php echo $total_credit?>" readonly />
+								<div class="help-block with-errors"></div> 
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="form-group">
+								<label for="remarks">Remark</label>
+								<?php $remark = "Being the Advance Salary Deduction for the month of ".date('F Y',strtotime($this->data['year'].'-'.$this->data['month'].'-01'));?>
+								<textarea class="form-control" name="remark" id="remark" ><?php echo $remark;?></textarea>  
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="year" id="year" value="<?php echo $this->data['year'];?>"/>
+					<input type="hidden" name="month" id="month" value="<?php echo $this->data['month'];?>"/>
+					<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+				<?php endif;?>
+					<button type="button" class="btn btn-warning" onclick="javascript:history.back();"><i class="fa fa-times"></i> Cancel </button> 
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#print').genpdfinvoice({
+		content: '#report-print',
+		src:"<?php echo $this->url('pdfxls', array('action' => 'plainpdf'));?>",
+		orentation:"P",//L =landscape, P = potrait
+	});
+	$('form select').chosen({ allow_single_deselect:false});
+	
+	$('#voucher_date').datepicker();		
+	$('#trdetails_table').salarytransaction({
+		src:'<?php echo $this->url("ajresponse", array("action" => "getsubhead")); ?>',
+		tot_debit: '<?php echo $total_debit;?>',
+		tot_credit:'<?php echo $total_credit;?>'
+	});	
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			voucher_date: {
+				validators: {
+					notEmpty: {
+						message: 'Please enter voucher date'
+					}
+				}
+			},
+			voucher_type: {
+				validators: {
+					notEmpty: {
+						message: 'Please select voucher type'
+					}
+				}
+			},
+			voucher_amount: {
+				validators: {
+					callback: {
+						message: 'Transaction cannot happen without any amount',
+						callback: function(value, validator, $field) {
+							// Get the selected options
+							var value = validator.getFieldElements('voucher_amount').val();
+							return (value != null && value > 0);
+						}
+					}
+				}
+			}, 
+			location[]: {
+				validators: {
+					notEmpty: {
+						message: 'Please select location'
+					}
+				}
+			},
+			activity[]: {
+				validators: {
+					notEmpty: {
+						message: 'Please select activity'
+					}
+				}
+			},
+			sub_head[]: {
+				validators: {
+					notEmpty: {
+						message: 'Please select subhead'
+					}
+				}
+			}, 
+			total_debit: {
+				validators: {
+						identical: {
+							field: 'total_credit',
+							message: 'Total credit must be equal to total dedit'
+						}
+				}
+			}, 
+			total_credit: {
+				validators: {
+						identical: {
+							field: 'total_debit',
+							message: 'Total debit must be equal to total credit'
+						}
+				}
+			},           
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+
+	.on('success.field.fv', function(e, data) {
+		if (data.fv.getInvalidFields().length > 0) {    // There is invalid field
+			data.fv.disableSubmitButtons(true);
+		}
+	});
+	$('#voucher_date').on('changeDate',function(){
+		$('form').formValidation('revalidateField', $(this).attr('id'));
+	});
+});
+</script>
+ 

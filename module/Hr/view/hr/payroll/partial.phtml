@@ -1,0 +1,21 @@
+<?php // partial.phtml 
+	$payroll = ($this->active == "payroll")?"active":"";
+	$payslip = ($this->active == "payslip")?"active":"";
+?>
+<br/>
+<ul class="nav nav-tabs padding-18" id="myTab">	
+	<li class="<?php echo $payroll; ?>">
+		<a href="<?php echo $this->url('payroll', array('action' => 'index')); ?>" title="Payroll">
+			<i class="blue ace-icon fa fa-bar-chart bigger-120"></i>
+			<span class="hidden-xs">Generate Payroll</span>
+		</a>
+	</li>
+	<li class="<?php echo $payslip; ?>">
+		<a href="<?php echo $this->url('payroll', array('action' => 'payslip')); ?>" title="Pay Slip">
+			<i class="red ace-icon fa fa-file-text bigger-120"></i>
+			<span class="hidden-xs">Generate Pay Slip</span>
+		</a>
+	</li>
+</ul>
+
+

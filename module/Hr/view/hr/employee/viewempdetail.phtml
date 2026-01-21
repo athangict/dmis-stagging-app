@@ -1,0 +1,170 @@
+<?php
+/**
+ * 
+ * View -- of Humanresource/EmployeeController/addemployeeAction
+ * 
+ */
+    $this->headTitle($this->title);
+?>
+<?php 
+    foreach ($employee as $row):
+            extract($row);
+    endforeach;
+    foreach ($emphistory as $emph);        
+?>
+<?php echo $this->tabs_helper(array(812,813,815,816,818,824),$row['id']); ?>
+<div class="space-12"></div>
+<div class="row">
+	<div class="col-lg-12">
+		<div id="user-profile-1" class="user-profile row">
+			<div class="col-lg-2 center">
+				<div>
+					<span class="profile-picture">
+						<img id="profile_picture" class="editable img-responsive" alt="<?php echo $full_name;?>" src="<?php echo "data:image/png;base64,".base64_encode($empimg); ?>" />
+					</span>
+					<div class="space-4"></div>
+					<?php echo $this->button(3, $id);?>
+				</div>
+			</div>
+			<div class="col-lg-5">
+				<div class="profile-user-info profile-user-info-striped">
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Employee ID </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $emp_id; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Name </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $full_name; ?></span>
+						</div>
+					</div>							
+					<div class="profile-info-row">
+						<div class="profile-info-name"> CID No. </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $cid; ?></span>
+						</div>
+					</div>					
+					<div class="profile-info-row">
+						<div class="profile-info-name"> DoB / Gender </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $dob; ?> / <?php echo $gender; ?></span>
+						</div>
+					</div>						
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Mobile </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $mobile; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Email </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $email; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Nationality / Religion </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $nationality; ?> / <?php echo $religion; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Height </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $height; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Blood Group </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $blood_group; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Parmanent Address </div>
+
+						<div class="profile-info-value">
+							<i class="fa fa-map-marker light-orange bigger-110"></i>
+							<span class="editable" id="dzongkhag"><?php echo $dzongkhag;?></span>
+							<span class="editable" id="gewog"><?php echo $gewog;?></span>
+							<span class="editable" id="village"><?php echo $village;?></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-5">
+				<div class="profile-user-info profile-user-info-striped">
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Location </div>
+						<div class="profile-info-value">
+							<i class="fa fa-map-marker light-orange bigger-110"></i>
+							<span class="editable" id="username"><?php echo $location; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Department </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $department; ?></span>
+						</div>
+					</div>							
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Designation </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $emph['designation']; ?></span>
+						</div>
+					</div>					
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Position Title </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $position_title; ?></span>
+						</div>
+					</div>					
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Position Level </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $position_level; ?></span>
+						</div>
+					</div>						
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Appointment Date </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $emph['start_date']; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Pay Scale </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $emph['pay_scale']; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Basic Pay </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $emph['basic_pay']; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Office Order No. </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $emph['office_order_no']; ?></span>
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name"> Office Order Date </div>
+						<div class="profile-info-value">
+							<span class="editable" id="username"><?php echo $emph['office_order_no']; ?></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="modal" style="text-align:left;" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">                                                  
+		</div>
+	</div>
+</div>

@@ -1,0 +1,89 @@
+<?php
+/**
+ * 
+ * View -- of Hr/LeaveController/encashmentAction
+ * 
+ */
+	$this->headTitle($this->title); ?>
+<?php $minYear = date('Y', strtotime($minYear)); ?>
+<div class="card">
+	<div class="card-header">
+		<div class="btn-group pull-right">
+			<?php echo $this->button(2);?>
+		</div>
+	</div>
+	<div class="table-responsive">
+			 <?php
+			  $subRoles = $this->userRoleObj->get(array('user'=>$this->userID, 'subrole'=>array('1','2','17')));  
+			  if(sizeof($subRoles) >0 ){				
+				  $leaveEncash = $this->encashObj->getAll();
+			  }else{
+				  $userEmp = $this->userObj->getColumn($this->userID, 'employee');
+				  if($userEmp > 0) { $leaveEncash = $this->encashObj->get(array('employee'=>$userEmp)); }					  
+			  }			
+		  
+			  if(sizeof($leaveEncash) > 0): 
+			?>
+			<table class="table card-table text-nowrap" id="dataTables">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Employee</th>
+						<th>Encash Date</th>
+						<th>No of Encashed Days</th>
+						<th>Payment Amount</th>
+						<th>Deduction</th>
+						<th>Status</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					  $i = 1; 
+					  foreach ($leaveEncash as $row):
+//echo"<pre>"; print_r($row); exit;					  
+					?>
+						<tr data-href="<?php echo $this->button(4, $row['id']); ?>">
+							<td><?php echo $i; ?>. </td>
+							<td><strong><?php $empdtls = $this->employeeObj->get($row['employee']);
+							foreach($empdtls as $dtl); echo $dtl['full_name'];
+							?></strong> ,&nbsp; <i> <?php echo $dtl['emp_id']; ?> </i> </td>
+							<td><?php echo $row['encash_date']; ?></td>
+							<td><?php echo $row['no_of_encashed_days']; ?></td>							
+							<td><?php echo $row['payment_amount']; ?></td>
+							<td><?php echo $row['deduction']; ?></td>
+							<td >
+                                    <?php echo $this->status($row['status']); ?>
+							</td>
+							<td class="action">
+							<a class="btn btn-xs btn-danger" data-toggle="modal" data-target="#modal" 
+							   href="<?php echo $this->url('acl', array('action' => 'activitylog', 'id' => "22-".$rows['id'])); ?>" title="View Activity Logs">
+										<i class="ace-icon fa fa-plus smaller-120" ></i>  
+							</a>
+				            </td>
+						</tr>
+					<?php 
+					$i++;
+					endforeach;  
+					?>
+				</tbody>
+			</table>
+			<?php else:  ?>
+			   <span class="alert alert-warning fade in"> No leave Encashment Application to view. </div>
+			<?php endif; ?>
+		</div>
+	</div>
+</div>
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		</div>
+	</div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#dataTables').DataTable({"paging":   true,});
+});
+</script>
+
+

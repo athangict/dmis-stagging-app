@@ -1,0 +1,305 @@
+<?php
+/**
+ * 
+ * View -- of Hr/LeaveController/indexAction
+ * 
+ */
+	$this->headTitle($this->title);
+	$checkleaveOfficial = $this->userRoleObj->get(array('user'=>$this->userID, 'subrole'=>'17'));
+?>
+<form id="#form" method="post" action="<?php echo $this->url('leave', array('action' => 'apply')); ?>"  enctype="multipart/form-data" >
+	<div class="row">
+		<div class="col-lg-12"> 
+			<div class="widget-box transparent">
+				<div class="widget-header widget-header-smaller">
+					<h4 class="widget-title blue bolder smaller"> Leave Application Form </h4>
+				</div>
+				<div class="widget-body">
+					<div class="widget-main padding-24"> 
+						<div class="row">  
+						   <div class="form-group col-lg-4">
+								<label for="applicant" class="control-label">Applicant</label>
+								<select class="form-control" id="applicant" name="applicant" data-placeholder="-Select-" required >
+									<option value=""></option>									
+									<?php 
+									if(sizeof($checkleaveOfficial) > 0){
+									  $employees = $this->employeeObj->getEmployee(array('e.status'=>array(1,4,5)));
+									  if(sizeof($employees)>0):
+									  foreach ($employees as $employee):
+									   ?>
+										 <option value="<?php echo $employee['id'];?>"><?php echo $employee['full_name'];?> (Emp No. : <?php echo $employee['emp_id'];?>)</option>
+									   <?php
+									  endforeach;
+									  endif; 
+									}
+									else{
+									    $loginEmployee = $this->employeeObj->getEmployee($this->login_emp_ID);
+										if(sizeof($loginEmployee)>0):
+										foreach($loginEmployee as $employee);
+										?>
+										  <option value="<?php echo $employee['id'];?>"><?php echo $employee['full_name'];?> (Emp No. : <?php echo $employee['emp_id'];?>)</option>
+									<?php
+									 endif; 
+									} ?>									
+								</select>
+							</div>		
+							<div class="form-group col-lg-4">
+								<label for="leavetype" class="control-label">Leave Type</label>
+								<select class="form-control" id="leave_type" name="leave_type" data-placeholder="-Select-" required >
+									<option value=""></option>									
+									<?php 
+									foreach ($this->leaveTypes as $leaveType):
+									?>
+										<option value="<?php echo $leaveType['id'];?>">
+											<?php echo $leaveType['type'];?> 
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>
+						</div>	
+						<div class="row">  
+						   <div class="form-group col-lg-10" id="empdtl"></div>						   
+						</div>						
+						<div class="row">
+							<div class="col-lg-8  alert alert-info fade in">
+								<h5>Leave Details as of <?php echo date('Y-m-d');?></h5>
+								<div class="form-group col-lg-3">
+									<label for="casual_bal" class="control-label">Casual Leave Bal (Day/s)</label>
+									<input type="text" class="form-control" id="casual_bal" name="casual_bal" readonly >
+								</div>	
+								<div class="form-group col-lg-3">
+									<label for="earned_bal" class="control-label">Earned Leave Bal (Day/s)</label>
+									<input type="text" class="form-control" id="earned_bal" name="earned_bal" readonly >
+								</div>	
+								<div class="form-group col-lg-3">
+									<label for="total_leave" class="control-label">Total Leave Taken (Day/s)</label>
+									<input type="text" class="form-control" id="total_leave" name="total_leave" readonly >
+								</div>
+								<div class="form-group col-lg-3">
+									<label for="total_bal" class="control-label">Total Leave Bal (Day/s)</label>
+									<input type="text" class="form-control" id="total_bal" name="total_bal" readonly >
+								</div>
+							</div>
+						</div>
+						<div class="row">  
+							<div class="form-group col-lg-4">
+								<label for="start_date" class="control-label">Leave Start Date</label>
+								<div class="date input-group" id="start_date" data-date="<?php echo date('Y-m-d');?>" data-date-format="yyyy-mm-dd" >
+									<input class="form-control span2" name="start_date" id="start_date" type="text" placeholder="Start Date" readonly required>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="end_date" class="control-label">Leave End Date</label>
+								<div class="date input-group" id="end_date" data-date="<?php echo date('Y-m-d');?>" data-date-format="yyyy-mm-dd" >
+									<input class="form-control span2" name="end_date" id="end_date" type="text" placeholder="End Date" readonly required>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group col-lg-3">
+								<label for="no_of_days" class="control-label">No. of Days</label>
+								<input type="text" class="form-control" name="no_of_days" id="no_of_days" size="30" required> 
+							</div>			
+						</div>
+						<div class="row">					
+							<div class="form-group col-lg-4">
+								<label for="contact" class="control-label">Contact No.</label>
+								<input type="text" class="form-control" name="contact" id="contact" size="30" required> 
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="substitute" class="control-label">Substitute</label>
+								<select class="form-control" id="delegation" name="delegation" data-placeholder="-Select-" required >
+									<option value=""></option>									
+									<?php 
+									$employees = $this->employeeObj->getEmployee(array('e.status'=>array(1,4,5)));
+									foreach ($employees as $employee):
+									?>
+										<option value="<?php echo $employee['id'];?>">
+											<?php echo $employee['full_name'];?> (<?php echo $employee['emp_id'];?>)
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>
+  						    <div class="form-group col-lg-3">
+								<label for="no_of_days" class="control-label">Reference/Sanction No.</label>
+								<input type="text" class="form-control" name="sanction_order_no" id="sanction_order_no" size="30"> 
+							</div>	
+						</div>
+						<div class="row">
+							<div class="form-group col-lg-11">
+								<label for="subs_contact" class="control-label">Remarks <span class="orange" style="font-size:11px;"> <i>* Mention First half or second half leave for half day leave. </i></span></label>
+								<textarea class="form-control" name="remarks" row="3" col="60"> </textarea>
+							</div>			
+						</div>
+						
+						<div class="row">
+							<div class="form-group">
+								<label>
+									<input class="ace" type="checkbox"  name="declaration" id="declaration" value="1" style="min-width: 90px;"></input>
+									<span class="lbl"> I hereby certify that the information provided above is correct. Any falsification of information in this record may form ground for disciplinary action, Furthermore; I fully understand that I am not entitled to go on leave until I receive an approved copy of this form.</span>
+								</label>
+							</div>
+							<div>
+								<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Next </button>
+								<button type="button" class="btn btn-warning" onclick="javascript:history.back();"><i class="fa fa-times"></i> Cancel </button>  
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+<script>
+$('document').ready(function(){
+		$('#applicant').on('change', function(){
+			//alert($(this).val()); 
+			$.post(
+				"<?php echo $this->url('leave', array('action' => 'getleavedtls')); ?>",
+				{
+					emp_id: $(this).val(),
+				},
+				function(data){
+					console.log(data);
+					//alert(data.total_bal); 
+					$('#casual_bal').val(data.casual_bal);	
+					$('#earned_bal').val(data.earned_bal);
+					$('#total_leave').val(data.total_leave);	
+					$('#total_bal').val(data.total_bal);
+					$('#no_of_days').val(data.no_of_days);			
+				},
+				'json'
+			);	
+	    $('#empdtl').load("<?php echo $this->url('leave', array('action' => 'displayempdtl')); ?>/"+ $(this).val(), function() {       
+           $("#empdtl").trigger('chosen:updated');
+  	      });
+		});
+		$('#leave_type').on('change',function(){
+				$no_of_days = "";					
+				$('#no_of_days').val($no_of_days);
+		});
+		$('#no_of_days').on('change',function(){
+			$leaveType = $('#leave_type').val();
+			if($.isNumeric($(this).val()) && $leaveType > 0){
+				if($leaveType == 3 || $leaveType == 2){
+					if($leaveType == 3){
+						$balance = ($('#earned_bal').val() - $(this).val());
+						if($balance >= 5){
+							$no_of_days = $(this).val();
+							$('#no_of_days').val(parseFloat($no_of_days));			
+						}else{	
+							$no_days = $(this).val();			
+							$no_of_days = "";					
+							$('#no_of_days').val($no_of_days);	
+							alert('You cannot take leave for ' + $no_days + ' days, Enter number of days again');
+						}	
+					}else{
+						$casual_bal = $('#casual_bal').val();
+						if($casual_bal >= $(this).val() || $(this).val() <= 5){
+							$no_of_days = $(this).val();
+							$('#no_of_days').val(parseFloat($no_of_days));			
+						}else{
+							$actual_days = $(this).val();				
+							$no_of_days = "";					
+							$('#no_of_days').val($no_of_days);	
+							alert('You cannot take leave for '+ $actual_days + ' number of days, Please enter Again');
+						}
+					}				
+				}	
+			}else{
+					$no_of_days = "";					
+					$('#no_of_days').val($no_of_days);	
+					alert('Select leave type first to enter number of days.');					
+			}	
+		});
+	
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			applicant: {
+				validators: {
+					notEmpty: {
+						message: 'Please select applicant.'
+					}
+				}
+			},
+			leave_type: {
+				validators: {
+					notEmpty: {
+						message: 'Please select type of leave.'
+					}
+				}
+			},
+			delegation: {
+				validators: {
+					notEmpty: {
+						message: 'Please select your Officiating.'
+					}
+				}
+			},
+			leave_official: {
+				validators: {
+					notEmpty: {
+						message: 'Please select leave official.'
+					}
+				}
+			},
+			no_of_days: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide no of days.'
+					},
+					numeric: {
+						message: 'Please provide valid no of days.'
+					},
+				}
+			},
+			start_date: {
+				validators: {
+					notEmpty: {
+						message: 'Please select start date.'
+					}
+				}
+			},
+			end_date:{
+				validators: {
+					notEmpty: {
+						message: 'Please select end_date.'
+					}
+				}
+			},
+			declaration:{
+				validators: {
+					notEmpty: {
+						message: 'Please read declaration and check declaration.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('#start_date').on('changeDate',function(){
+		$('form').formValidation('revalidateField','start_date');
+	});
+	$('#end_date').on('changeDate',function(){
+		$('form').formValidation('revalidateField','end_date');
+	});
+});
+</script>
+

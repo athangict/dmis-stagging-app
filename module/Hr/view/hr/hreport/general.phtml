@@ -1,0 +1,94 @@
+﻿<?php
+/**
+ * Report -- of HR -- General Report
+**/
+	$this->headTitle($this->title);
+	foreach($monks as $monk);
+	// print_r($data);
+	// exit;
+?>
+<?php echo $this->tabs_helper(array(957)); ?>
+<div class="card">
+	<div class="card-header">
+	<div class="col-12">
+		<div class="card dcard">
+			<div class="card-body px-1 px-md-3">
+				<form method="POST" >    
+					<div class="row">
+						<div class="form-group col-lg-3">  
+						<label for="age" class="control-label">Age Range</label>
+						<select name="age" id="age" class="form-control" data-placeholder="Select">
+								<?php 
+										$selected1 =($data['age']=='1')? 'selected':'';
+										$selected2 =($data['age']=='2')? 'selected':'';
+										$selected3 =($data['age']=='3')? 'selected':'';
+										$selected4 =($data['age']=='4')? 'selected':'';
+									?>
+								<option value="1" <?php echo $selected1;?> >5-18</option>
+								<option value="2" <?php echo $selected2;?> >19-25</option>
+								<option value="3" <?php echo $selected3;?> >26-35</option>
+								<option value="4" <?php echo $selected4;?> >36-46</option>
+							</select>
+						</div>
+					</div>	
+				</form>
+			</div>
+		</div>
+	</div>
+	</div>
+	 <div class="table-responsive">
+		<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+        	<thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Organization</th>	
+					<th>Total Student</th>
+					<th>Total Student (Age) </th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php 
+				$i=1;
+				foreach ($paginator as $row):
+				?>
+				<tr data-href="<?php echo $this->button(4,$row['id']); ?>">
+					<td><?php  echo $i++; ?></td>	
+
+					<td class="uchen"><?php  echo $this->locationObj->getColumn($row,'location'); ?></td>
+					<td><?php  echo $this->studentObj->getCount($row)?></td>	
+					<td><?php  echo $this->studentObj->getage($data['age'],$row)?></td>	
+					
+				</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	</div> 
+</div>
+<div class="card-footer d-flex align-items-center">
+	<?php echo $this->paginationControl($this->paginator,'Sliding','hr_pagination.phtml', 
+		array('route' => 'hreport/paginator','action'=>'general','id'=>'0'));?>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+$('document').ready(function(){
+	$('#age').change(function(){
+		window.location.href="<?php echo $this->url('hreport',array('action'=>'general'));?>/"+$(this).val();
+	});
+	$("tr[data-href]").each(function(){ 
+		if($(this).attr('data-href')!='#'){
+			$(this).css('cursor','pointer');
+			$(this).bind('click',function() {
+				window.document.location = $(this).attr("data-href");
+			});
+		}
+	});
+	$('#dataTables').DataTable();
+});	
+</script>

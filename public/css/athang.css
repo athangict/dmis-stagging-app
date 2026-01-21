@@ -1,0 +1,28 @@
+/*!
+* Athang v1.0.0 (https://athang.com)
+* @version 1.0.0
+* @link https://athang.com
+* Copyright 2022-2023 The Athang IC Tech
+* Copyright 2022-2023 chophel@athang.com
+*/
+/* ---------------------------------------------------------------------- */
+/*  Dzongkha Font -- Dzongkha, Uchen
+/* ---------------------------------------------------------------------- */
+@font-face{
+    font-family: "Dzongkha";
+    src: url(fonts/dzongkha/dzongkha_calligraphic.ttf);
+}
+@font-face{
+    font-family: "Uchen";
+    src: url(fonts/dzongkha/DDC_Uchen.ttf);
+}
+.dzongkha {
+  font-family: 'Dzongkha', Lato;
+  font-size: 1.20rem;
+  font-weight: 400;
+}
+.uchen {
+  font-family: 'Uchen';
+  font-size: 1.125rem;
+  font-weight: 400;
+}

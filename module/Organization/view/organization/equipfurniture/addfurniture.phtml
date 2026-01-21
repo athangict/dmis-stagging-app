@@ -1,0 +1,121 @@
+<?php
+/**
+ * 
+ * View -- of Accounts/DemographyController/addcurrencyAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<form id="#form" method="post" action="<?php echo $this->url('ef', array('action' => 'addfurniture')); ?>"  enctype="multipart/form-data" >                 
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">
+			    <div class="form-group">
+					<label for="location" class="control-label">Location</label>
+					<select class="form-control" id="location" name="location" data-placeholder="Select" required >
+						<option value=""></option>
+						<?php 
+						foreach ($locations as $loc):
+						?>
+							<option value="<?php echo $loc['id'];?>">
+								<?php echo $loc['location'];?>
+							</option>
+						<?php
+						endforeach;
+						?>
+					</select>
+				</div>   
+				<div class="form-group">
+					<label for="organization" class="control-label">Organization</label>
+					<select class="form-control chosen-widget" id="organization" name="organization" data-placeholder="Select" required >
+						<option value=""></option>
+					</select>
+				</div>    
+			    <div class="form-group">
+                    <label for="group" class="control-label">Furniture Type</label>
+                    <select id="type" name="type" class="form-control" data-placeholder="Select" required >
+                        <option value=""></option>
+                        <?php 
+                        foreach ($furnituretypes as $type):
+                        ?>
+                            <option value="<?php echo $type['id'];?>">
+                            <?php echo $type['name']; ?>
+                            </option>
+                        <?php 
+                        endforeach;
+                        ?>
+                    </select>
+                </div>  
+				<div class="form-group">
+					<label for="fur" class="control-label">Furniture</label>
+					<input class="form-control" placeholder="furniture" name="fur" id="fur" required >
+				</div>
+				<div class="form-group">
+					<label for="equip" class="control-label">Usable Count</label>
+					<input type="number" class="form-control" name="usable" id="usable" size="30" placeholder="Usable" required/> 
+				</div>
+				<div class="form-group">
+					<label for="equip" class="control-label">Not Usable</label>
+					<input type="number" class="form-control" name="notusable" id="notusable" size="30" placeholder="Not Usable" required/> 
+				</div>
+			</div>
+		</div>                    
+    </div><!-- /modal-body -->
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div><!-- /modal-footer -->
+</form>
+<script>
+$(function(){
+	$('#location').on('change', function(){
+			//alert($(this).val());
+		$.post(
+			"<?php echo $this->url('ef', array('action' => 'getorganization')); ?>",
+			{
+				location_id: $(this).val(),
+			},
+			function(data){
+				//console.log(data);
+				$("#organization").html(data.org);
+				$("#organization").trigger('chosen:updated');				
+			},
+			'json'
+		);	
+	});
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			fur: {
+				validators: {
+					notEmpty: {
+						message: 'Please select Furniture.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('form select').chosen().change(function () {
+		fv.revalidateField($(this).attr('name'));
+	});
+});
+</script>

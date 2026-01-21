@@ -1,0 +1,193 @@
+<?php
+/**
+ * 
+ *  Hr/MasterController/addpayslabAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<form id="#form" role="form" action="<?php echo $this->url('master', array('action' => 'addpayslab')); ?>" enctype="multipart/form-data" method="post" >
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+    	<div class="panel panel-default">
+    		<div class="panel-body">
+				<div class="form-group">
+					<label for="pay_head" class="control-label">Pay Head</label>
+					<select class="form-control" style="width:100%" placeholder="Select Pay Head Type" name="pay_head" id="pay_head" required onchange>
+						<option value="">-Select pay head-</option>
+							<?php
+							foreach ($payhead as $rowset):
+							?>
+								<?php if($rowset['type']==3): ?>
+								 	<option value="<?php echo $rowset['id'];?>">
+									<?php echo $rowset['pay_head']; ?>
+								</option>
+							<?php 
+									endif;
+								endforeach;
+							?>					
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="formula" class="control-label"> Formula</label>
+					<div class="radio">
+						<label>
+							<input type="radio" name="formula" id="formula" value="1" required>
+							Yes
+						</label>
+						&nbsp;&nbsp;&nbsp;
+						<label>
+							<input type="radio" name="formula" id="formula" value="0" required>
+							No
+						</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label>Monthly Salary Range:</label>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-6">
+						<label for="from" class="control-label">From</label>
+						<input type="text" class="form-control" name="from" id="from" placeholder="From" required/> 
+					</div>
+					<div class="form-group col-lg-6">
+						<label for="to" class="control-label">To</label>
+						<input type="text" class="form-control" name="to" id="to" placeholder="To" required/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-4">
+						<div class="form-group" id="rate_container">
+							<label for="rate" class="control-label">Rate</label>
+							<input type="text" class="form-control" name="rate" id="rate" placeholder="Rate" required/> 
+						</div>
+					</div>
+					<div class="form-group col-lg-4">
+						<div class="form-group" id="base_container">
+							<label for="base" class="control-label">Base</label>
+							<input type="text" class="form-control" name="base" id="base" placeholder="Base" required/> 
+						</div>
+					</div>
+					<div class="form-group col-lg-4">
+						<div class="form-group" id="value_container">
+							<label for="value" class="control-label">Value</label>
+							<input type="text" class="form-control" name="value" id="value" placeholder="Value" required/> 
+						</div>
+					</div>
+				</div>
+			</div><!-- panel-body -->
+		</div><!-- panel panel-default -->
+    </div> <!-- /modal-body -->
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="reset" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>        
+    </div>  
+</form>
+<script>
+$('document').ready(function(){
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			pay_head: {
+				validators: {
+					notEmpty: {
+						message: 'Please select pay head.'
+					}
+				}
+			},
+			from: {
+				validators: {
+					notEmpty: {
+						message: 'Provide min limit of range'
+					},
+					regexp: {
+						regexp: /^\d*\.?\d*$/,
+						message: 'Please enter valid amount'
+					}		
+				}
+			},
+			to: {
+				validators: {
+					notEmpty: {
+						message: 'Provide max limit of range.'
+					},	
+					regexp: {
+						regexp: /^\d*\.?\d*$/,
+						message: 'Please enter valid amount'
+					}	
+				}
+			},
+			formula: {
+				validators: {
+					notEmpty: {
+						message: 'Is there formula for this slab?'
+					}
+				}
+			},
+			rate: {
+				validators: {
+					notEmpty: {
+						message: 'Provide rate.'
+					},
+					regexp: {
+						regexp: /^\d*\.?\d*$/,
+						message: 'Please enter valid amount'
+					}
+				}
+			},
+			base: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide base amount.'
+					},
+					regexp: {
+						regexp: /^\d*\.?\d*$/,
+						message: 'Please enter valid amount'
+					}	
+				}
+			},
+			value: {
+				validators: {
+					notEmpty: {
+						message: 'Please enter amount.'
+					},
+					regexp: {
+						regexp: /^\d*\.?\d*$/,
+						message: 'Please enter valid amount'
+					}		
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$("input[name='formula']").change(function(e){
+		    if($(this).val() == '1') {
+		        $("#value").prop('disabled','disabled');
+		        $("#rate").prop('disabled',false);
+		        $("#base").prop('disabled',false);
+		    } else {
+		    	$("#rate").prop('disabled','disabled');
+		        $("#base").prop('disabled','disabled');
+		        $("#value").prop('disabled',false);
+		    }
+
+		});
+});
+</script>

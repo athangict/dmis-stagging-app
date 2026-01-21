@@ -1,0 +1,96 @@
+<?php
+/**
+ *  Define Pay Head  
+ */
+	$this->headTitle($this->title);
+?>
+<div class="widget widget-box transparent">
+	<div class="widget-header">
+		<h5 class="widget-title"> 	
+			Define Pay Detail
+		</h5>
+	</div>
+	<div class="widget-body">
+		<div class="widget-main">
+			<div class="row">
+				<form class="form-horizontal">
+					<div class="form-group col-md-12">
+						<label for="payhead" class="control-label col-md-2">Pay Head(s)</label>
+						<div class="col-md-8">
+							<select multiple="multiple" class="form-control chosen-select tag-input-style" id="payhead" name="payhead[]" data-placeholder="Choose a Pay Head...">
+								<?php foreach($this->payheadObj->getAll() as $payhead): 
+									$selected = (in_array($payhead['id'], $this->payheads, true))? 'selected':'';
+								?>
+									<option value="<?php echo $payhead['id'];?>" <?php echo $selected;?> > <?php echo $payhead['pay_head'];?> </option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+						<div class="col-md-1">
+							<button type="button" class="btn btn-sm btn-success" onclick="redirect();"><i class="fa fa-refresh"></i> refresh </button>
+						</div>
+						<?php if(sizeof($this->payheads)==1 && $this->payheads[0]==12):?>
+							<div class="col-md-1">
+								<a class="btn btn-sm btn-info" href="<?php echo $this->url('payroll',array('action'=>'deleteallpaydetail','id'=> $this->payheads[0].'-'.$this->payheads[0]));?>"><i class="fa fa-trash-o"></i> Delete All</a>
+							</div>
+						<?php endif;?>
+					</div>
+				</form>
+			</div>
+			<div class="row">
+				<table class="table table-striped table-bordered" id="dataTables">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Employee</th>
+							<?php foreach($this->payheads as $payhead): ?>
+								<th class="nosort"><?php echo $this->payheadObj->getColumn($payhead,'pay_head');?></th>
+							<?php endforeach;?>
+						</tr>
+					</thead>
+					<tbody>
+						<?php 
+						$payhead_id = implode('-',$this->payheads);
+						$i =1;
+						foreach($this->employees as $emp_row):?>
+							<tr>
+								<td><?php echo $i++;?></td>
+								<td><?php echo $emp_row['full_name'];?>(<?php echo $emp_row['emp_id'];?>)</td>
+								<?php foreach($this->payheads as $payhead): 
+									$amt = $this->paystructureObj->getColumn(array('employee'=> $emp_row['id'], 'pay_head'=>$payhead),'amount');
+								?>
+									<td>
+										<div class="col-md-9">
+											<input type="text" class="form-control" value="<?php echo number_format((float)$amt, 2, '.', ''); ?>" style="width:100%;" readonly ></input> 
+										</div>
+										<div class="col-md-3">
+											<a class='btn btn-xs btn-info' data-toggle='modal' data-target='#modal' title='Edit' href='<?php echo $this->url('payroll',array('action'=>'editpaydetail','id'=> $emp_row['id'].'&'.$payhead.'&'.$payhead_id));?>' >
+												<i class='ace-icon fa fa-pencil bigger-120' ></i> 
+											</a>
+											<a class='btn btn-xs btn-info'  title='Delete' href='<?php echo $this->url('payroll',array('action'=>'deletepaydetail','id'=> $emp_row['id'].'&'.$payhead.'&'.$payhead_id));?>' >
+												<i class='ace-icon fa fa-trash-o bigger-120' ></i> 
+											</a>
+										</div>
+									</td>
+								<?php endforeach;?>
+							</tr>
+						<?php  endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script>
+	$('form select').chosen({ allow_single_deselect: true });
+	function redirect(){
+		var val = $('#payhead').val();
+		var payheads = val.join('-');
+		location.href="<?php echo $this->url('payroll', array('action'=>'definepay'));?>/"+payheads;
+	}
+</script>

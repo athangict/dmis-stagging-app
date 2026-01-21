@@ -1,0 +1,88 @@
+<?php
+/**
+ * 
+ * View -- of Hr/MasterController/payslabAction
+ * 
+ */
+	$this->headTitle($this->title);
+?>
+<?php echo $this->tabs_helper(array(853,832,838,835,841,850,844,847,856,859)); ?>
+<div class="card">
+	<div class="card-header">
+		<div class="btn-group pull-right">
+			<?php echo $this->button(2);?>
+		</div>
+	</div>
+	<div class="table-responsive">
+	<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Pay Head</th>
+					<th>From</th>
+					<th>To</th>
+					<th>Formula</th>
+					<th>Rate(r) and Base(b)</th>
+					<th>Value</th>
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>
+				</tr>
+				
+			</thead>
+			<tbody>
+				<?php
+					$i = 1; 
+					foreach ($this->rowset as $rows):
+						$class = ($i % 2 == 0)?"even gradeC":"odd gradeX";
+					if($rows['formula']==1):
+						$formula="yes";
+						if($rows['from_range'] >150200):
+							$val="((Basic Salary - 83338) / 100) * r + b";
+						else:
+							$val="IntergerValue((Basic Salary - a) / 100) * r + b";
+						endif;
+						$rate=$rows['rate'];
+						$base=$rows['base'];
+					else:
+						$formula="no";
+						$val=$rows['value'];
+						$rate="null";
+						$base="null";
+					endif;
+					$payhead = $this->payheadObj->getColumn(array('id'=>$rows['pay_head']),'pay_head');
+					
+				?>
+					<tr class="<?php echo $class; ?>">
+						<td><?php echo $i; ?> </td>
+						<td><b><?php echo $payhead; ?></b></td>
+						<td><?php echo $rows['from_range'];?></td>
+						<td><?php echo $rows['to_range'];?></td>
+						<td><?php echo $formula; ?></td>
+						<td>r= <?php echo $rate;?>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b=<?php echo $base; ?></td>
+						<td><?php echo $val; ?></td>
+						<?php if($this->button(1)!=""):?>
+						<td><?php echo $this->button(1, $rows['id']);?></td>
+						<?php endif;?>
+					</tr>
+				<?php 
+				$i++;
+				endforeach;  
+				?>                        
+			</tbody>
+		</table>
+	</div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#dataTables').DataTable({"paging":   true,});
+});
+</script>

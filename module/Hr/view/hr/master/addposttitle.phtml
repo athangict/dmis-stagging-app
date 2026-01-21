@@ -1,0 +1,72 @@
+
+<?php
+/**
+ * 
+ * View -- of Hr/MasterController/addpostAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<form id="#form" method="post" action="<?php echo $this->url('master', array('action' => 'addposttitle')); ?>"  enctype="multipart/form-data" >
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+        <div class="panel panel-default">                       
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="post" class="control-label">Position Title</label>
+                    <input class="form-control" name="post" id="post" size="30" placeholder="Position Title" required/> 
+                </div>       
+				<div class="form-group">
+                    <label for="level" class="control-label">Position Level</label>
+                    <select class="form-control" name="level" id="level" data-placeholder="Select" required > 
+						<option value=""></option>
+						<?php foreach($position_levels as $level):?>
+							<option value="<?php echo $level['id']?>">
+								<?php echo $level['code'].'|'.$level['position_level'];?>
+							</option>
+						<?php endforeach;?>
+					</select>
+                </div>       
+            </div>
+        </div>
+    </div> <!-- /modal-body -->
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>  
+</form>
+<script>
+$('document').ready(function(){
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			post: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please provide position title.'
+                    }
+                }
+            },
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+});
+</script>
+

@@ -1,0 +1,61 @@
+<?php
+/**
+ * chophel@athang.com -- 2022
+ * View -- of Acl/AclController/mapmodulesAction
+ */
+	$this->headTitle($this->title);
+?>
+<?php echo $this->tabs_helper(array(203,204,205,206)); ?>
+<?php $modules = $this->moduleObj->getAllExcept('1');?>
+<div class="card">
+	<div class="card-header"></div>
+	<div class="card body">
+	<div class="table-responsive">
+	<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+				<tr>
+					<th>#</th>
+					<th>Role</th>
+					<?php foreach ($modules as $title): ?>
+						<th class="no-sort"> <?php echo $title['module'];?></th>
+					<?php endforeach; ?>
+				</tr>
+			</thead>
+			<tbody>	
+				<?php $i=1+(($page-1)*20); foreach ($roles as $role):?>
+				<tr>
+					<td> <?php echo $i++; ?></td>
+					<td> <?php echo "<strong>".$role['role'];?> </strong></td>
+					
+					<?php $check = $this->button(5);
+					foreach ($modules as $module): ?>
+					<td class="text-center">
+						<?php if($this->rolemoduleObj->checkmapped($role['id'], $module['id'])): ?> 	
+							<a href="<?php echo ($check)?$this->url('acl', array( 'action' => 'mapmodules', 'id' => $role['id'].'_'.$page, 'role'=>$module['id'], 'task' =>'unmap')):'#'; ?>" title="Unmap the module"> 
+								<span class='ace-icon fa fa-check fa-lg text-green'></span>
+							</a>
+						<?php else: ?>
+							<a href="<?php echo ($check)?$this->url('acl', array( 'action' => 'mapmodules', 'id' => $role['id'].'_'.$page, 'role'=>$module['id'], 'task' =>'map')):'#'; ?>" title="Map the module"> 
+								<span class='ace-icon fa fa-times fa-lg text-danger'></span>
+							</a>
+						<?php endif; ?>
+					</td>
+					<?php endforeach; ?>							
+				</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	</div>
+	</div>
+	<div class="card-footer d-flex align-items-center">
+		<?php echo $this->paginationControl($this->roles,'Sliding','acl_pagination.phtml', 
+			array('route' => 'button/paginator','action'=>'button','id'=>'0','role'=>'0','task'=>'0'));?>
+	</div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#dataTables').DataTable();
+});
+</script>

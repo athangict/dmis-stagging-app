@@ -1,0 +1,294 @@
+<?php
+/**
+ * View -- of Hr/PayIncrementController/editincrementAction
+ */
+	$this->headTitle($this->title);
+?>
+<?php 
+	foreach($increments as $increment):
+		extract($increment);
+		//echo "<pre>"; print_r($increment);
+	endforeach;
+?>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="widget widget-box">
+			<div class="widget-header">
+				<h5 class="widget-title lighter smaller">
+					<i class="fa fa-asterisk"></i>&nbsp;&nbsp;Edit Salary Increment
+				</h5>
+			</div><!-- end of widget-header -->
+			<div class="widget-body">
+				<div class="widget-main">
+					<form id="#form" method="post" action="<?php echo $this->url('payincrement', array('action' => 'editincrement')); ?>"  enctype="multipart/form-data" >    
+						<input type="hidden" name="increment_id" id="increment_id" value="<?php echo $id?>" />
+						<div class="row">	
+							<div class="col-lg-3">    
+								<div class="form-group">
+									<label for="increment_date" class="control-label">Increment Date</label>
+									<div class="date input-group" id="increment_date" data-date-format="yyyy-mm-dd" >
+										<input class="form-control span2" name="increment_date" id="increment_date" type="text" placeholder="Increment Date" value="<?php echo $increment_date;?>" required>
+										<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-3">    
+								<div class="form-group">
+									<label for="Increment Type" class="control-label">Increment Type</label>
+									<select class="control-form" name="increment_type" id="increment_type" data-placeholder="Select" >
+										<option value=""></option>
+										<?php 
+											$incrementtypes = $this->incrementtypeObj->getAll();
+											foreach($incrementtypes as $incrementtype):
+												$selected_type = ($incrementtype['id'] == $increment_type)?'selected':'';
+										?>
+										<option value="<?php echo $incrementtype['id'];?>" <?php echo $selected_type;?>>
+											<?php echo $incrementtype['increment_type'];?>
+										</option>
+										<?php endforeach;?>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-3"> 
+								<div class="space-6"></div>
+								<button type="button" id="refresh_btn" class="btn btn-info"><i class="fa fa-refresh"></i> Load </button>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12">
+								<div id="incrementdtl">
+									<div class="row">
+										<div class="col-lg-12">
+											<i class="fa fa-flag green bigger-130"></i> New Basic Pay exceeds Maximum Pay Scale.<br>
+											<i class="fa fa-flag red bigger-130"></i> Old Pay exceeds Maximum Pay Scale.
+											<h3><?php echo $this->incrementtypeObj->getColumn($increment_type,'increment_type');?></h3>
+											<div>
+												<table class="table table-striped table-hover table-condensed" style="width:100%;" id="trdetails_table">
+													<thead>
+														<tr>
+															<th>#</th>
+															<th>EmpID</th>
+															<th>Employee</th>
+															<th>Location</th>
+															<th>Activity</th>
+															<th>Position Level</th>
+															<th>PayScale</th>
+															<th>Old Pay</th>
+															<th>Increment</th>
+															<th>New Pay</th>
+															<th>Action <label class="ace bolder blue">
+															<input type="checkbox" id="checkAll" class="ace" />
+															  &nbsp;<span class="lbl">Select All</span>
+															</label></th>
+														</tr>
+													</thead>
+													<tbody>
+														<?php 
+															$sl = 1;
+															$included_emps = array();
+															foreach($increment_dtls as $row):
+																$employee = $this->employeeObj->get($row['employee']);
+																foreach($employee as $emp);
+																array_push($included_emps,$emp['id']);
+																$positionlevels = $this->positionlevelObj->get($emp['position_level_id']);
+																foreach($positionlevels as $level);
+																$pay_increment = $row['old_pay']+$level['increment'];
+																//echo "<pre>";print_r($pay);
+														?>
+														<tr <?php if($pay_increment > $level['max_pay']){ ?> class="success" <?php }elseif($basic_pay > $level['max_pay']){ ?> class="danger" <?php } else{} ?>>
+															<td><?php echo $sl++;?></td>
+															<td>
+																<input type="hidden" value="<?php echo $row['id']; ?>" name="detail_<?php echo $emp['id']; ?>" id="detail" />
+																
+																<?php echo $emp['emp_id'];?>
+															</td>
+															<td><b><?php echo $emp['full_name'];?></b></td>
+															<td><?php echo $emp['location'];?></td>
+															<td><?php echo $emp['activity'];?></td>
+															<td><?php echo $emp['position_level'];?></td>
+															<td><?php echo $level['min_pay'].'-'.$level['increment'].'-'.$level['max_pay'];?></td>
+															<td>
+																<?php echo $row['old_pay'];?>
+															</td>
+															<?php if($increment_type == '1'):?>
+																<td>
+																	<input type="hidden" value="<?php echo $emp['id']; ?>" name="employee_<?php echo $emp['id']; ?>" id="employee" />
+																	<input type="hidden" value="<?php echo $row['old_pay'];?>" name="old_pay_<?php echo $emp['id']; ?>" id="old_pay" />
+																	<input type="hidden" class="form-control" value="<?php echo $row['increment'];?>" name="increment_<?php echo $emp['id']; ?>" id="increment" />
+																	<input type="hidden" class="form-control" value="<?php echo $row['new_pay'];?>" name="new_pay_<?php echo $emp['id']; ?>" id="new_pay" />
+																	<input type="text" class="form-control" name="incrementM_<?php echo $emp['id']; ?>" value="<?php echo $row['increment'];?>" id="incrementM" />
+																</td>
+																<td><input type="text" class="form-control" name="new_payM_<?php echo $emp['id']; ?>" value="<?php echo $row['new_pay'];?>" id="new_payM" /></td>
+															<?php else:?>
+															<td>
+																<?php echo $row['increment'];?>
+															</td>
+															<td>
+																<?php echo $row['new_pay'];?>
+															</td>
+															<?php endif;?>
+															<td>
+																<input type="checkbox" name="increment_check[]" id="increment_check" value="<?php echo $emp['id']; ?>" checked <?php if($pay_increment > $level['max_pay'] && $increment_type!=1){ ?> disabled <?php } ?> > 
+															</td>
+														</tr>
+														<?php endforeach;?>
+														<?php
+															$excluded_emps = $this->employeeObj->getNotIn($included_emps, array('increment_type'=>$increment_type));
+															foreach($excluded_emps as $excluded_emp):
+															$employees = $this->employeeObj->get($excluded_emp['id']);
+															foreach ($employees as $emp):
+																$positionlevels = $this->positionlevelObj->get($emp['position_level_id']);
+																foreach($positionlevels as $level);
+																$basic_pay = $this->paystructureObj->getColumn(array('employee' => $emp['id'], 'pay_head'=> '1'),'amount');
+																$pay_increment = $basic_pay+$level['increment'];
+														?>
+															<tr <?php if($pay_increment > $level['max_pay']){ ?> class="success" <?php }elseif($basic_pay > $level['max_pay']){ ?> class="danger" <?php } else{} ?>>
+																<td><?php echo $sl++; ?> </td>
+																<td>
+																	<input type="hidden" value="<?php echo $emp['id']; ?>" name="employee_<?php echo $emp['id']; ?>" id="employee" />
+																	<?php echo $emp['emp_id']; ?>
+																</td>
+																<td><b><?php echo $emp['full_name']; ?></b></td>
+																<td><?php echo $emp['location']; ?></td>
+																<td><?php echo $emp['activity']; ?></td>
+																<td><?php echo $emp['position_level']; ?></td>
+																<td><?php echo $level['min_pay'].'-'.$level['increment'].'-'.$level['max_pay'];?></td>
+																<td>
+																	<input type="hidden" value="<?php echo $basic_pay;?>" name="old_pay_<?php echo $emp['id']; ?>" id="old_pay" <?php if($pay_increment > $level['max_pay'] && $increment_type!=1){ ?> disabled <?php } ?>  />
+																	<?php echo $basic_pay;?>
+																</td>
+																<?php if($increment_type == '1'):?>
+																	<td>
+																		<input type="text" class="form-control" name="incrementM_<?php echo $emp['id']; ?>" id="incrementM" />
+																	</td>
+																	<td><input type="text" class="form-control" name="new_payM_<?php echo $emp['id']; ?>" id="new_payM" /></td>
+																<?php else:?>
+																<td>
+																	<input type="hidden" class="form-control" value="<?php echo $level['increment'];?>" name="increment_<?php echo $emp['id']; ?>" id="increment" />
+																	<?php echo $level['increment'];?>
+																</td>
+																<td>
+																	<input type="hidden" class="form-control" value="<?php echo $basic_pay+$level['increment'];?>" name="new_pay_<?php echo $emp['id']; ?>" id="new_pay" />
+																	<?php echo $basic_pay+$level['increment'];?>
+																</td>
+																<?php endif;?>
+																<td>
+																	<input type="checkbox" name="increment_check[]" id="increment_check" value="<?php echo $emp['id']; ?>" <?php if($pay_increment > $level['max_pay'] && $increment_type!=1){ ?> disabled <?php } ?>  > 
+																</td>
+															</tr>
+														<?php endforeach;
+															endforeach;?>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12">
+								<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save</button>
+								<button type="button" class="btn btn-warning" onclick="javascript:history.back();" ><i class="fa fa-long-arrow-left"></i> Back </button> 
+							</div>
+						</div> 
+					</form>
+				</div><!-- end of widget-main -->
+			</div><!-- end of widget-body -->
+		</div><!-- end of widget-box -->
+	</div>
+</div>
+<script>
+$('document').ready(function(){
+	$("#checkAll").change(function () {
+			$("input:checkbox").not("[disabled]").prop('checked', $(this).prop("checked"));
+		});
+		var tr_id =0;
+		var parentObj = $('#trdetails_table');
+		parentObj.wrap("<div style='overflow-x:scroll;margin-bottom:5px;'> </div>");
+		parentObj.find("tbody tr").each(function(){
+			$(this).attr('id',++tr_id);			
+			$(this).find('div.chosen-search input').each(function(){
+				$(this).addClass('ch-search');
+			});
+			$(this).find('div.chosen-container .chosen-drop').each(function(){
+				$(this).css({'position':'relative'});
+			});
+			$(this).find(':input, :button').not('input.ch-search').each(function(){
+				var old_id = $(this).attr('id');
+				var new_id=(old_id.lastIndexOf('-') > 0)? old_id.substr(0, old_id.lastIndexOf('-')): old_id;
+				$(this).attr('id',new_id+'-'+tr_id);
+				$(this).addClass('tr-'+new_id);
+			});				
+			
+			$(this).find('input.tr-incrementM').each(function(){
+				var id = $(this).closest('tr').attr('id');
+				$(this).bind('change', function(){	
+					var new_pay = parseFloat($(this).val()) + parseFloat($('#old_pay-'+id).val());
+					$('#new_payM-'+id).val(new_pay);	
+				});
+			});
+		});
+		$('#increment_date').datepicker();
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			district: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide District Name En.'
+					}
+				}
+			},
+			districtDz: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide District Name Dz.'
+					}
+				}
+			},
+			status: {
+				validators: {
+					notEmpty: {
+						message: 'Please select status.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('#increment_date').on('changeDate',function(){
+			$('form').formValidation('revalidateField', $(this).attr('id'));
+		});
+		
+		$('#refresh_btn').click(function(){
+			$('form').formValidation('revalidateField',$('select#increment_type'));
+			var validation = $('form small[data-fv-result = "INVALID"]').length;
+			if(validation <= 0){
+				$.post( 
+					"<?php echo $this->url('payincrement', array('action' => 'getincrementdtl'));?>",
+					{	
+						'increment_type': $('select#increment_type').val(),
+					}, 
+					function(data) {
+						$('div#incrementdtl').html( data ); 
+				});	
+				$('div.message_box').hide();
+			}
+		});
+});
+</script>
+
+

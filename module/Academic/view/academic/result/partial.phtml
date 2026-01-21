@@ -1,0 +1,25 @@
+<?php 
+/** 
+ * academic/result/partial.phtml 
+**/
+	$result = ($this->active == "result")?"active":"";
+
+?>
+<br/>
+<ul class="nav nav-tabs padding-18" id="myTab" >
+	<?php if($this->id > 0):?>
+		<li class="<?php echo $result; ?>">
+			<a href="<?php echo $this->url('result', array('action' => 'view', 'id' => $this->id)); ?>">
+				<i class="blue ace-icon fa fa-user bigger-120"> </i>
+				<span class="hidden-xs" >Result Details</span>
+			</a>
+		</li>
+	<?php else: ?>
+		<li class="<?php echo $result; ?>">
+			<a href="<?php echo $this->url('result', array('action' => 'addresult', 'id' => $this->id)); ?>">
+				<i class="blue ace-icon fa fa-user bigger-120"> </i>
+				<span class="hidden-xs" >Result Details</span>
+			</a>
+		</li>
+	<?php endif;?>
+</ul>

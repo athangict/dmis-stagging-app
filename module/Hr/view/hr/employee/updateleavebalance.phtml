@@ -1,0 +1,74 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmployeeController/updateleavebalanceAction
+ * 
+ */
+?>
+<form id="#form" method="post" action="<?php echo $this->url('employee', array('action' => 'updateleavebalance')); ?>"  enctype="multipart/form-data" >
+	<div class="modal-header">
+		<h4 class="modal-title"> <i class="fa fa-asterisk"></i> Update Leave Opening Balance for All Employee </h4>
+	</div>  <!-- /modal-header -->
+	<div class="modal-body">
+		<div class="panel panel-default">                       
+			<div class="panel-body">
+			    <div class="row">				</div>
+			    <?php foreach($employee as $rowset):?>
+				<div class="row">
+					<div class="form-group col-lg-4">
+						<label for="leave_balance" class="control-label">Employee Name</label>
+						<input type="hidden" class="form-control" name="empID[]" id="empID" value="<?php echo $rowset['id'];?>"> 
+						<input type="text" class="form-control" name="empl_name" id="empl_name[]" value="<?php echo $rowset['full_name']. " / " .$rowset['designation']." / ".$rowset['cid']?>"size="30" readonly > 
+					</div>
+					<div class="form-group col-lg-4">
+						<label for="leave_balance" class="control-label">Leave Opening Balance</label>
+						<input type="text" class="form-control" name="leave_balance[]" id="leave_balance" value ="<?php echo $rowset['leave_balance']; ?>" size="30"> 
+					</div>
+					<div class="form-group col-lg-4">
+						<label for="leave_balance" class="control-label">Empl ID</label>
+						<input type="text" class="form-control" name="emplID[]" id="emplID" value ="<?php echo $rowset['emp_id']; ?>"size="30"> 
+					</div>
+				</div>
+				<?php endforeach;?>
+				<div>
+				    <div class="form-group col-lg-4"><button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+						<button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> </div>
+					<div class="form-group col-lg-8"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+<script>
+$('document').ready(function(){
+	$('#leave_balance_date').datepicker();
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			leave_balance_date: {
+				validators: {
+					notEmpty: {
+						message: 'Please privide leave balance date.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('#leave_balance_date').on('changeDate',function(){
+		$('form').formValidation('revalidateField','leave_balance_date');
+	});
+});
+</script>

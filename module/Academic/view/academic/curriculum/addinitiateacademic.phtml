@@ -1,0 +1,160 @@
+<?php 
+/**
+ * View -- of Academic/MonkController/addstudentdetails
+ * chophel@athang.com
+ */
+$this->headTitle($this->title);
+foreach($curriculum as $row);
+	// print_r($row);
+	// exit;
+?>
+<form id="#form" method="post" action="<?php echo $this->url('curriculum', array('action' => 'addinitiateacademic','id'=>$page)); ?>"  enctype="multipart/form-data" >                                  
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body"> 
+        <div class="panel panel-default">
+			<div class="panel-body">  
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div  class="form-group">
+							<label for="class_name" class="control-label">Name</label>
+							<input type="text" name="class_name" id="class_name" class="form-control" placeholder="Eg. Section A Class 1" required/>
+                        </div>
+						<div  class="form-group">
+							<label for="program" class="control-label">Program</label>
+							<select id="program" name="program" class="form-control" data-placeholder="Select">
+							<option value="-1" data-mdb-secondary-text="Secondary text" selected>None</option>
+							<?php foreach($program as $class): ?>
+								<option value="<?php echo $class['id'] ?>" data-mdb-secondary-text="Secondary text">
+								<?php echo $class['name']?>
+								(<?php echo $this->classobj->getColumn($class['level'], 'standard'); ?>)
+								</option>
+							<?php endforeach; ?>
+							</select>
+                        </div>
+					</div>
+						<div  class="form-group col-lg-6">
+							<label for="start_date" class="control-label">Start Date</label>
+							<input type="date" name="start_date" id="start_date" class="form-control" required/>
+                        </div>
+						<div  class="form-group col-lg-6">
+							<label for="end_date" class="control-label">End Date</label>
+							<input type="date" name="end_date" id="end_date" class="form-control" required/>
+                        </div>
+						<div class="col-lg-12">
+						<div  class="form-group ">
+							<label for="capacity" class="control-label">Capacity</label>
+							<input type="number" name="capacity" id="capacity" class="form-control" placeholder="Capacity" required/>
+                        </div>
+						<!-- <div  class="form-group">
+							<label for="level" class="control-label">Level</label>
+							<select id="level" name="level" class="form-control" data-placeholder="Select">
+							<option value="-1" selected>None</option>
+							<?php foreach($classes as $class):?>
+								<option value="<?php echo $class['id']?>">
+									<?php echo $class['standard'];?></option>
+							<?php endforeach;?>
+						</select>
+                        </div> -->
+                    </div>
+                </div>
+		    </div>
+		</div>
+	</div> <!-- /modal-body -->    
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="ace-icon fa fa-check"></i> Save</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="ace-icon fa fa-times"></i> Cancel</button> 
+    </div>
+</form>
+<script>
+ $('document').ready(function(){
+	$('select#district').on('change',function(){
+		
+			$.post(
+				"<?php echo $this->url('monk', array('action' => 'getorganization'));?>",
+				{
+					rdzoId: $(this).val(),
+				},
+				function(data){
+					$('select#organization').html(data.organization);
+					$('select#organization').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		$('select#class').on('change',function(){
+			$.post(
+				"<?php echo $this->url('curriculum', array('action' => 'getsection'));?>",
+				{
+					classId: $(this).val(),
+				},
+				function(data){
+					$('select#section').html(data.section);
+					$('select#section').trigger('chosen:updated');
+				},
+				'json'
+			);
+		});
+		
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			region: {
+				validators: {
+					notEmpty: {
+						message: 'Please select region.'
+					}
+				}
+			},
+			location_type: {
+				validators: {
+					notEmpty: {
+						message: 'Please select location type.'
+					}
+				}
+			},
+			location: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide location name.'
+					}
+				}
+			},
+			district: {
+				validators: {
+					notEmpty: {
+						message: 'Please select dzongkhag.'
+					}
+				}
+			},
+			status: {
+				validators: {
+					notEmpty: {
+						message: 'Please select status.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('form select').chosen().change(function () {
+		fv.revalidateField($(this).attr('name'));
+	});
+});
+</script>

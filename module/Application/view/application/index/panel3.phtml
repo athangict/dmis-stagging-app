@@ -1,0 +1,236 @@
+<?php
+/**
+ * View -- of Application/IndexController/panel4Action
+ * chophel@athang.com
+ */
+	$this->headTitle($title);
+	//echo '<pre>';print_r($permitted_districts);exit;
+?>
+<div class="container-xl">
+	<!-- Page title -->
+	<div class="page-header d-print-none">
+		<div class="row align-items-center">
+			<div class="col">
+				<!-- Page pre-title -->
+                <div class="page-pretitle">Overview</div>
+                <h2 class="page-title">Dashboard</h2>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="page-body">
+	<div class="container-xl">
+		<div class="row row-deck row-cards">
+		    <div class="col-lg-6">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Total Students in the Organization | Section Based</h5>
+						<div id="chart1" style="height: 370px;"></div>
+						<?php
+							$class_Section_student = array();
+							//foreach($$location_from_user as $location);
+							foreach($this->standardObj->get(array('level' =>$org_level)) as $standards):
+								foreach($this->sectionObj->get(array('class'=>$standards['id'])) as $sections):
+									$student = $this->classstdObj->getCount(array('organization'=>$user_location,'class'=>$sections['class'],'section'=>$sections['id'],'academic_year'=>$distinctyear));
+									array_push($class_Section_student,array("y"=>$student,"label"=>$sections['section'],"label1"=>$standards['standard']));
+								    
+								endforeach;
+							endforeach;
+							//echo '<pre>';print_r($class_Section_student);
+						    //exit;
+						?>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Total Students in the Organization | Gender Based</h5>
+						<div id="chart2" style="height: 370px;"></div>
+						<?php
+							$male_student_in_class = array();
+							$female_student_in_class = array();
+							//foreach($$location_from_user as $location);
+							foreach($this->locationObj->get(array('status'=>'1')) as $locations):
+								$male_student_in_org = $this->studentObj->getCount(array('organization'=>$user_location,'staff'=>'1','gender'=>'1'));
+								$female_student_in_org = $this->studentObj->getCount(array('organization'=>$user_location,'staff'=>'1','gender'=>'0'));
+							endforeach;
+							array_push($male_student_in_class,array("y"=>$male_student_in_org,"label"=>$locations['location'],"label1"=>'Male'));
+							array_push($female_student_in_class,array("y"=>$female_student_in_org,"label"=>$locations['location'],"label1"=>'Female'));
+							//echo '<pre>';print_r($female_student_in_class);exit;
+						?>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row row-deck row-cards">
+		    <div class="col-lg-6">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Pass Percentage in Organization | Standard Based</h5>
+						<div id="chart3" style="height: 370px;"></div>
+						<?php
+							$pass_percentages = array();
+							foreach($this->standardObj->get(array('level' =>$org_level)) as $standards):
+								$pass_in_class = $this->resultObj->getPasscount(array('organization'=>$user_location,'class'=>$standards['id'],'academic_year'=>$distinctyear,'pass'=>'1'));	
+								$total_in_class = $this->resultObj->getTotalcount(array('organization'=>$user_location,'class'=>$standards['id'],'academic_year'=>$distinctyear));
+								if($pass_in_class):
+									$percent=$pass_in_class / $total_in_class * 100;
+								else:
+									$percent=0;
+								endif;
+								array_push($pass_percentages,array("y"=>$percent,"label"=>$standards['standard']));
+							endforeach;
+						?>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Pass Percentage | (Standard & Section) Based</h5>
+						<div id="chart4" style="height: 370px;"></div>
+						<?php
+						    $pass_percentages_in_section = array();
+							$pass_percentages_in_section_grade = array();
+							$pass_percent='';
+								foreach($this->sectionObj->get(array('status'=>'1')) as $sections):
+									$passed_student = $this->resultObj->getCount(array('organization'=>$user_location,'class'=>$sections['class'],'section'=>$sections['id'],'academic_year'=>$distinctyear,'pass'=>'1'));
+									$Total_student = $this->resultObj->getCount(array('organization'=>$user_location,'class'=>$sections['class'],'section'=>$sections['id'],'academic_year'=>$distinctyear));
+										if($passed_student!=0):
+											$pass_percent= $passed_student / $Total_student * 100;
+										else:
+											$pass_percent=0;
+										endif;
+										$class= $this->standardObj->getColumn($sections['class'],'standard');
+									array_push($pass_percentages_in_section,array("y"=>$pass_percent,"label"=>$sections['section'],"label1"=>$class));
+								endforeach; 
+						?>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+    $(function () {
+		var chart1 = new CanvasJS.Chart("chart1", {
+            animationEnabled: true,
+			exportFileName: "Students in Class & Section",
+            exportEnabled: true,
+            legend: {
+                verticalAlign: "center",
+                horizontalAlign: "right",
+            },
+			axisX: {
+				title: "No. of Students in Class & Section"
+			},
+			axisY: {
+				title: "No. of Students in Class & Section"
+			},
+            theme: "light2",
+			axisX: {
+						interval: 1
+					},
+            data: [
+				{
+					type: "stackedBar",
+					indexLabel: "{label1}",
+					showInLegend: true,
+					dataPoints: <?php echo json_encode($class_Section_student, JSON_NUMERIC_CHECK); ?>
+				}
+            ]
+        });
+        chart1.render();
+		var chart2 = new CanvasJS.Chart("chart2", {
+            animationEnabled: true,
+			exportFileName: "Total Students",
+            exportEnabled: true,
+            legend: {
+                verticalAlign: "center",
+                horizontalAlign: "right",
+            },
+			axisX: {
+				title: "Students"
+			},
+			axisY: {
+				title: "Number of Students"
+			},
+            theme: "dark2",
+			axisX: {
+						interval: 1
+					},
+            data: [
+				{
+					type: "stackedBar",
+					name: "Total Male",
+					indexLabel: "{label1}:{y}",
+					showInLegend: true,
+					dataPoints: <?php echo json_encode($male_student_in_class, JSON_NUMERIC_CHECK); ?>
+				},
+				{
+					type: "stackedBar",
+					name: "Total Female",
+					indexLabel: "{label1}:{y}",
+					showInLegend: true,
+					dataPoints: <?php echo json_encode($female_student_in_class, JSON_NUMERIC_CHECK); ?>
+				},
+            ]
+        });
+        chart2.render();
+		var chart3 = new CanvasJS.Chart("chart3", {
+            animationEnabled: true,
+			exportFileName: "Pass Percentage",
+            exportEnabled: true,
+           
+			axisX: {
+				title: "Student Passed"
+			},
+			axisY: {
+				title: "Student Passed in Standard Wise",
+				suffix: "%"
+			},
+            theme: "light2",
+			axisX: {
+						interval: 1
+					},
+            data: [
+				{
+					type: "column",
+					name: "Total Student Passed in Standard",
+					indexLabel: "{y}",
+					showInLegend: true,
+					dataPoints: <?php echo json_encode($pass_percentages, JSON_NUMERIC_CHECK); ?>
+				}
+            ]
+        });
+        chart3.render();
+		var chart4 = new CanvasJS.Chart("chart4", {
+            animationEnabled: true,
+			exportFileName: "Pass Percentage",
+            exportEnabled: true,
+			axisX: {
+				title: "Percentage"
+			},
+			axisY: {
+				title: "Passed Percentage",
+				suffix: "%"
+			},
+            theme: "light2",
+			axisX: {
+						interval: 1
+					},
+            data: [
+				{
+					type: "stackedBar",
+					name: "Pass Percentage in a each Section",
+					indexLabel: "{label1}",
+					showInLegend: true,
+					dataPoints: <?php echo json_encode($pass_percentages_in_section, JSON_NUMERIC_CHECK); ?>
+				},
+				
+            ]
+        });
+        chart4.render();
+	});
+</script>

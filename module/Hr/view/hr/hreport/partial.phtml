@@ -1,0 +1,14 @@
+<?php // partial.phtml 
+	$general = ($this->active == "general")?"active":"";
+?>
+<br/>
+<ul class="nav nav-tabs padding-18" id="myTab">	
+	<li class="<?php echo $general; ?>">
+		<a href="<?php echo $this->url('hreport', array('action' => 'general')); ?>" title="HR General Report">
+			<i class="red ace-icon fa fa-bar-chart bigger-120"></i>
+			<span class="hidden-xs">General Report</span>
+		</a>
+	</li>
+</ul>
+
+

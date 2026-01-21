@@ -1,0 +1,174 @@
+<?php
+/**
+ * Academic/ReportController/resultreportAction  
+ */
+	$this->headTitle($this->title);
+
+?>
+<?php echo $this->partial('academic/report/partial.phtml', array('active' => 'resultreport')); ?><br/>
+
+<div class="widget widget-box transparent">
+	<div class="widget-header">
+		<h4 class="widget-title"> 	
+			Student Results
+		</h4>
+	</div>	
+	<div class="widget-body">
+		<div class="widget-main">
+			<form id="#form" method="POST" action="<?php echo $this->url('report', array('action' => 'resultreport')); ?>"  enctype="multipart/form-data" >    
+				<div class="row">
+					<div class="col-lg-2">
+						<label for="year" class="control-label">Year </label>
+						<select class="form-control" name="year" id="year" data-placeholder="Select" required >
+							<option value=""></option>
+							<?php $minYear = $this->studentObj->getMin('yoe');
+                            $minYear = ($this->minYear > 0)?$this->minYear:date('Y');?>
+							<?php for($y=date('Y');$y >= $minYear; $y--):
+								$selected = ($year == $y)?'selected':'';?>
+								<option value="<?php echo $y;?>" <?php echo $selected;?>>
+									<?php echo $y; ?>
+								</option>
+							<?php endfor; ?>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label for="organization" class="control-label">Organization</label>
+						<select class="form-control" id="organization" name="organization" data-placeholder="Select"  required >
+							<option value="-1">All</option>
+							<?php 
+							foreach ($this->organization->getAll() as $organizations):
+							?>
+							<?php $selected = ($organizations['id'] == $data['organization'])?'selected':'';?>
+								<option value="<?php echo $organizations['id'];?>" <?php echo $selected;?>>
+									<?php echo $organizations['department'];?>
+								</option>
+							<?php
+							endforeach;
+							?>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label for="classes" class="control-label">Course</label>
+						<select class="form-control" id="classes" name="classes" data-placeholder="Select" required >
+							<option value="-1">All</option>
+							<?php 
+							foreach ($this->classes->getAll()as $class):
+							?>
+								<?php $selected = ($class['id'] == $data['class'])?'selected':'';?>
+								<option value="<?php echo $class['id'];?>" <?php echo $selected;?>>
+									<?php echo $class['class'];?>
+								</option>
+							<?php
+							endforeach;
+							?>
+						</select>
+					</div>
+					<div class="col-md-2"></br>
+						<div class="pull-right">
+							<label for="redirect" class="control-label">&nbsp;</label>
+							<button type="submit" class="btn btn-sm btn-success" onclick="redirect();"><i class="fa fa-refresh"></i> Generate </button>
+						</div>
+					</div>
+				</div>
+			</form>
+			<div class="space-6"></div>
+			<table class="table table-condensed table-bordered" id="example">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Student</th>
+						<th>Organization</th>
+						<th>Course</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php $i=1;foreach ($result as $row):?>
+				<tr data-href="<?php echo $this->button(4, $row['std_id']); ?>">
+						<td><?php  echo $i++; ?></td>								       
+						<td><?php echo $this->employee->getColumn($row['std_id'],'full_name'); ?></td>
+						<td><?php echo $this->organization->getColumn($row['organization'],'department'); ?></td>
+						<td><?php echo $this->classes->getColumn($row['course'],'class'); ?></td>
+						<td><?php echo $this->status(18);?></td>
+					</tr>
+					<?php endforeach;?>
+				</tbody>
+            </table>
+	    </div>
+	</div>
+</div>
+
+<script type="text/javascript">
+$("tr[data-href]").each(function(){
+		$(this).find('td').not('td.action').each(function(){
+			$(this).css('cursor','pointer');
+			$(this).bind('click',function() {
+				window.document.location = $(this).closest('tr').attr("data-href");
+			});
+		});
+	});
+	var title_table = 'GIS for the Month : '+$('#gis_date').val();
+	$('#example').DataTable( {
+		dom: 'Bfrtip',
+		/*buttons: [
+			'copy', 'csv', 'excel', 'pdf', 'print'
+		]*/
+		lengthMenu: [
+			[ 25, 50, -1 ],
+			[ '25 rows', '50 rows', 'Show all' ]
+		],
+		columnDefs: [ {
+			visible: false
+		} ],
+		buttons: [
+			{
+				extend: 'copy',
+				exportOptions: {
+					columns: ':visible'
+				},
+				text: '<i class="fa fa-files-o"></i> Copy',
+				titleAttr: 'Copy'
+			},
+			{
+				extend: 'excel',
+				title: title_table,
+				exportOptions: {
+					columns: ':visible'
+				},
+				text: '<i class="fa fa-file-excel-o"></i> Excel',
+				titleAttr: 'Excel'
+			},
+			{
+				extend: 'pdfHtml5',
+				title: title_table,
+				exportOptions: {
+					columns: ':visible'
+				},
+				orientation: 'landscape',
+				pageSize: 'LEGAL',
+				text: '<i class="fa fa-file-pdf-o"></i> Pdf',
+				titleAttr: 'PDF'
+			},
+			{
+				extend: 'print',
+				title: title_table,
+				exportOptions: {
+					columns: ':visible'
+				},
+				text: '<i class="fa fa-print"></i> Print',
+				titleAttr: 'Print'
+			},
+			'pageLength','colvis'
+		],
+		select:true
+	} );
+	$("#region").change(function() { 
+		$.post( "<?php echo $this->url('ajresponse', array('action' => 'getlocation')); ?>/"+ $("#region").val(), function( data ) {
+			var newdata ="<option value='-1'>All</option>"+data;
+			$('#location').html( newdata );
+			$("#location").trigger('chosen:updated');
+		});
+	});
+	
+</script>
+

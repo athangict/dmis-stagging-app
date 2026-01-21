@@ -1,0 +1,254 @@
+<?php
+/**
+ * 
+ * View -- of Hr/MasterController/editlocationAction
+ * 
+ */
+$this->headTitle($this->title);
+?>
+<?php 
+    foreach($this->payhead as $payhead):
+        extract($payhead);
+    endforeach;
+?> 
+<form id="#form" method="post" action="<?php echo $this->url('master', array('action' => 'editpayhead', 'id' => $id)); ?>"  enctype="multipart/form-data" >                 
+<div class="modal-header">
+        <h5 class="modal-title"><i class="ace-icon fa fa-plus-square-o"></i> <?php echo $this->title;?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="form-group">
+					<label for="head_type" class="control-label">PayHead Type</label>
+					<select class="form-control" id="payhead_type" name="payhead_type" data-placeholder="Select" required>
+						<option value=""></option>
+						<?php 
+						foreach ($payheadtypes as $payheadtype):
+						 $selected = ($payhead_type == $payheadtype['id'])? "selected":"";
+						?>
+							<option value="<?php echo $payheadtype['id'];?>" <?php echo $selected;?>>
+								<?php echo $payheadtype['head_type'];?>
+							</option>
+						<?php
+						endforeach;
+						?>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="pay_head" class="control-label">Pay Head</label>
+					<input class="form-control" name="pay_head" id="pay_head" value="<?php echo $pay_head; ?>" required >
+				</div>
+				<div class="form-group">
+					<label for="pay_head" class="control-label">Code</label>
+					<input class="form-control" name="code" id="code" value="<?php echo $code; ?>" required >
+				</div>
+				<div class="form-group">
+    				<label for="type" class="control-label">Type </label>
+    				<?php 
+    					$actual = ($type == '1')?'checked':'';
+    					$percent = ($type=='2')?'checked':'';
+    					$slab = ($type=='3')?'checked':'';
+    					$group = ($type=='4')?'checked':'';
+    				?>
+    				<div class="radio">
+    					<label>
+    						<input type="radio" name="type" id="type" value="1" <?php echo $actual; ?> required>
+    						Actual Amount
+    					</label>
+    					&nbsp;&nbsp;&nbsp;
+    					<label>
+    						<input type="radio" name="type" id="type" value="2" <?php echo $percent; ?> required>
+    						Percent
+    					</label>
+    					&nbsp;&nbsp;&nbsp;
+    					<label>
+    						<input type="radio" name="type" id="type" value="3" <?php echo $slab; ?> required>
+    						Slab
+    					</label>
+    					&nbsp;&nbsp;&nbsp;
+    					<label>
+    						<input type="radio" name="type" id="type" value="4" <?php echo $group; ?> required>
+    						Group
+    					</label>
+    				</div>
+    			</div>
+    			<?php if($type=='2'):
+	    			$against_display='';
+	    			$against_disable='';
+	    			$percentage_display='';
+	    			$percentage_disable='';
+    			elseif($type=='3'):
+    				$against_display='';
+    				$against_disable='';
+    				$percentage_display='none';
+    				$percentage_disable='disabled';
+    			else:
+					$against_display='none';
+    				$against_disable='disabled';
+    				$percentage_display='none';
+    				$percentage_disable='disabled';
+    			endif;
+    			?>
+    			<div class="row">
+					<div class="form-group col-lg-6" id="against_container" style="display:<?php echo $against_display;?>">
+						<label for="against" class="control-label">Against</label>
+						<select class="form-control" id="against" name="against" data-placeholder="Select" <?php echo $against_disable;?> >
+					        <option value=""></option>
+	        				<?php 
+	        				    foreach ($payheads as $payheads):
+	        				        $selected = ($against == $payheads['id'])?"selected":"";
+	    				    ?>
+            				<option value="<?php echo $payheads['id'];?>"<?php echo $selected; ?>>
+        						<?php echo $payheads['pay_head'];?>
+            				</option>
+	            			<?php endforeach;?>
+	            			<?php $selected_net = ($against == -1)? 'selected':''; ?>
+	            			<option value="-1" <?php echo $selected_net;?>>Gross Pay</option>
+							<?php $selected_pitnet = ($against == -2)? 'selected':''; ?>
+	            			<option value="-2" <?php echo $selected_pitnet;?>>PIT Net Pay</option>
+				        </select>
+					</div>
+					<div class="form-group col-lg-6" id="percentage_container" style="display:<?php echo $percentage_display;?>">
+						<label for="percentage" class="control-label">Percentage</label>
+						<input type="text" class="form-control" name="percentage" id="percentage" value="<?php echo $percentage;?>" placeholder="Percentage" <?php echo $percentage_disable;?>required/>
+					</div>	
+				</div>
+				<div class="form-group">
+					<label>
+						 <?php $checked = ($dlwp == '1')?"checked":""; ?>
+						<input class="ace" type="checkbox"  <?php echo $checked;?> name="dlwp" id="dlwp" value="1" style="min-width: 90px;"></input>
+						<span class="lbl"> Depends on LWP</span>
+					</label>
+			    </div>				
+				<div class="form-group">
+					<label>
+						 <?php $checked_rup = ($roundup == '1')?"checked":""; ?>
+						<input class="ace" type="checkbox"  <?php echo $checked_rup;?> name="roundup" id="roundup" value="1" style="min-width: 90px;"></input>
+						<span class="lbl"> Round up the Value</span>
+					</label>
+			    </div>				
+				<div class="form-group">
+					<label>
+						<input class="ace" type="checkbox"  name="change_paystructure" id="change_paystructure" value="1" style="min-width: 90px;"></input>
+						<span class="lbl"> Apply changes to Pay Structures</span>
+					</label>
+			    </div>
+			    <div class="alert alert-warning"> 
+					<strong>Warning!</strong> By Checking above checkbox the changes will be made to all the paystructures of entire employee.
+				</div>				
+			</div><!-- panel-body -->
+        </div><!-- panel panel-default -->
+    </div><!-- modal-body -->
+                    
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="reset" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>
+    </div><!-- /modal-footer -->
+</form>
+<script>
+$('document').ready(function(){
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			pay_head: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide pay head.'
+					}
+				}
+			},
+			code: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide abreviation.'
+					}
+				}
+			},
+			against: {
+				validators: {
+					notEmpty: {
+						message: 'Please choose against.'
+					}		
+				}
+			},
+			percentage: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide percentage.'
+					}		
+				}
+			},
+			deduction: {
+				validators: {
+					notEmpty: {
+						message: 'Is this deduction.'
+					}
+				}
+			},
+			type: {
+				validators: {
+					notEmpty: {
+						message: 'Select the type.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	if($("input[name='type']")==1){
+			$("#against_container").css('display','none');
+			$("#percentage_container").css('display','none');
+		}else if($("input[name='type']")==3){
+			$("#percentage_container").css('display','none');
+		}
+		var against = $('#against').val();
+		var percentage = $('#percentage').val();
+		$("input[name='type']").change(function(e){
+		    if($(this).val() == '2') {
+		        $("#against").removeProp('disable');
+		        $("#against").val(against).trigger('chosen:updated');
+		        $('form').formValidation('addField','percentage');
+		        $("#against_container").css('display','');
+
+		        $("#percentage").removeProp('disable');
+		        $("#percentage").val(percentage);
+		        $('form').formValidation('addField','percentage');
+		        $("#percentage_container").css('display','');
+		    }else if($(this).val() == '3'){
+		    	$("#against").removeProp('disable');
+		    	$("#against").val(against).trigger('chosen:updated');
+		        $('form').formValidation('addField','against');
+		        $("#against_container").css('display','');
+
+		        $("#percentage").prop('disable','disable');
+		        $('form').formValidation('removeField','percentage');
+		        $("#percentage_container").css('display','none');
+		    }else{
+				$("#against").val('defaultSelected').trigger('chosen:updated');
+		        $("#against").prop('disable','disable');
+		        $('form').formValidation('removeField','against');
+		        $("#against_container").css('display','none');
+
+		        $("#percentage").val('');
+		        $("#percentage").prop('disable','disable');
+		        $('form').formValidation('removeField','percentage');
+		        $("#percentage_container").css('display','none');
+			}
+		});
+});
+</script>

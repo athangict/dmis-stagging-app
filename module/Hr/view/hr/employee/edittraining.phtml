@@ -1,0 +1,187 @@
+<?php
+/**
+ * 
+ * View -- of Hr/EmphltController/edittrainingAction
+ * 
+ */
+    $this->headTitle($this->title);
+?>
+<?php 
+foreach($this->training as $training):
+    extract($training);
+endforeach;
+?>
+<div class="row">
+	<div class="col-lg-12">
+        <div class="widget widget-box">
+            <div class="widget-header">
+            	<h5 class="widget-title lighter smaller">
+	            	<i class="fa fa-pencil-square-o"></i> Edit Training of <?php echo $full_name; ?>
+	             </h5>
+            </div>
+            <div class="widget-body">
+				<div class="widget-main">
+					<form id="#form" method="post" action="<?php echo $this->url('employee', array('action' => 'edittraining','id' => $id)); ?>" enctype="multipart/form-data" >
+						<div class="row">   				
+						   <div class="form-group col-lg-4">
+								<label for="training_name" class="control-label">Training Name :</label>
+								<input type="text" name="training_name" id="training_name" class="form-control" value="<?php echo $training_name; ?>"  placeholder="Training Name" required onchange="check(this);"/>
+							</div>  
+							<div class="form-group col-lg-4">
+								<label>Start Date :</label>
+								<?php $def_date = (date('Y-m-d',strtotime($start_date)) > date('Y-m-d',strtotime('0000-00-00')))? $start_date:date('Y-m-d'); ?>	
+								<div class="date input-group" id="start_date" data-date="<?php echo date('Y-m-d',strtotime($def_date));?>" data-date-format="yyyy-mm-dd" data-date-viewmode="years">
+									<input class="form-control" name="start_date" id="start_date" type="text" value="<?php echo $start_date; ?> " placeholder="Start Date" readonly>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group col-lg-4">
+								<label>End Date :</label>
+								<?php $def_date = (date('Y-m-d',strtotime($end_date)) > date('Y-m-d',strtotime('0000-00-00')))? $end_date:date('Y-m-d'); ?>	
+								<div class="date input-group" id="end_date" data-date="<?php echo date('Y-m-d',strtotime($def_date));?>" data-date-format="yyyy-mm-dd" data-date-viewmode="years">
+									<input class="form-control" name="end_date" id="end_date" type="text" value="<?php echo $end_date; ?>" placeholder="End Date" readonly>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+						</div>
+						 <div class="row"> 
+							<div class="form-group col-lg-4">
+								<label for="level" class="control-label">Level :</label>
+								<input type="text" name="level" id="level" class="form-control" value="<?php echo $level; ?>" placeholder="Level" required/>
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="country" class="control-label">Training in country or out country</label>
+								<div class="radio">
+								<?php $checked1 = ($country==1)?"checked":"";
+								 $checked2 = ($country==2)?"checked":"";?>
+									<label>
+										<input class="ace" type="radio" name="country" id="country" value="1" <?php echo $checked1;?>/>
+										<span class="lbl"> In country </span>
+									</label>
+									<label>
+										<input class="ace" type="radio" name="country" id="country" value="2" <?php echo $checked2;?>/>
+										<span class="lbl"> Out country </span>
+									</label>
+								</div>
+							</div>  
+							<div class="form-group col-lg-4">
+								<label for="location" class="control-label">Location :</label>
+								<input type="text" name="location" id="location" class="form-control" value="<?php echo $location; ?>" placeholder="location" required />
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-lg-4">
+								<label for="funding" class="control-label">Funding :</label>
+								<input type="text" name="funding" id="funding" class="form-control" value="<?php echo $funding; ?>" placeholder="funding" required />
+							</div>  
+						
+							<div class="form-group col-lg-4">
+								<label for="govt_approval_no" class="control-label">Government Approval No. :</label>
+								<input type="text" name="govt_approval_no" id="govt_approval_no" class="form-control" value="<?php echo $govt_approval_no; ?>" placeholder="government approval no" required />
+							</div>  
+							<div class="form-group col-lg-4">
+								<label for="result" class="control-label">Result :</label>
+								<input type="text" name="result" id="result" class="form-control" value="<?php echo $result; ?>" placeholder="result" />
+							</div>  
+						</div>
+						<div class="row">
+							<div class="col-lg-12">
+								<button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+								<button type="button" class="btn btn-warning" onclick="javascript:history.back();"><i class="fa fa-times"></i> Cancel </button> 
+							</div>
+						</div>
+					</form>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$('document').ready(function(){
+	$('#start_date').datepicker();
+	$('#end_date').datepicker();
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			training_name: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide training name.'
+					}
+				}
+			},
+			start_date: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide start date.'
+					}
+				}
+			},
+			end_date: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide end date.'
+					}
+				}
+			},
+			level: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide level.'
+					}
+				}
+			},
+			country: {
+				validators: {
+					notEmpty: {
+						message: 'Please select country.'
+					}
+				}
+			},
+			location: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide location.'
+					}
+				}
+			},
+			funding: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide funding.'
+					}
+				}
+			},		
+			govt_approval_no: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide government approval no.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('#start_date').on('changeDate',function(){
+			$('form').formValidation('revalidateField','start_date');
+	});
+	$('#end_date').on('changeDate',function(){
+		$('form').formValidation('revalidateField','end_date');
+	});
+});
+</script>
+
+

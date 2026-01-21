@@ -1,0 +1,231 @@
+<?php
+/**
+ * View -- of Humanresource/EmployeeController/viewAction
+ */
+    $this->headTitle($this->title);
+	foreach ($employee as $row):
+		// print_r($row);
+		// exit;
+        extract($row);
+    endforeach; 
+	
+?>
+<?php echo $this->tabs_helper(array(812,813,815,816,818,824),$row['id']); ?>
+<div class="container mt-5">
+    <div class="row">
+		<div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+			<div class="card">
+				<img class="editable img-responsive"; alt="<?php echo $full_name; ?>" id="<?php echo $full_name; ?>" src="<?php echo $this->basePath() . '/images/avatar2.jpg';?>" />
+				<div class="card-body">
+					<h6 class="card-title">
+						<span class="middle"><?php echo $full_name; ?> (<?php echo $type_code; ?>)</span>
+						<span class="label label-<?php echo $status_color;?> arrowed-in-right">					
+							<i class="ace-icon fa fa-circle smaller-80 align-middle"></i>
+							<?php echo $status;?>
+						</span>
+					</h6>
+					<p class="card-text"><?php echo $this->button(3, $id, $system_user);?></p>
+					<p class="card-text"><strong>Email Address:</strong> 
+						<span class="profile-info-value">
+							<span><?php echo $email;?></span>
+						</span>
+					</p>
+					<p class="card-text"><strong>Phone Number:</strong> 
+						<span class="profile-info-value">
+							<span><?php echo $mobile;?></span>
+						</span>
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-9 col-md-4 col-sm-6 col-12 mb-4">
+			<div class="card">
+				<div class="card-body">
+					<div class="card-header">
+						<h5 class="card-title">
+							<div class="profile-info-row">
+								<span class="profile-info-name"><strong> NAME: </strong></span><strong>
+								<span class="middle"><?php echo $full_name; ?> </strong>(<?php echo $type_code; ?>)</span>
+								<span class="label label-<?php echo $status_color;?> arrowed-in-right">					
+									<i class="ace-icon fa fa-circle smaller-80 align-middle"></i>
+									<?php echo $status;?>
+								</span>
+							</div>
+						</h5>
+                    </div>
+					<p class="card-text"><span class="profile-info-value">
+					    <div class="profile-info-row">
+							<span class="profile-info-name"><strong> EID / CID : </strong></span>
+							<span class="profile-info-value">
+								<span><?php echo $emp_id;?> / <?php echo $cid;?></span>
+							</span>
+						</div> 
+					</p>
+					<p class="card-text">
+					    <div class="profile-info-row">
+							<span class="profile-info-name"><strong>DOB / GENDER : </strong></span>
+							<span class="profile-info-value">
+								<span><?php echo $dob;?> /  <?php echo $gender; ?></span>
+							</span>
+                        </div> 
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>EMAIL / MOBILE :</strong></span>
+							<span class="profile-info-value">
+								<span><?php echo $email;?> / <?php echo $mobile; ?></span>
+							</span>
+						</div>
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>HEIGHT / BLOOD GROUP :</strong></span>
+							<span class="profile-info-value">
+								<span><?php echo $height;?> / <?php echo $blood_group; ?></span>
+							</span>
+					    </div>
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>NATIONALITY / RELIGION :</strong></span>
+							<span class="profile-info-value">
+								<span><?php echo $nationality;?> / <?php echo $religion;?></span>
+							</span>
+						</div>
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>PERMANENT ADDRESS :</strong></span>
+							<span class="profile-info-value">
+								<i class="fa fa-map-marker light-orange bigger-110"></i>
+								<span><?php echo $village;?>,</span>
+								<span><?php echo $block;?>,</span>
+								<span><?php echo $district;?></span>
+							</span>
+						</div>
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>THRAM No. / House No. : </strong></span>
+							<span class="profile-info-value">
+								<span><?php echo $thram_no;?> / <?php echo $house_no;?></span>
+							</span>
+						</div>
+					</p>
+					<p class="card-text">
+						<div class="profile-info-row">
+							<span class="profile-info-name"><strong>BANK ACC No./BASIC PAY. : </strong></span>
+							<span class="profile-info-value">
+								<span><?php echo ($bank_account_no == 0)?'CASH':$bank_account_no;?> / <?php //echo $basicPAY;?></span>
+							</span>
+						</div>
+					</p>
+				</div>
+			</div>
+			<div class="card">
+			    <div class="card-header ">
+					<h6 class="card-title ">QUALIFICATIONS,TRAININGS & AWARDS</h6>
+				</div>
+				<div class="card-body">
+					<?php $i = 1;foreach($qualification as $qua):
+						if(!empty($qualification)):?>
+						    <p>Qualifications</p>
+							<<table id="datatable" class="d-style w-100 table text-dark-m1 text-95 border-y-1 brc-black-tp11 collapsed dtr-table">
+                  <!-- add `collapsed` by default ... it will be removed by default -->
+                  <!-- thead with .sticky-nav -->
+         <thead class="sticky-nav text-primary-d1 text-uppercase text-100">
+									<tr>
+										<th>Sl.</th>
+										<th>Qualifications</th>
+										<th>Course</th>
+										<th>Institute</th>
+										<th>location</th>
+										<th>Completion Year</  th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td><?php echo $i++;?></td>
+										<td><?php echo $qua['qualification'];?></td>
+										<td><?php echo $qua['course'];?></td>
+										<td><?php echo $qua['institute'];?></td>
+										<td><?php echo $qua['location'];?></td>
+										<td><?php echo $qua['completion_year'];?></td>
+									</tr>
+								</tbody>
+							</table>
+						<?php else:?>
+					<?php endif; endforeach;?>
+				</div>
+				<div class="card-body ">
+					<?php $i = 1;foreach($trainings as $tr):
+						if(!empty($trainings)):?>
+						    <p>Trainings Received</p>
+							<table class="table table-sm">
+								<thead>
+									<tr>
+									<th>Sl.</th>
+									<th>Name</th>
+									<th>Country</th>
+									<th>Location</th>
+									<th>Fund</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td><?php echo $i++;?></td>
+										<td><?php echo $tr['training_name'];?></td>
+										<td><?php echo $tr['country'];?></td>
+										<td><?php echo $tr['location'];?></td>
+										<td><?php echo $tr['funding'];?></td>
+									</tr>
+								</tbody>
+							</table>
+				<?php   else:?>
+				<?php   endif;endforeach;?>
+				</div>
+				<div class="card-body ">
+				    <?php $i = 1;foreach($award as $awa):
+						if(!empty($award)):?>
+							<p>Awards Received</p>
+							<table class="table table-sm">
+								<thead>
+									<tr>
+									<th>Sl.</th>
+									<th>Paticular</th>
+									<th>Award</th>
+									<th>Date</th>
+									<th>Authority</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td><?php echo $i++;?></td>
+										<td><?php echo $awa['particular'];?></td>
+										<td><?php echo $awa['award'];?></td>
+										<td><?php echo $awa['award_date'];?></td>
+										<td><?php echo $awa['authority'];?></td>
+									</tr>
+								</tbody>
+							</table>
+					<?php else:?>
+					<?php endif;endforeach;?>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+<!--for modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> </div>
+    </div>
+</div>
+<script type="text/javascript">
+	$('#print').genpdfprofile({
+		content: '#report-print',
+		src:"<?php echo $this->url('pdfxls', array('action' => 'pdf'));?>",
+		orentation:"P",//L =landscape, P = potrait
+	});
+</script>   
+
