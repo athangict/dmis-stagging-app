@@ -70,22 +70,18 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig
-          export KUBECONFIG=kubeconfig
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+          kubectl config view
 
       - name: Update deployment image
         run: |
-          export KUBECONFIG=kubeconfig
           kubectl set image deployment/staging-app \
             app=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${GITHUB_SHA::7} \
             -n staging
 
       - name: Verify deployment
         run: |
-          export KUBECONFIG=kubeconfig
           kubectl rollout status deployment/staging-app -n staging
           kubectl get pods -n staging
-
-      - name: Clean up
-        if: always()
-        run: rm -f kubeconfig
